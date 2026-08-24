@@ -1,0 +1,7 @@
+seasons/
+*.csv
+trends_data.json
+dashboard.html
+fixtures_raw.csv
+fixtures_test.csv
+test_2324.csv

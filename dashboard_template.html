@@ -1,0 +1,673 @@
+<title>Pitch Signals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --surface-2: #FBFAF7;
+    --ink: #1B1D22;
+    --ink-muted: #6B6A63;
+    --ink-faint: #A6A49A;
+    --border: rgba(27, 29, 34, 0.10);
+    --border-strong: rgba(27, 29, 34, 0.18);
+    --accent: #A9772F;
+    --accent-ink: #FFFFFF;
+    --accent-soft: rgba(169, 119, 47, 0.12);
+    --positive: #2E7D4F;
+    --positive-soft: rgba(46, 125, 79, 0.12);
+    --negative: #B3402A;
+    --negative-soft: rgba(179, 64, 42, 0.12);
+    --shadow: 0 1px 2px rgba(20, 20, 15, 0.04), 0 8px 24px -12px rgba(20, 20, 15, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161C;
+      --surface: #1C1F27;
+      --surface-2: #21242D;
+      --ink: #EDEBE3;
+      --ink-muted: #9C9C9F;
+      --ink-faint: #6A6B72;
+      --border: rgba(237, 235, 227, 0.09);
+      --border-strong: rgba(237, 235, 227, 0.16);
+      --accent: #D9AE5C;
+      --accent-ink: #1B1503;
+      --accent-soft: rgba(217, 174, 92, 0.14);
+      --positive: #4FB379;
+      --positive-soft: rgba(79, 179, 121, 0.16);
+      --negative: #E2735A;
+      --negative-soft: rgba(226, 115, 90, 0.16);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14161C;
+    --surface: #1C1F27;
+    --surface-2: #21242D;
+    --ink: #EDEBE3;
+    --ink-muted: #9C9C9F;
+    --ink-faint: #6A6B72;
+    --border: rgba(237, 235, 227, 0.09);
+    --border-strong: rgba(237, 235, 227, 0.16);
+    --accent: #D9AE5C;
+    --accent-ink: #1B1503;
+    --accent-soft: rgba(217, 174, 92, 0.14);
+    --positive: #4FB379;
+    --positive-soft: rgba(79, 179, 121, 0.16);
+    --negative: #E2735A;
+    --negative-soft: rgba(226, 115, 90, 0.16);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", monospace; font-variant-numeric: tabular-nums; }
+  .display { font-family: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif; }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .masthead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 28px;
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid var(--border-strong);
+  }
+
+  .masthead-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .masthead-title h1 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: clamp(34px, 5vw, 46px);
+    letter-spacing: 0.2px;
+    margin: 0;
+    text-wrap: balance;
+    line-height: 0.95;
+  }
+
+  .masthead-title .tag {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    padding: 3px 9px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .masthead-meta {
+    text-align: right;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .masthead-meta .updated {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .masthead-meta .dot { color: var(--accent); }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .controls-label {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-right: 2px;
+  }
+
+  .chip-btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+
+  .chip-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+
+  .chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chip-btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  /* ---------- Fixture grid ---------- */
+  .fixtures {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 18px;
+  }
+
+  .fixture-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fixture-head {
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+
+  .fixture-date {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fixture-teams {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .fixture-teams h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .fixture-teams .vs { color: var(--ink-faint); font-weight: 400; font-size: 0.85em; margin: 0 6px; }
+
+  .fixture-odds {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .odds-pill {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 7px;
+  }
+
+  .odds-pill b { color: var(--ink); font-weight: 600; }
+
+  .signals {
+    padding: 6px 8px 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .signal-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 9px 10px;
+    border-radius: 7px;
+  }
+
+  .signal-row:hover { background: var(--surface-2); }
+
+  .signal-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .signal-sub {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .signal-bar-track {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal-bar-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 3px;
+  }
+
+  .signal-bar-fill.pos { background: var(--positive); left: 50%; }
+  .signal-bar-fill.neg { background: var(--negative); right: 50%; }
+  .signal-bar-mid {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 1px;
+    background: var(--border-strong);
+  }
+
+  .signal-value {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+    min-width: 52px;
+  }
+
+  .signal-value.pos { color: var(--positive); }
+  .signal-value.neg { color: var(--negative); }
+
+  .hit-pill {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+
+  .signal-n {
+    font-size: 11px;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .signal-breakdown {
+    grid-column: 1 / -1;
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 1px;
+  }
+
+  .data-note {
+    margin: 8px 10px 4px;
+    padding: 7px 10px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Team trends table ---------- */
+  .section-heading {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    margin: 48px 0 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .section-sub {
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    margin: 0 0 18px;
+    max-width: 62ch;
+  }
+
+  .team-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  table.team-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 920px;
+  }
+
+  table.team-table th, table.team-table td {
+    padding: 9px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.team-table th:first-child, table.team-table td:first-child {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+  }
+
+  table.team-table thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  table.team-table thead th:first-child { z-index: 2; }
+
+  table.team-table tbody tr:hover td { background: var(--surface-2); }
+  table.team-table tbody tr:last-child td { border-bottom: none; }
+
+  table.team-table td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 13px; }
+  table.team-table td.team-name { font-weight: 600; font-size: 13.5px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-faint);
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 72ch;
+  }
+
+  footer strong { color: var(--ink-muted); }
+
+  @media (max-width: 560px) {
+    .fixtures { grid-template-columns: 1fr; }
+    .masthead { flex-direction: column; align-items: flex-start; }
+    .masthead-meta { text-align: left; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <div class="masthead-title">
+      <h1>Pitch Signals</h1>
+      <span class="tag">EPL</span>
+    </div>
+    <div class="masthead-meta">
+      <div class="updated">Updated __GENERATED_AT__</div>
+      <div>Refreshes weekly after each round <span class="dot">&middot;</span> rolling 10-game trends</div>
+    </div>
+  </div>
+
+  <div class="controls" role="group" aria-label="Sort fixtures">
+    <span class="controls-label">Sort by</span>
+    <button class="chip-btn active" data-sort="strength">Strongest signal</button>
+    <button class="chip-btn" data-sort="date">Kickoff date</button>
+  </div>
+
+  <div class="fixtures" id="fixtures"></div>
+
+  <h2 class="section-heading">Team Trends</h2>
+  <p class="section-sub">Every tracked team's own rolling-10-game average, across all markets. This is the raw material the matchup projections above are built from.</p>
+  <div class="team-table-wrap">
+    <table class="team-table" id="team-table">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <strong>Methodology.</strong> Each matchup projection blends one team's own rolling-10-game average with the specific opponent's own rolling-10-game average at allowing/conceding that stat &mdash; e.g. a corners projection averages Team A's own corners-won rate with Team B's own corners-conceded rate, so it's a read on this specific pairing, not a comparison to the league at large. The headline number is that projection minus the standard betting line for the market (shown in brackets), so +2.1 means we project 2.1 above the typical line. Hit-rate is the share of the team's last 10 games that landed over its own individual line. Match cards sums both teams' own card rates directly, compared against a 3.5 total-cards line. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+  </footer>
+</div>
+
+<script>
+  const DATA = __DATA_JSON__;
+
+  const MARKET_ORDER = ['home_goals', 'away_goals', 'home_corners', 'away_corners', 'home_sot', 'away_sot', 'match_cards', 'btts'];
+
+  function fmtSigned(n) {
+    if (n === undefined || n === null) return '—';
+    const s = n > 0 ? '+' : '';
+    return s + n.toFixed(2);
+  }
+
+  function barWidth(val, scale) {
+    const pct = Math.min(Math.abs(val) / scale, 1) * 50;
+    return pct.toFixed(1) + '%';
+  }
+
+  function renderSignalRow(sig, scale, teamLabel, opponentLabel) {
+    if (!sig) return '';
+    const hasProjection = sig.vs_line !== undefined;
+    const value = hasProjection ? sig.vs_line : null;
+    const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
+    const hitRate = sig.avg_hit_rate;
+    const nTotal = (sig.team_n || sig.home_team_n || 0) + (sig.opponent_n || sig.away_team_n || 0);
+
+    const barHtml = hasProjection ? `
+      <div class="signal-bar-track">
+        <div class="signal-bar-mid"></div>
+        <div class="signal-bar-fill ${sign}" style="width:${barWidth(value, scale)}"></div>
+      </div>` : `<div class="signal-bar-track"></div>`;
+
+    let breakdown = '';
+    if (sig.team_avg !== undefined) {
+      breakdown = `${teamLabel} avg ${sig.team_avg.toFixed(1)} &middot; ${opponentLabel} allow ${sig.opponent_avg.toFixed(1)} &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+    } else if (sig.home_team_avg !== undefined) {
+      breakdown = `${teamLabel} ${sig.home_team_avg.toFixed(1)} + ${opponentLabel} ${sig.away_team_avg.toFixed(1)} &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+    }
+
+    return `
+      <div class="signal-row">
+        <div class="signal-label">${sig.label}</div>
+        <div class="signal-value ${sign}">${hasProjection ? fmtSigned(value) : hitRate.toFixed(0) + '%'}</div>
+        <div class="signal-sub">
+          ${barHtml}
+          <span class="hit-pill">${hitRate.toFixed(0)}% of games</span>
+          <span class="signal-n">n=${nTotal}</span>
+        </div>
+        ${breakdown ? `<div class="signal-breakdown">${breakdown}</div>` : ''}
+      </div>`;
+  }
+
+  function fixtureStrength(fx) {
+    if (!fx.signals) return -1;
+    let max = 0;
+    for (const key of MARKET_ORDER) {
+      const s = fx.signals[key];
+      if (s && s.vs_line !== undefined) {
+        max = Math.max(max, Math.abs(s.vs_line));
+      }
+    }
+    return max;
+  }
+
+  function renderFixtureCard(fx) {
+    const dateObj = new Date(fx.Date + 'T12:00:00');
+    const dateStr = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+
+    if (!fx.signals) {
+      return `<div class="fixture-card">
+        <div class="fixture-head">
+          <div class="fixture-date">${dateStr}</div>
+          <div class="fixture-teams"><h2>${fx.HomeTeam}<span class="vs">v</span>${fx.AwayTeam}</h2></div>
+        </div>
+        <div class="empty-state">Not enough recent data for one or both teams yet.</div>
+      </div>`;
+    }
+
+    const scaleByMarket = { goals: 2.5, corners: 4, sot: 4, cards: 3 };
+    function scaleFor(key) {
+      if (key.includes('goals')) return scaleByMarket.goals;
+      if (key.includes('corners')) return scaleByMarket.corners;
+      if (key.includes('sot')) return scaleByMarket.sot;
+      return scaleByMarket.cards;
+    }
+
+    const sortedKeys = MARKET_ORDER
+      .filter(k => fx.signals[k])
+      .sort((a, b) => {
+        const sa = fx.signals[a], sb = fx.signals[b];
+        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : sa.avg_hit_rate / 20;
+        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : sb.avg_hit_rate / 20;
+        return vb - va;
+      });
+
+    // which side is "team" vs "opponent" in the breakdown text, per signal key
+    const SIDE_LABELS = {
+      home_goals: [fx.HomeTeam, fx.AwayTeam], away_goals: [fx.AwayTeam, fx.HomeTeam],
+      home_corners: [fx.HomeTeam, fx.AwayTeam], away_corners: [fx.AwayTeam, fx.HomeTeam],
+      home_sot: [fx.HomeTeam, fx.AwayTeam], away_sot: [fx.AwayTeam, fx.HomeTeam],
+      match_cards: [fx.HomeTeam, fx.AwayTeam], btts: [fx.HomeTeam, fx.AwayTeam],
+    };
+
+    const rows = sortedKeys.map(k => {
+      const [teamLabel, oppLabel] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam];
+      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel);
+    }).join('');
+
+    const notes = [];
+    const ht = DATA.trends[fx.HomeTeam], at = DATA.trends[fx.AwayTeam];
+    if (ht && ht._data_note) notes.push(`${fx.HomeTeam}: ${ht._data_note}`);
+    if (at && at._data_note) notes.push(`${fx.AwayTeam}: ${at._data_note}`);
+    const noteHtml = notes.length ? `<div class="data-note">${notes.join('<br>')}</div>` : '';
+
+    return `<div class="fixture-card">
+      <div class="fixture-head">
+        <div class="fixture-date">${dateStr}</div>
+        <div class="fixture-teams"><h2>${fx.HomeTeam}<span class="vs">v</span>${fx.AwayTeam}</h2></div>
+        <div class="fixture-odds">
+          <span class="odds-pill">1 <b>${fx.B365H ?? '—'}</b></span>
+          <span class="odds-pill">X <b>${fx.B365D ?? '—'}</b></span>
+          <span class="odds-pill">2 <b>${fx.B365A ?? '—'}</b></span>
+        </div>
+      </div>
+      <div class="signals">${rows}</div>
+      ${noteHtml}
+    </div>`;
+  }
+
+  function renderFixtures(sortMode) {
+    const container = document.getElementById('fixtures');
+    let fixtures = [...DATA.fixtures];
+    if (sortMode === 'strength') {
+      fixtures.sort((a, b) => fixtureStrength(b) - fixtureStrength(a));
+    } else {
+      fixtures.sort((a, b) => a.Date.localeCompare(b.Date));
+    }
+    if (fixtures.length === 0) {
+      container.innerHTML = '<div class="empty-state">No upcoming fixtures loaded yet.</div>';
+      return;
+    }
+    container.innerHTML = fixtures.map(renderFixtureCard).join('');
+  }
+
+  document.querySelectorAll('.chip-btn[data-sort]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chip-btn[data-sort]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFixtures(btn.dataset.sort);
+    });
+  });
+
+  renderFixtures('strength');
+
+  // ---------- Team trends table ----------
+  const TEAM_COLS = [
+    { key: 'goals_for', label: 'Goals' },
+    { key: 'goals_against', label: 'Conceded' },
+    { key: 'corners_for', label: 'Corners' },
+    { key: 'corners_against', label: 'Corners Con.' },
+    { key: 'cards_for', label: 'Cards' },
+    { key: 'shots_on_target_for', label: 'SoT' },
+    { key: 'shots_on_target_against', label: 'SoT Con.' },
+    { key: 'btts', label: 'BTTS %', pctOnly: true },
+    { key: 'clean_sheet', label: 'Clean Sheet %', pctOnly: true },
+  ];
+
+  function renderTeamTable() {
+    const thead = document.querySelector('#team-table thead');
+    const tbody = document.querySelector('#team-table tbody');
+    thead.innerHTML = '<tr><th>Team</th>' + TEAM_COLS.map(c => `<th>${c.label}</th>`).join('') + '</tr>';
+
+    const teams = Object.keys(DATA.trends).sort();
+    tbody.innerHTML = teams.map(team => {
+      const t = DATA.trends[team];
+      const cells = TEAM_COLS.map(c => {
+        const stat = t[c.key];
+        if (!stat) return '<td class="mono-cell">—</td>';
+        if (c.pctOnly) return `<td class="mono-cell">${stat.hit_rate.toFixed(0)}%</td>`;
+        return `<td class="mono-cell">${stat.avg.toFixed(1)}/gm</td>`;
+      }).join('');
+      return `<tr><td class="team-name">${team}</td>${cells}</tr>`;
+    }).join('');
+  }
+
+  renderTeamTable();
+</script>
