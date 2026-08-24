@@ -585,9 +585,13 @@
     // Two separate teams, two separate histories - team_hit_rate is the subject team's own
     // rate, opponent_hit_rate is the OTHER team's own rate at the complementary market (e.g.
     // Fulham's own rate of conceding over the line). Shown side by side, labeled by name, never
-    // blended into one ambiguous number.
-    const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
-    const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+    // blended into one ambiguous number. Both are stored as "% over the line" - flip each to
+    // "% under" when UNDER is the direction being called, so the percentage always answers
+    // "how often does history support THIS specific call", not a fixed always-over baseline.
+    const teamHitRaw = sig.team_hit_rate ?? sig.home_team_hit_rate;
+    const oppHitRaw = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+    const teamHit = direction === 'UNDER' ? 100 - teamHitRaw : teamHitRaw;
+    const oppHit = direction === 'UNDER' ? 100 - oppHitRaw : oppHitRaw;
     const teamN = sig.team_n || sig.home_team_n || 0;
     const oppN = sig.opponent_n || sig.away_team_n || 0;
     const nTotal = teamN + oppN;
@@ -612,7 +616,7 @@
       strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
     }
 
-    const lineSuffix = sig.line !== undefined ? ` over ${sig.line}` : '';
+    const lineSuffix = sig.line !== undefined ? ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}` : '';
     const hitRow = `
       <div class="hit-compare">
         <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
