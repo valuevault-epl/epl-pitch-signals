@@ -20,7 +20,10 @@ import datetime
 import os
 
 WORKDIR = os.path.dirname(os.path.abspath(__file__))
-ROLLING_WINDOW = 10  # last N games per team for the trend number
+# A full season (38 games) as the base sample, not a short-form window - starts from all of
+# 2025-26, and as 2026-27 progresses each new game played adds in while the oldest drops out,
+# keeping a constant ~38-game rolling sample per team rather than a small, noisier one.
+ROLLING_WINDOW = 38
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
 
@@ -116,10 +119,11 @@ def _extract_team_games(recent, division_label):
     return team_games
 
 
-def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=3,
+def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
                         results_fallback=None, min_games=6):
     """For each team, build a list of recent per-game stat dicts (most recent `window`), using
-    only the most recent `use_last_n_seasons` seasons so the trend reflects current squad/form,
+    only the most recent `use_last_n_seasons` seasons (2025-26 + the current season is enough to
+    always have a full `window`-sized sample available) so the trend reflects current squad/form,
     not a team's whole 26-year history. Teams with fewer than `min_games` top-flight matches
     (newly promoted) get topped up with their most recent games from `results_fallback` (e.g.
     the Championship), tagged with division='Championship' so the caveat is visible downstream."""
@@ -146,7 +150,7 @@ def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=3,
     return team_games
 
 
-def league_averages_from_matches(results, use_last_n_seasons=3):
+def league_averages_from_matches(results, use_last_n_seasons=2):
     """Compute league-average per-team-per-game stats directly from the match table (not from
     per-team windows), so goals_for/goals_against etc. are exactly symmetric by construction -
     every match contributes one team's 'for' value and the opponent's matching 'against' value."""
