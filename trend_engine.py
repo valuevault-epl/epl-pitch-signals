@@ -106,6 +106,7 @@ def _extract_team_games(recent, division_label):
                 'corners_against': row.get('AC') if is_home else row.get('HC'),
                 'cards_for': compute_team_card_count(row, is_home),
                 'cards_against': compute_team_card_count(row, not is_home),
+                'match_total_cards': compute_team_card_count(row, True) + compute_team_card_count(row, False),
                 'shots_on_target_for': row.get('HST') if is_home else row.get('AST'),
                 'shots_on_target_against': row.get('AST') if is_home else row.get('HST'),
                 'btts': (row['FTHG'] > 0) and (row['FTAG'] > 0),
@@ -165,6 +166,7 @@ def league_averages_from_matches(results, use_last_n_seasons=3):
         'corners_for': recent['HC'].sum() + recent['AC'].sum(),
         'corners_against': recent['AC'].sum() + recent['HC'].sum(),
         'cards_for': card_total(recent, True).sum() + card_total(recent, False).sum(),
+        'match_total_cards': (card_total(recent, True) + card_total(recent, False)).sum() * 2,
         'shots_on_target_for': recent['HST'].sum() + recent['AST'].sum(),
         'shots_on_target_against': recent['AST'].sum() + recent['HST'].sum(),
     }
@@ -185,9 +187,9 @@ def team_trend(team_games, team, stat, window, league_avg, line):
 
 def build_all_trends(team_games, league_avgs, window=ROLLING_WINDOW):
     metrics = ['goals_for', 'goals_against', 'corners_for', 'corners_against',
-               'cards_for', 'shots_on_target_for', 'shots_on_target_against']
+               'cards_for', 'match_total_cards', 'shots_on_target_for', 'shots_on_target_against']
     lines = {'goals_for': 1.5, 'goals_against': 1.5, 'corners_for': 5.5, 'corners_against': 5.5,
-             'cards_for': 1.5, 'shots_on_target_for': 4.5, 'shots_on_target_against': 4.5}
+             'cards_for': 1.5, 'match_total_cards': 3.5, 'shots_on_target_for': 4.5, 'shots_on_target_against': 4.5}
 
     trends = {}
     for team in team_games:

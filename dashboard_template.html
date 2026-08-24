@@ -234,6 +234,19 @@
 
   .fixture-teams .vs { color: var(--ink-faint); font-weight: 400; font-size: 0.85em; margin: 0 6px; }
 
+  .side-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 0px 4px;
+    vertical-align: middle;
+  }
+
+  .signal-label .side-tag { margin-left: 5px; }
+
   .fixture-odds {
     display: flex;
     gap: 6px;
@@ -548,18 +561,20 @@
     return { cls: 'rel-weak', label: 'Weak' };
   }
 
-  function renderSignalRow(sig, scale, teamLabel, opponentLabel) {
+  function renderSignalRow(sig, scale, teamLabel, opponentLabel, side) {
     if (!sig) return '';
+    const sideTagHtml = side ? `<span class="side-tag">${side}</span>` : '';
     const hasProjection = sig.vs_line !== undefined;
     const value = hasProjection ? sig.vs_line : null;
     const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
     const direction = sign === 'pos' ? 'OVER' : sign === 'neg' ? 'UNDER' : '';
     const nTotal = (sig.team_n || sig.home_team_n || 0) + (sig.opponent_n || sig.away_team_n || 0);
 
-    // avg_hit_rate is always "% of games that landed OVER the line" - flip it to "% that landed
-    // UNDER" when that's the direction being suggested, so the shown percentage always answers
-    // "how often does history support THIS call", not an arbitrary fixed direction.
-    const rawHitRate = sig.avg_hit_rate;
+    // market_hit_rate is the specific market's own historical rate of landing OVER its line -
+    // flip it to "% that landed UNDER" when that's the direction being suggested, so the shown
+    // percentage always answers "how often has THIS exact market actually been true", not an
+    // arbitrary fixed direction or a blend with a different market.
+    const rawHitRate = sig.market_hit_rate;
     const directionalHitRate = hasProjection
       ? (sign === 'neg' ? 100 - rawHitRate : rawHitRate)
       : rawHitRate;
@@ -593,7 +608,7 @@
 
     return `
       <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
-        <div class="signal-label">${sig.label}</div>
+        <div class="signal-label">${sig.label}${sideTagHtml}</div>
         <div class="signal-value ${sign}">${valueHtml}</div>
         <div class="signal-sub">
           ${barHtml}
@@ -614,7 +629,7 @@
       const s = fx.signals[key];
       if (s && s.vs_line !== undefined) {
         const nTotal = (s.team_n || s.home_team_n || 0) + (s.opponent_n || s.away_team_n || 0);
-        const rel = reliability(s.avg_hit_rate, nTotal);
+        const rel = reliability(s.market_hit_rate, nTotal);
         max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * rel));
       }
     }
@@ -629,7 +644,7 @@
       return `<div class="fixture-card">
         <div class="fixture-head">
           <div class="fixture-date">${dateStr}</div>
-          <div class="fixture-teams"><h2>${fx.HomeTeam}<span class="vs">v</span>${fx.AwayTeam}</h2></div>
+          <div class="fixture-teams"><h2>${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2></div>
         </div>
         <div class="empty-state">Not enough recent data for one or both teams yet.</div>
       </div>`;
@@ -647,22 +662,23 @@
       .filter(k => fx.signals[k])
       .sort((a, b) => {
         const sa = fx.signals[a], sb = fx.signals[b];
-        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : sa.avg_hit_rate / 20;
-        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : sb.avg_hit_rate / 20;
+        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : sa.market_hit_rate / 20;
+        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : sb.market_hit_rate / 20;
         return vb - va;
       });
 
-    // which side is "team" vs "opponent" in the breakdown text, per signal key
+    // which side is "team" vs "opponent" in the breakdown text, per signal key, plus which side
+    // ("H"/"A") the market's own subject team is playing on in THIS fixture
     const SIDE_LABELS = {
-      home_goals: [fx.HomeTeam, fx.AwayTeam], away_goals: [fx.AwayTeam, fx.HomeTeam],
-      home_corners: [fx.HomeTeam, fx.AwayTeam], away_corners: [fx.AwayTeam, fx.HomeTeam],
-      home_sot: [fx.HomeTeam, fx.AwayTeam], away_sot: [fx.AwayTeam, fx.HomeTeam],
-      match_cards: [fx.HomeTeam, fx.AwayTeam], btts: [fx.HomeTeam, fx.AwayTeam],
+      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H'], away_goals: [fx.AwayTeam, fx.HomeTeam, 'A'],
+      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H'], away_corners: [fx.AwayTeam, fx.HomeTeam, 'A'],
+      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H'], away_sot: [fx.AwayTeam, fx.HomeTeam, 'A'],
+      match_cards: [fx.HomeTeam, fx.AwayTeam, null], btts: [fx.HomeTeam, fx.AwayTeam, null],
     };
 
     const rows = sortedKeys.map(k => {
-      const [teamLabel, oppLabel] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam];
-      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel);
+      const [teamLabel, oppLabel, side] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam, null];
+      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel, side);
     }).join('');
 
     const notes = [];
@@ -674,7 +690,7 @@
     return `<div class="fixture-card">
       <div class="fixture-head">
         <div class="fixture-date">${dateStr}</div>
-        <div class="fixture-teams"><h2>${fx.HomeTeam}<span class="vs">v</span>${fx.AwayTeam}</h2></div>
+        <div class="fixture-teams"><h2>${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2></div>
         <div class="fixture-odds">
           <span class="odds-pill">1 <b>${fx.B365H ?? '—'}</b></span>
           <span class="odds-pill">X <b>${fx.B365D ?? '—'}</b></span>

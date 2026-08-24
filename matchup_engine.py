@@ -27,9 +27,13 @@ def combine_matchup(team_trends, opponent_trends, team_market, opponent_market):
         'projection': round(projection, 2),
         'line': t['line'],
         'vs_line': round(projection - t['line'], 2),
+        # market_hit_rate is the team's OWN genuine historical hit rate for THIS exact market
+        # (e.g. "how often has Chelsea actually scored over 1.5" over their last 10 games) - the
+        # true frequency of the proposition being shown, not blended with the opponent's own
+        # (different) market.
+        'market_hit_rate': t['hit_rate'],
         'team_avg': t['avg'], 'team_hit_rate': t['hit_rate'], 'team_n': t['n'],
         'opponent_avg': o['avg'], 'opponent_hit_rate': o['hit_rate'], 'opponent_n': o['n'],
-        'avg_hit_rate': round((t['hit_rate'] + o['hit_rate']) / 2, 1),
     }
 
 
@@ -60,30 +64,35 @@ def build_fixture_signals(fixture, trends):
     if as_:
         signals['away_sot'] = {'label': f'{away} shots on target', **as_}
 
-    # match cards: both teams contribute their own average directly to the match total, so the
-    # projection is simply the sum of each team's own recent cards-per-game rate (no opponent
-    # blend needed here - a team's card tendency isn't really "conceded" by the other side).
+    # match cards: projection sums each team's own cards-per-game rate (a card-proneness proxy -
+    # not "conceded" by the other side, so no opponent blend for the number). For the displayed
+    # %, use each team's own match_total_cards hit rate - i.e. how often THEIR OWN games (both
+    # teams' cards combined) actually went over 3.5 - the true frequency of the total-cards
+    # market, not a proxy built from a one-sided card count.
     hc_cards = home_trends.get('cards_for')
     ac_cards = away_trends.get('cards_for')
-    if hc_cards and ac_cards:
+    hc_total = home_trends.get('match_total_cards')
+    ac_total = away_trends.get('match_total_cards')
+    if hc_cards and ac_cards and hc_total and ac_total:
         match_cards_line = 3.5  # standard "total match cards" betting line
         projection = hc_cards['avg'] + ac_cards['avg']
         signals['match_cards'] = {
             'label': 'Total match cards',
             'projection': round(projection, 2), 'line': match_cards_line,
             'vs_line': round(projection - match_cards_line, 2),
-            'home_team_avg': hc_cards['avg'], 'home_team_hit_rate': hc_cards['hit_rate'], 'home_team_n': hc_cards['n'],
-            'away_team_avg': ac_cards['avg'], 'away_team_hit_rate': ac_cards['hit_rate'], 'away_team_n': ac_cards['n'],
-            'avg_hit_rate': round((hc_cards['hit_rate'] + ac_cards['hit_rate']) / 2, 1),
+            'market_hit_rate': round((hc_total['hit_rate'] + ac_total['hit_rate']) / 2, 1),
+            'home_team_avg': hc_cards['avg'], 'home_team_hit_rate': hc_total['hit_rate'], 'home_team_n': hc_total['n'],
+            'away_team_avg': ac_cards['avg'], 'away_team_hit_rate': ac_total['hit_rate'], 'away_team_n': ac_total['n'],
         }
 
-    # btts: both teams' individual btts hit rates (already a probability-style read, no line)
+    # btts: each team's own historical btts rate, averaged - already a genuine per-team
+    # frequency of the same proposition (was a goal scored by both sides in their games)
     if 'btts' in home_trends and 'btts' in away_trends:
         signals['btts'] = {
             'label': 'Both teams to score',
+            'market_hit_rate': round((home_trends['btts']['hit_rate'] + away_trends['btts']['hit_rate']) / 2, 1),
             'home_hit_rate': home_trends['btts']['hit_rate'], 'home_n': home_trends['btts']['n'],
             'away_hit_rate': away_trends['btts']['hit_rate'], 'away_n': away_trends['btts']['n'],
-            'avg_hit_rate': round((home_trends['btts']['hit_rate'] + away_trends['btts']['hit_rate']) / 2, 1),
         }
     return signals
 
