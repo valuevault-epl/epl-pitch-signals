@@ -366,25 +366,6 @@
     color: var(--ink-faint);
   }
 
-  .hit-pill {
-    font-family: "IBM Plex Mono", monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--ink-muted);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 6px;
-    white-space: nowrap;
-  }
-
-  .signal-n {
-    font-size: 11px;
-    color: var(--ink-faint);
-    white-space: nowrap;
-  }
-
   .signal-breakdown {
     grid-column: 1 / -1;
     font-family: "IBM Plex Mono", monospace;
@@ -392,6 +373,36 @@
     font-size: 11px;
     color: var(--ink-faint);
     margin-top: 1px;
+  }
+
+  .hit-compare {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .hit-chip {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .hit-chip b {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .hit-n {
+    color: var(--ink-faint);
+    font-size: 10.5px;
   }
 
   .data-note {
@@ -526,7 +537,7 @@
   </div>
 
   <footer>
-    <strong>Methodology.</strong> Each matchup projection blends one team's own rolling-10-game average with the specific opponent's own rolling-10-game average at allowing/conceding that stat &mdash; e.g. a corners projection averages Team A's own corners-won rate with Team B's own corners-conceded rate, so it's a read on this specific pairing, not a comparison to the league at large. The headline number is that projection minus the standard betting line for the market (shown in brackets), so +2.1 means we project 2.1 above the typical line. Hit-rate is the share of the team's last 10 games that landed over its own individual line. Match cards sums both teams' own card rates directly, compared against a 3.5 total-cards line. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+    <strong>Methodology.</strong> Each team gets a strength rating per market: its own rolling-10-game rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. The headline number is that projection minus the market's standard betting line, so +2.1 means we project 2.1 above the typical line. The two hit-rate chips under each signal are each team's OWN historical rate at their OWN side of the market (e.g. how often the scorer's own games went over the line, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total exceeded 3.5. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
   </footer>
 </div>
 
@@ -568,18 +579,18 @@
     const value = hasProjection ? sig.vs_line : null;
     const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
     const direction = sign === 'pos' ? 'OVER' : sign === 'neg' ? 'UNDER' : '';
-    const nTotal = (sig.team_n || sig.home_team_n || 0) + (sig.opponent_n || sig.away_team_n || 0);
 
-    // market_hit_rate is the specific market's own historical rate of landing OVER its line -
-    // flip it to "% that landed UNDER" when that's the direction being suggested, so the shown
-    // percentage always answers "how often has THIS exact market actually been true", not an
-    // arbitrary fixed direction or a blend with a different market.
-    const rawHitRate = sig.market_hit_rate;
-    const directionalHitRate = hasProjection
-      ? (sign === 'neg' ? 100 - rawHitRate : rawHitRate)
-      : rawHitRate;
+    // Two separate teams, two separate histories - team_hit_rate is the subject team's own
+    // rate, opponent_hit_rate is the OTHER team's own rate at the complementary market (e.g.
+    // Fulham's own rate of conceding over the line). Shown side by side, labeled by name, never
+    // blended into one ambiguous number.
+    const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
+    const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+    const teamN = sig.team_n || sig.home_team_n || 0;
+    const oppN = sig.opponent_n || sig.away_team_n || 0;
+    const nTotal = teamN + oppN;
 
-    const relScore = reliability(directionalHitRate, nTotal);
+    const relScore = reliability((teamHit + oppHit) / 2, nTotal);
     const tier = reliabilityTier(relScore);
     const relColorVar = sign === 'neg' ? 'var(--negative)' : sign === 'pos' ? 'var(--positive)' : 'var(--accent)';
     const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
@@ -590,21 +601,26 @@
         <div class="signal-bar-fill ${sign}" style="width:${barWidth(value, scale)}"></div>
       </div>` : `<div class="signal-bar-track"></div>`;
 
-    let breakdown = '';
-    if (sig.team_avg !== undefined) {
-      breakdown = `${teamLabel} avg ${sig.team_avg.toFixed(1)} &middot; ${opponentLabel} allow ${sig.opponent_avg.toFixed(1)} &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
-    } else if (sig.home_team_avg !== undefined) {
-      breakdown = `${teamLabel} ${sig.home_team_avg.toFixed(1)} + ${opponentLabel} ${sig.away_team_avg.toFixed(1)} &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+    // Strength = team's own rate vs league average for that market (1.0 = exactly average).
+    // Shown so the numbers feeding the formula are visible, not just the output.
+    let strengthLine = '';
+    if (sig.attack_strength !== undefined) {
+      strengthLine = `${teamLabel} ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+    } else if (sig.home_card_strength !== undefined) {
+      strengthLine = `${teamLabel} ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
     }
+
+    const hitSuffix = sig.line !== undefined ? `over ${sig.line}` : 'of games';
+    const hitRow = `
+      <div class="hit-compare">
+        <span class="hit-chip">${teamLabel}: <b>${teamHit.toFixed(0)}%</b> ${hitSuffix} <span class="hit-n">(n=${teamN})</span></span>
+        <span class="hit-chip">${opponentLabel}: <b>${oppHit.toFixed(0)}%</b> ${hitSuffix} <span class="hit-n">(n=${oppN})</span></span>
+      </div>`;
 
     const valueHtml = hasProjection ? `
       <div class="signal-direction ${sign}">${direction} ${sig.line}</div>
       <div class="signal-delta">${fmtSigned(value)}</div>` : `
-      <div class="signal-direction">${rawHitRate.toFixed(0)}%</div>`;
-
-    const hitLabel = hasProjection
-      ? `landed ${direction.toLowerCase()} in ${directionalHitRate.toFixed(0)}% of games`
-      : `${rawHitRate.toFixed(0)}% of games`;
+      <div class="signal-direction">${((teamHit + oppHit) / 2).toFixed(0)}%</div>`;
 
     return `
       <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
@@ -612,11 +628,10 @@
         <div class="signal-value ${sign}">${valueHtml}</div>
         <div class="signal-sub">
           ${barHtml}
-          <span class="hit-pill">${hitLabel}</span>
-          <span class="signal-n">n=${nTotal}</span>
           <span class="rel-tag">${tier.label}</span>
         </div>
-        ${breakdown ? `<div class="signal-breakdown">${breakdown}</div>` : ''}
+        ${strengthLine ? `<div class="signal-breakdown">${strengthLine}</div>` : ''}
+        ${hitRow}
       </div>`;
   }
 
@@ -628,8 +643,10 @@
     for (const key of MARKET_ORDER) {
       const s = fx.signals[key];
       if (s && s.vs_line !== undefined) {
+        const teamHit = s.team_hit_rate ?? s.home_team_hit_rate;
+        const oppHit = s.opponent_hit_rate ?? s.away_team_hit_rate;
         const nTotal = (s.team_n || s.home_team_n || 0) + (s.opponent_n || s.away_team_n || 0);
-        const rel = reliability(s.market_hit_rate, nTotal);
+        const rel = reliability((teamHit + oppHit) / 2, nTotal);
         max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * rel));
       }
     }

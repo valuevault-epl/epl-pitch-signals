@@ -1,9 +1,16 @@
 """
-Combine each fixture's two teams' individual trends into matchup-specific projections: e.g.
-Man City's own average corners blended with Coventry's own average corners-conceded, projecting
-what THIS specific matchup should produce - not a comparison against an abstract league average.
-The projection is then measured against the actual betting line for that market (e.g. 5.5
-corners), so the +/- number directly means "how far above/below the typical line we project."
+Combine each fixture's two teams' individual trends into matchup-specific, strength-adjusted
+projections. Two teams' raw averages aren't directly comparable on their own - a team's own
+average can be inflated or deflated just by the strength of opponents it happened to face
+recently, and mixing two raw averages (old approach) inherits that distortion. Instead: rate
+each team's own recent rate AGAINST the league average for that market (a "strength" ratio -
+1.0 = exactly average, 1.3 = 30% above average, 0.7 = 30% below), then combine attack strength
+x defense strength x league average - the standard expected-goals-style approach used throughout
+football analytics - to get a projection that's adjusted for how strong each side actually is,
+not just their raw recent counting stats. The projection is then measured against the actual
+betting line (e.g. 5.5 corners), so the +/- number means "how far above/below the typical line
+we project," and both teams' own raw hit-rates are kept and labeled separately (never blended
+into one number) so it's always clear whose history a given percentage describes.
 """
 import json
 import os
@@ -14,24 +21,21 @@ WORKDIR = os.path.dirname(os.path.abspath(__file__))
 def combine_matchup(team_trends, opponent_trends, team_market, opponent_market):
     """team_market is the market this signal is ABOUT (e.g. goals_for, for 'this team to
     score'); opponent_market is the opponent's corresponding market (e.g. goals_against).
-    Projection = average of the team's own recent rate and this specific opponent's own recent
-    rate at allowing/conceding it - a matchup-specific blend, not a league-average comparison.
     Keys are named team_/opponent_, never home_/away_, so the caller can't mislabel who's who
     regardless of which side is actually home or away in the fixture."""
     t = team_trends.get(team_market)
     o = opponent_trends.get(opponent_market)
     if not t or not o:
         return None
-    projection = (t['avg'] + o['avg']) / 2
+    attack_strength = t['avg'] / t['league_avg'] if t['league_avg'] else 1.0
+    defense_strength = o['avg'] / o['league_avg'] if o['league_avg'] else 1.0
+    projection = t['league_avg'] * attack_strength * defense_strength
     return {
         'projection': round(projection, 2),
         'line': t['line'],
         'vs_line': round(projection - t['line'], 2),
-        # market_hit_rate is the team's OWN genuine historical hit rate for THIS exact market
-        # (e.g. "how often has Chelsea actually scored over 1.5" over their last 10 games) - the
-        # true frequency of the proposition being shown, not blended with the opponent's own
-        # (different) market.
-        'market_hit_rate': t['hit_rate'],
+        'attack_strength': round(attack_strength, 2),
+        'defense_strength': round(defense_strength, 2),
         'team_avg': t['avg'], 'team_hit_rate': t['hit_rate'], 'team_n': t['n'],
         'opponent_avg': o['avg'], 'opponent_hit_rate': o['hit_rate'], 'opponent_n': o['n'],
     }
@@ -75,12 +79,18 @@ def build_fixture_signals(fixture, trends):
     ac_total = away_trends.get('match_total_cards')
     if hc_cards and ac_cards and hc_total and ac_total:
         match_cards_line = 3.5  # standard "total match cards" betting line
+        # cards is additive (total = home's own + away's own), not a for/against pair, so there's
+        # no opponent-defense adjustment to apply here - the strength ratio is shown for context
+        # (is this team more/less card-prone than league average) but the projection is still
+        # each side's own raw rate summed.
+        home_card_strength = hc_cards['avg'] / hc_cards['league_avg'] if hc_cards['league_avg'] else 1.0
+        away_card_strength = ac_cards['avg'] / ac_cards['league_avg'] if ac_cards['league_avg'] else 1.0
         projection = hc_cards['avg'] + ac_cards['avg']
         signals['match_cards'] = {
             'label': 'Total match cards',
             'projection': round(projection, 2), 'line': match_cards_line,
             'vs_line': round(projection - match_cards_line, 2),
-            'market_hit_rate': round((hc_total['hit_rate'] + ac_total['hit_rate']) / 2, 1),
+            'home_card_strength': round(home_card_strength, 2), 'away_card_strength': round(away_card_strength, 2),
             'home_team_avg': hc_cards['avg'], 'home_team_hit_rate': hc_total['hit_rate'], 'home_team_n': hc_total['n'],
             'away_team_avg': ac_cards['avg'], 'away_team_hit_rate': ac_total['hit_rate'], 'away_team_n': ac_total['n'],
         }
@@ -90,9 +100,8 @@ def build_fixture_signals(fixture, trends):
     if 'btts' in home_trends and 'btts' in away_trends:
         signals['btts'] = {
             'label': 'Both teams to score',
-            'market_hit_rate': round((home_trends['btts']['hit_rate'] + away_trends['btts']['hit_rate']) / 2, 1),
-            'home_hit_rate': home_trends['btts']['hit_rate'], 'home_n': home_trends['btts']['n'],
-            'away_hit_rate': away_trends['btts']['hit_rate'], 'away_n': away_trends['btts']['n'],
+            'home_team_hit_rate': home_trends['btts']['hit_rate'], 'home_team_n': home_trends['btts']['n'],
+            'away_team_hit_rate': away_trends['btts']['hit_rate'], 'away_team_n': away_trends['btts']['n'],
         }
     return signals
 
