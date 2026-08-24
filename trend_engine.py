@@ -20,10 +20,12 @@ import datetime
 import os
 
 WORKDIR = os.path.dirname(os.path.abspath(__file__))
-# A full season (38 games) as the base sample, not a short-form window - starts from all of
-# 2025-26, and as 2026-27 progresses each new game played adds in while the oldest drops out,
-# keeping a constant ~38-game rolling sample per team rather than a small, noisier one.
-ROLLING_WINDOW = 38
+# ~Half a season (18 games) as the base sample - a deliberate middle ground: large enough that
+# hit-rates aren't pure small-sample noise, small enough that genuine recent-form trends can
+# still show up as "Strong" rather than getting averaged away over a full 38-game season. As new
+# games get played, each one adds in while the oldest drops out, keeping a constant rolling
+# sample per team.
+ROLLING_WINDOW = 18
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
 
