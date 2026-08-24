@@ -20,12 +20,12 @@ import datetime
 import os
 
 WORKDIR = os.path.dirname(os.path.abspath(__file__))
-# ~Half a season (18 games) as the base sample - a deliberate middle ground: large enough that
-# hit-rates aren't pure small-sample noise, small enough that genuine recent-form trends can
-# still show up as "Strong" rather than getting averaged away over a full 38-game season. As new
-# games get played, each one adds in while the oldest drops out, keeping a constant rolling
-# sample per team.
-ROLLING_WINDOW = 18
+# Rolling window target: 10 recent-form games. Early in a season this bridges from the prior
+# season's tail (see build_team_history) so there's always a full 10-game sample; once a team
+# has played 10 games in the CURRENT season alone, the bridge stops permanently and the sample
+# just keeps growing with every new game for the rest of that season (up to a full 38) - no more
+# dropping. So "10" is really "the minimum warm-up size", not a hard cap once the season is under way.
+ROLLING_WINDOW = 10
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
 
@@ -52,6 +52,16 @@ def fetch_current_data():
     with urllib.request.urlopen(req, timeout=20) as r:
         with open(fixtures_path, 'wb') as f:
             f.write(r.read())
+
+
+def current_season_code(today=None):
+    """EPL seasons run Aug-May, coded like '2627' for 2026-27. Derived from the real calendar
+    date, not from whichever season the results feed happens to have data for - important right
+    at a season's start, when the results file for the new season may not exist yet (zero
+    completed matches), which would otherwise make the LAST completed season look like "current"."""
+    today = today or datetime.date.today()
+    start_year = today.year if today.month >= 7 else today.year - 1
+    return f"{start_year % 100:02d}{(start_year + 1) % 100:02d}"
 
 
 def load_results(div='E0'):
@@ -122,17 +132,40 @@ def _extract_team_games(recent, division_label):
 
 
 def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
-                        results_fallback=None, min_games=6):
-    """For each team, build a list of recent per-game stat dicts (most recent `window`), using
-    only the most recent `use_last_n_seasons` seasons (2025-26 + the current season is enough to
-    always have a full `window`-sized sample available) so the trend reflects current squad/form,
-    not a team's whole 26-year history. Teams with fewer than `min_games` top-flight matches
-    (newly promoted) get topped up with their most recent games from `results_fallback` (e.g.
-    the Championship), tagged with division='Championship' so the caveat is visible downstream."""
+                        results_fallback=None, min_games=6, current_season=None):
+    """For each team, build a list of recent per-game stat dicts. Early in a season, this bridges
+    from the PRIOR season's tail (dropping its oldest game one at a time as new current-season
+    games arrive) to keep a constant `window`-sized rolling sample - exactly like the previous
+    design. But once a team has played `window` games in the CURRENT season alone, the bridge
+    stops: prior-season games are dropped entirely and never topped up again, and every new
+    current-season game just keeps accumulating (uncapped, up to a full season) rather than
+    pushing an old current-season game out. So the sample only ever grows once it's genuinely
+    current-season data, and old-season carryover is purely an early-season warm-up device.
+    Teams with too little data even after that (newly promoted, fewer than `min_games`) get
+    topped up from `results_fallback` (e.g. the Championship), tagged div='Championship' so the
+    caveat is visible downstream."""
     seasons_sorted = sorted(results['season'].unique())
-    recent_seasons = set(seasons_sorted[-use_last_n_seasons:])
-    recent = results[results['season'].isin(recent_seasons)].sort_values('Date')
-    team_games = _extract_team_games(recent, 'Premier League')
+    if current_season is None:
+        current_season = seasons_sorted[-1]
+    prior_seasons = [s for s in seasons_sorted[-use_last_n_seasons:] if s != current_season]
+
+    cur_results = results[results['season'] == current_season].sort_values('Date')
+    prior_results = results[results['season'].isin(prior_seasons)].sort_values('Date') if prior_seasons else results.iloc[0:0]
+
+    cur_games = _extract_team_games(cur_results, 'Premier League')
+    prior_games = _extract_team_games(prior_results, 'Premier League')
+
+    all_teams = set(cur_games) | set(prior_games)
+    team_games = {}
+    for team in all_teams:
+        cur = cur_games.get(team, [])
+        if len(cur) >= window:
+            # enough CURRENT-season data alone - use all of it, uncapped, no prior-season bridge
+            team_games[team] = cur
+        else:
+            needed = window - len(cur)
+            prior = prior_games.get(team, [])
+            team_games[team] = sorted((prior[-needed:] if needed > 0 else []) + cur, key=lambda g: g['date'])
 
     if results_fallback is not None and len(results_fallback):
         fb_seasons_sorted = sorted(results_fallback['season'].unique())
@@ -142,13 +175,11 @@ def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
 
         for team, fb_games in fb_team_games.items():
             existing = team_games.get(team, [])
-            if len(existing) < min_games:
+            if len(existing) < min_games:  # min_games gates WHETHER to bother, target is still window
                 needed = window - len(existing)
                 topped_up = (fb_games[-needed:] if needed > 0 else []) + existing
                 team_games[team] = sorted(topped_up, key=lambda g: g['date'])
 
-    for team in team_games:
-        team_games[team] = team_games[team][-window * 3:]  # keep a bit extra, we'll slice per-metric
     return team_games
 
 
@@ -180,7 +211,9 @@ def league_averages_from_matches(results, use_last_n_seasons=2):
 
 
 def team_trend(team_games, team, stat, window, league_avg, line):
-    games = team_games.get(team, [])[-window:]
+    # No [-window:] slice here - build_team_history already decided the right sample (exactly
+    # `window` during the early-season bridge, or all of the current season once that's >= window).
+    games = team_games.get(team, [])
     vals = [g[stat] for g in games if g.get(stat) is not None and not (isinstance(g[stat], float) and np.isnan(g[stat]))]
     if len(vals) < 4:
         return None
@@ -205,7 +238,7 @@ def build_all_trends(team_games, league_avgs, window=ROLLING_WINDOW):
             if t:
                 trends[team][m] = t
 
-        games = team_games[team][-window:]
+        games = team_games[team]
         if len(games) >= 4:
             btts_vals = [g['btts'] for g in games]
             trends[team]['btts'] = {'n': len(btts_vals), 'hit_rate': round(float(np.mean(btts_vals)) * 100, 1)}
@@ -228,7 +261,8 @@ if __name__ == '__main__':
     fixtures = load_fixtures()
     print(f"Loaded {len(fixtures)} upcoming fixtures")
 
-    team_games = build_team_history(results, results_fallback=results_championship)
+    team_games = build_team_history(results, results_fallback=results_championship,
+                                     current_season=current_season_code())
     league_avgs = league_averages_from_matches(results)
     trends = build_all_trends(team_games, league_avgs)
     print(f"\nComputed trends for {len(trends)} teams")

@@ -515,7 +515,7 @@
     </div>
     <div class="masthead-meta">
       <div class="updated">Updated __GENERATED_AT__</div>
-      <div>Refreshes weekly after each round <span class="dot">&middot;</span> rolling 18-game trends</div>
+      <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
 
@@ -528,7 +528,7 @@
   <div class="fixtures" id="fixtures"></div>
 
   <h2 class="section-heading">Team Trends</h2>
-  <p class="section-sub">Every tracked team's own rolling 18-game average, across all markets. This is the raw material the matchup projections above are built from.</p>
+  <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
   <div class="team-table-wrap">
     <table class="team-table" id="team-table">
       <thead></thead>
@@ -537,7 +537,7 @@
   </div>
 
   <footer>
-    <strong>Methodology.</strong> Each team gets a strength rating per market: its own rolling 18-game rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. The headline number is that projection minus the market's standard betting line, so +2.1 means we project 2.1 above the typical line. The two hit-rate chips under each signal are each team's OWN historical rate at their OWN side of the market (e.g. how often the scorer's own games went over the line, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total exceeded 3.5. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. The headline number is that projection minus the market's standard betting line, so +2.1 means we project 2.1 above the typical line. The two hit-rate chips under each signal are each team's OWN historical rate at their OWN side of the market (e.g. how often the scorer's own games went over the line, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total exceeded 3.5. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
   </footer>
 </div>
 
@@ -562,7 +562,12 @@
   // text label, so it reads even without color.
   function reliability(hitRate, nTotal) {
     const extremity = Math.abs(hitRate - 50) / 50;       // 0 = coin flip, 1 = always/never
-    const sizeFactor = Math.min(1, nTotal / 29);          // 18-game window: two teams at up to 18 each (~36 max) - 29 is "deep enough to trust"
+    // Window size is now adaptive (see methodology) - starts at 10/team early in a season,
+    // growing toward 38/team as the season goes on. 40 combined is "deep enough to trust" at a
+    // typical mid-season point; early-season signals (leaning on last season's bridge data)
+    // land lower on this scale and so lean toward Moderate rather than Strong until the current
+    // season's own evidence has had a chance to build up.
+    const sizeFactor = Math.min(1, nTotal / 40);
     return extremity * sizeFactor;
   }
 
