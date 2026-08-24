@@ -264,11 +264,29 @@
     grid-template-columns: 1fr auto;
     align-items: center;
     gap: 4px 12px;
-    padding: 9px 10px;
+    padding: 9px 10px 9px 12px;
     border-radius: 7px;
+    border-left: 3px solid transparent;
   }
 
   .signal-row:hover { background: var(--surface-2); }
+
+  .signal-row.rel-strong { border-left-color: var(--rel-color); background: color-mix(in srgb, var(--rel-color) 6%, transparent); }
+  .signal-row.rel-moderate { border-left-color: var(--rel-color); }
+  .signal-row.rel-weak { border-left-color: var(--border); }
+
+  .rel-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--rel-color);
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  .rel-weak .rel-tag { color: var(--ink-faint); }
 
   .signal-label {
     font-size: 13.5px;
@@ -502,6 +520,21 @@
     return pct.toFixed(1) + '%';
   }
 
+  // Reliability = how far the hit-rate sits from a coin-flip (50%), scaled down when the
+  // sample backing it is thin. Encoded as a tier (strong/moderate/weak) - both a color AND a
+  // text label, so it reads even without color.
+  function reliability(hitRate, nTotal) {
+    const extremity = Math.abs(hitRate - 50) / 50;       // 0 = coin flip, 1 = always/never
+    const sizeFactor = Math.min(1, nTotal / 16);          // rolling window caps n well below 16-20
+    return extremity * sizeFactor;
+  }
+
+  function reliabilityTier(score) {
+    if (score >= 0.55) return { cls: 'rel-strong', label: 'Strong' };
+    if (score >= 0.28) return { cls: 'rel-moderate', label: 'Moderate' };
+    return { cls: 'rel-weak', label: 'Weak' };
+  }
+
   function renderSignalRow(sig, scale, teamLabel, opponentLabel) {
     if (!sig) return '';
     const hasProjection = sig.vs_line !== undefined;
@@ -509,6 +542,11 @@
     const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
     const hitRate = sig.avg_hit_rate;
     const nTotal = (sig.team_n || sig.home_team_n || 0) + (sig.opponent_n || sig.away_team_n || 0);
+
+    const relScore = reliability(hitRate, nTotal);
+    const tier = reliabilityTier(relScore);
+    const relColorVar = sign === 'neg' ? 'var(--negative)' : sign === 'pos' ? 'var(--positive)' : 'var(--accent)';
+    const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
 
     const barHtml = hasProjection ? `
       <div class="signal-bar-track">
@@ -524,25 +562,30 @@
     }
 
     return `
-      <div class="signal-row">
+      <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
         <div class="signal-label">${sig.label}</div>
         <div class="signal-value ${sign}">${hasProjection ? fmtSigned(value) : hitRate.toFixed(0) + '%'}</div>
         <div class="signal-sub">
           ${barHtml}
           <span class="hit-pill">${hitRate.toFixed(0)}% of games</span>
           <span class="signal-n">n=${nTotal}</span>
+          <span class="rel-tag">${tier.label}</span>
         </div>
         ${breakdown ? `<div class="signal-breakdown">${breakdown}</div>` : ''}
       </div>`;
   }
 
   function fixtureStrength(fx) {
+    // Weights raw edge size by how reliable it is, so a big gap backed by a coin-flip hit rate
+    // doesn't outrank a smaller, more consistent one.
     if (!fx.signals) return -1;
     let max = 0;
     for (const key of MARKET_ORDER) {
       const s = fx.signals[key];
       if (s && s.vs_line !== undefined) {
-        max = Math.max(max, Math.abs(s.vs_line));
+        const nTotal = (s.team_n || s.home_team_n || 0) + (s.opponent_n || s.away_team_n || 0);
+        const rel = reliability(s.avg_hit_rate, nTotal);
+        max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * rel));
       }
     }
     return max;
