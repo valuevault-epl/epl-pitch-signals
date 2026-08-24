@@ -572,8 +572,10 @@
     return { cls: 'rel-weak', label: 'Weak' };
   }
 
-  function renderSignalRow(sig, scale, teamLabel, opponentLabel, side) {
+  function renderSignalRow(sig, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb) {
     if (!sig) return '';
+    teamVerb = teamVerb || 'own rate';
+    oppVerb = oppVerb || 'own rate';
     const sideTagHtml = side ? `<span class="side-tag">${side}</span>` : '';
     const hasProjection = sig.vs_line !== undefined;
     const value = hasProjection ? sig.vs_line : null;
@@ -605,16 +607,16 @@
     // Shown so the numbers feeding the formula are visible, not just the output.
     let strengthLine = '';
     if (sig.attack_strength !== undefined) {
-      strengthLine = `${teamLabel} ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
     } else if (sig.home_card_strength !== undefined) {
-      strengthLine = `${teamLabel} ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
     }
 
-    const hitSuffix = sig.line !== undefined ? `over ${sig.line}` : 'of games';
+    const lineSuffix = sig.line !== undefined ? ` over ${sig.line}` : '';
     const hitRow = `
       <div class="hit-compare">
-        <span class="hit-chip">${teamLabel}: <b>${teamHit.toFixed(0)}%</b> ${hitSuffix} <span class="hit-n">(n=${teamN})</span></span>
-        <span class="hit-chip">${opponentLabel}: <b>${oppHit.toFixed(0)}%</b> ${hitSuffix} <span class="hit-n">(n=${oppN})</span></span>
+        <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
+        <span class="hit-chip"><b>${opponentLabel}</b>${oppVerb}${lineSuffix} in <b>${oppHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${oppN})</span></span>
       </div>`;
 
     const valueHtml = hasProjection ? `
@@ -675,27 +677,38 @@
       return scaleByMarket.cards;
     }
 
+    function bttsHitRate(s) {
+      const th = s.team_hit_rate ?? s.home_team_hit_rate;
+      const oh = s.opponent_hit_rate ?? s.away_team_hit_rate;
+      return (th + oh) / 2;
+    }
     const sortedKeys = MARKET_ORDER
       .filter(k => fx.signals[k])
       .sort((a, b) => {
         const sa = fx.signals[a], sb = fx.signals[b];
-        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : sa.market_hit_rate / 20;
-        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : sb.market_hit_rate / 20;
+        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : bttsHitRate(sa) / 20;
+        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : bttsHitRate(sb) / 20;
         return vb - va;
       });
 
-    // which side is "team" vs "opponent" in the breakdown text, per signal key, plus which side
-    // ("H"/"A") the market's own subject team is playing on in THIS fixture
+    // which side is "team" vs "opponent" in the breakdown text, per signal key; which side
+    // ("H"/"A") the market's own subject team is playing on in THIS fixture; and the verb each
+    // side takes so it's explicit who's SCORING/WINNING vs CONCEDING/ALLOWING, not just two team
+    // names next to two percentages.
     const SIDE_LABELS = {
-      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H'], away_goals: [fx.AwayTeam, fx.HomeTeam, 'A'],
-      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H'], away_corners: [fx.AwayTeam, fx.HomeTeam, 'A'],
-      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H'], away_sot: [fx.AwayTeam, fx.HomeTeam, 'A'],
-      match_cards: [fx.HomeTeam, fx.AwayTeam, null], btts: [fx.HomeTeam, fx.AwayTeam, null],
+      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H', ' scored', ' conceded'],
+      away_goals: [fx.AwayTeam, fx.HomeTeam, 'A', ' scored', ' conceded'],
+      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H', ' won', ' conceded'],
+      away_corners: [fx.AwayTeam, fx.HomeTeam, 'A', ' won', ' conceded'],
+      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H', ' had', ' allowed'],
+      away_sot: [fx.AwayTeam, fx.HomeTeam, 'A', ' had', ' allowed'],
+      match_cards: [fx.HomeTeam, fx.AwayTeam, null, "'s games saw", "'s games saw"],
+      btts: [fx.HomeTeam, fx.AwayTeam, null, ' had both teams score', ' had both teams score'],
     };
 
     const rows = sortedKeys.map(k => {
-      const [teamLabel, oppLabel, side] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam, null];
-      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel, side);
+      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb);
     }).join('');
 
     const notes = [];
