@@ -329,16 +329,29 @@
   }
 
   .signal-value {
-    font-family: "IBM Plex Mono", monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 14px;
-    font-weight: 600;
     text-align: right;
-    min-width: 52px;
+    min-width: 68px;
+    line-height: 1.2;
   }
 
-  .signal-value.pos { color: var(--positive); }
-  .signal-value.neg { color: var(--negative); }
+  .signal-direction {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .signal-direction.pos { color: var(--positive); }
+  .signal-direction.neg { color: var(--negative); }
+
+  .signal-delta {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
 
   .hit-pill {
     font-family: "IBM Plex Mono", monospace;
@@ -540,10 +553,18 @@
     const hasProjection = sig.vs_line !== undefined;
     const value = hasProjection ? sig.vs_line : null;
     const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
-    const hitRate = sig.avg_hit_rate;
+    const direction = sign === 'pos' ? 'OVER' : sign === 'neg' ? 'UNDER' : '';
     const nTotal = (sig.team_n || sig.home_team_n || 0) + (sig.opponent_n || sig.away_team_n || 0);
 
-    const relScore = reliability(hitRate, nTotal);
+    // avg_hit_rate is always "% of games that landed OVER the line" - flip it to "% that landed
+    // UNDER" when that's the direction being suggested, so the shown percentage always answers
+    // "how often does history support THIS call", not an arbitrary fixed direction.
+    const rawHitRate = sig.avg_hit_rate;
+    const directionalHitRate = hasProjection
+      ? (sign === 'neg' ? 100 - rawHitRate : rawHitRate)
+      : rawHitRate;
+
+    const relScore = reliability(directionalHitRate, nTotal);
     const tier = reliabilityTier(relScore);
     const relColorVar = sign === 'neg' ? 'var(--negative)' : sign === 'pos' ? 'var(--positive)' : 'var(--accent)';
     const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
@@ -561,13 +582,22 @@
       breakdown = `${teamLabel} ${sig.home_team_avg.toFixed(1)} + ${opponentLabel} ${sig.away_team_avg.toFixed(1)} &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
     }
 
+    const valueHtml = hasProjection ? `
+      <div class="signal-direction ${sign}">${direction} ${sig.line}</div>
+      <div class="signal-delta">${fmtSigned(value)}</div>` : `
+      <div class="signal-direction">${rawHitRate.toFixed(0)}%</div>`;
+
+    const hitLabel = hasProjection
+      ? `landed ${direction.toLowerCase()} in ${directionalHitRate.toFixed(0)}% of games`
+      : `${rawHitRate.toFixed(0)}% of games`;
+
     return `
       <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
         <div class="signal-label">${sig.label}</div>
-        <div class="signal-value ${sign}">${hasProjection ? fmtSigned(value) : hitRate.toFixed(0) + '%'}</div>
+        <div class="signal-value ${sign}">${valueHtml}</div>
         <div class="signal-sub">
           ${barHtml}
-          <span class="hit-pill">${hitRate.toFixed(0)}% of games</span>
+          <span class="hit-pill">${hitLabel}</span>
           <span class="signal-n">n=${nTotal}</span>
           <span class="rel-tag">${tier.label}</span>
         </div>
