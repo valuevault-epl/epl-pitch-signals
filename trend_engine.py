@@ -13,6 +13,7 @@ Markets covered (derived from team-level box score stats, all available in footb
   - Clean sheets / failed to score
 """
 import json
+import re
 import numpy as np
 import pandas as pd
 import urllib.request
@@ -27,6 +28,99 @@ WORKDIR = os.path.dirname(os.path.abspath(__file__))
 # dropping. So "10" is really "the minimum warm-up size", not a hard cap once the season is under way.
 ROLLING_WINDOW = 10
 HEADERS = {'User-Agent': 'Mozilla/5.0'}
+
+# football-data.co.uk's fixtures.csv (upcoming matches) is a separate feed from its season result
+# files and can lag for days after a round finishes before it's updated with the next round's
+# dates - confirmed by checking its Last-Modified header, which sat on the previous round's date
+# well after that round had been played in full. openfootball's community-maintained season file
+# has the full schedule (all 380 fixture dates, known well ahead of kickoff) and updates promptly,
+# so it's used as the PRIMARY source for "what's the next round and when" - football-data.co.uk
+# remains the only source for results/trends (box-score stats openfootball doesn't have) and is
+# kept as a fallback fixture source if openfootball can't be reached.
+OPENFOOTBALL_URL = "https://raw.githubusercontent.com/openfootball/england/master/{season}/1-premierleague.txt"
+OPENFOOTBALL_MONTHS = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+                        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
+# openfootball spells out full club names; map to football-data.co.uk's short names so team
+# lookups against the trends dict (keyed by the football-data.co.uk names) work directly.
+OPENFOOTBALL_TEAM_MAP = {
+    "Arsenal FC": "Arsenal", "Aston Villa FC": "Aston Villa", "AFC Bournemouth": "Bournemouth",
+    "Brentford FC": "Brentford", "Brighton & Hove Albion FC": "Brighton", "Chelsea FC": "Chelsea",
+    "Coventry City FC": "Coventry", "Crystal Palace FC": "Crystal Palace", "Everton FC": "Everton",
+    "Fulham FC": "Fulham", "Hull City AFC": "Hull", "Ipswich Town FC": "Ipswich",
+    "Leeds United FC": "Leeds", "Liverpool FC": "Liverpool", "Manchester City FC": "Man City",
+    "Manchester United FC": "Man United", "Newcastle United FC": "Newcastle",
+    "Nottingham Forest FC": "Nott'm Forest", "Sunderland AFC": "Sunderland",
+    "Tottenham Hotspur FC": "Tottenham", "Burnley FC": "Burnley", "Leicester City FC": "Leicester",
+    "Southampton FC": "Southampton", "West Ham United FC": "West Ham",
+    "Wolverhampton Wanderers FC": "Wolves", "Norwich City FC": "Norwich", "Watford FC": "Watford",
+    "West Bromwich Albion FC": "West Brom", "Sheffield United FC": "Sheffield United",
+    "Luton Town FC": "Luton",
+}
+
+
+def fetch_openfootball_next_round(season_start_year, played_pairs):
+    """Parse openfootball's plain-text season fixture list and return the next round that hasn't
+    been fully played yet, as [{'Date': 'YYYY-MM-DD', 'HomeTeam': ..., 'AwayTeam': ...}, ...].
+    `played_pairs` is the set of (HomeTeam, AwayTeam) already confirmed played, from
+    football-data.co.uk's own results - openfootball's OWN score column isn't trusted for this,
+    because it can itself lag on filling in final scores for the last few matches of a round even
+    after football-data.co.uk already has them (confirmed: it once showed 4 of matchday 1's 10
+    games as still scoreless a full day after they'd finished with recorded results elsewhere).
+    Returns [] on any fetch/parse problem so the caller can fall back to another source - this is
+    a convenience supplement, not something that should ever crash the pipeline."""
+    season = f"{season_start_year}-{(season_start_year + 1) % 100:02d}"
+    url = OPENFOOTBALL_URL.format(season=season)
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            text = r.read().decode('utf-8')
+    except Exception:
+        return []
+
+    day_re = re.compile(
+        r'^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)'
+        r'\s+(\d{1,2})(?:\s+(\d{4}))?\s*$')
+    match_re = re.compile(r'^\s*(?:\d{1,2}:\d{2}\s+)?(.+?)\s+v\s+(.+?)\s*$')
+    score_re = re.compile(r'^(.*?)\s{2,}\d+-\d+(?:\s*\(\d+-\d+\))?\s*$')
+
+    current_year = season_start_year
+    current_date = None
+    matchdays = []
+    cur = None
+    try:
+        for line in text.splitlines():
+            if re.search(r'Matchday\s+\d+', line):
+                if cur is not None:
+                    matchdays.append(cur)
+                cur = []
+                continue
+            if cur is None:
+                continue
+            dm = day_re.match(line)
+            if dm:
+                mon, day, yr = dm.groups()
+                if yr:
+                    current_year = int(yr)
+                current_date = datetime.date(current_year, OPENFOOTBALL_MONTHS[mon], int(day))
+                continue
+            mm = match_re.match(line)
+            if mm and current_date is not None and ' v ' in line:
+                home_raw, away_raw = mm.groups()
+                score_m = score_re.match(away_raw)
+                away_raw = score_m.group(1) if score_m else away_raw
+                home = OPENFOOTBALL_TEAM_MAP.get(home_raw.strip(), home_raw.strip())
+                away = OPENFOOTBALL_TEAM_MAP.get(away_raw.strip(), away_raw.strip())
+                cur.append((current_date, home, away))
+        if cur is not None:
+            matchdays.append(cur)
+    except Exception:
+        return []
+
+    for md in matchdays:
+        unplayed = [(d, h, a) for (d, h, a) in md if (h, a) not in played_pairs]
+        if unplayed:
+            return [{'Date': d.isoformat(), 'HomeTeam': h, 'AwayTeam': a} for (d, h, a) in unplayed]
+    return []
 
 
 def fetch_current_data():
@@ -82,6 +176,14 @@ def load_results(div='E0'):
     return combined
 
 
+def played_pairs_for_season(results, current_season):
+    """(HomeTeam, AwayTeam) pairings with a confirmed result in the current season, per
+    football-data.co.uk's own results file - the authoritative played/not-played signal, used to
+    filter stale fixture feeds regardless of which source they came from."""
+    cur = results[results['season'] == current_season]
+    return set(zip(cur['HomeTeam'], cur['AwayTeam']))
+
+
 def load_fixtures(results=None, current_season=None):
     """football-data.co.uk's fixtures.csv is a separate feed from the season result files, and it
     lags: right after a round is played, the results file already has final scores for those
@@ -95,8 +197,7 @@ def load_fixtures(results=None, current_season=None):
     e0 = e0.dropna(subset=['Date', 'HomeTeam', 'AwayTeam']).sort_values('Date').reset_index(drop=True)
 
     if results is not None and current_season is not None:
-        cur = results[results['season'] == current_season]
-        played = set(zip(cur['HomeTeam'], cur['AwayTeam']))
+        played = played_pairs_for_season(results, current_season)
         already_played = e0.apply(lambda r: (r['HomeTeam'], r['AwayTeam']) in played, axis=1)
         e0 = e0[~already_played].reset_index(drop=True)
 
@@ -273,8 +374,25 @@ if __name__ == '__main__':
     print(f"Loaded {len(results)} PL results (latest: {results['Date'].max()}), "
           f"{len(results_championship)} Championship results (fallback for promoted teams)")
     current_season = current_season_code()
-    fixtures = load_fixtures(results, current_season)
-    print(f"Loaded {len(fixtures)} upcoming fixtures (already-played matches filtered out)")
+    fd_fixtures = load_fixtures(results, current_season)
+    season_start_year = int(f"20{current_season[:2]}")
+    played_pairs = played_pairs_for_season(results, current_season)
+    of_fixtures = fetch_openfootball_next_round(season_start_year, played_pairs)
+
+    if of_fixtures:
+        # enrich with odds from football-data.co.uk's feed when that same fixture is in it
+        odds_lookup = {(r['HomeTeam'], r['AwayTeam']): r for _, r in fd_fixtures.iterrows()}
+        for fx in of_fixtures:
+            odds_row = odds_lookup.get((fx['HomeTeam'], fx['AwayTeam']))
+            for col in ('B365H', 'B365D', 'B365A'):
+                fx[col] = odds_row.get(col) if odds_row is not None else None
+        fixtures_out = of_fixtures
+        print(f"Loaded {len(fixtures_out)} upcoming fixtures (openfootball, next round)")
+    else:
+        fixtures_out = fd_fixtures[['Date', 'HomeTeam', 'AwayTeam', 'B365H', 'B365D', 'B365A']].assign(
+            Date=lambda d: d['Date'].dt.strftime('%Y-%m-%d')).to_dict('records')
+        print(f"Loaded {len(fixtures_out)} upcoming fixtures "
+              f"(football-data.co.uk fallback - openfootball unreachable)")
 
     team_games = build_team_history(results, results_fallback=results_championship,
                                      current_season=current_season)
@@ -284,8 +402,7 @@ if __name__ == '__main__':
     print(f"League averages: {league_avgs}")
 
     out = {'generated_at': datetime.datetime.now().isoformat(), 'league_avgs': league_avgs,
-           'trends': trends, 'fixtures': fixtures[['Date', 'HomeTeam', 'AwayTeam', 'B365H', 'B365D', 'B365A']].assign(
-               Date=lambda d: d['Date'].dt.strftime('%Y-%m-%d')).to_dict('records')}
+           'trends': trends, 'fixtures': fixtures_out}
     with open(os.path.join(WORKDIR, 'trends_data.json'), 'w') as f:
         json.dump(out, f, indent=2, default=str)
     print("Saved trends_data.json")
