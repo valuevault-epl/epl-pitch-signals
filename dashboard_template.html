@@ -405,6 +405,11 @@
     font-size: 10.5px;
   }
 
+  .floor-chip {
+    border-color: var(--rel-color);
+    color: var(--ink);
+  }
+
   .data-note {
     margin: 8px 10px 4px;
     padding: 7px 10px;
@@ -568,7 +573,11 @@
     return { cls: 'rel-weak', label: 'Weak' };
   }
 
-  function renderSignalRow(sig, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb) {
+  function seasonLabel(code) {
+    return `20${code.slice(0, 2)}-${code.slice(2)}`;
+  }
+
+  function renderSignalRow(sig, key, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb) {
     if (!sig) return '';
     teamVerb = teamVerb || 'own rate';
     oppVerb = oppVerb || 'own rate';
@@ -611,10 +620,18 @@
     }
 
     const lineSuffix = sig.line !== undefined ? ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}` : '';
+    // Minimum live odds for a 5% edge, from this market's own accumulating Strong-signal track
+    // record since the VAR era (2019-20+) - a separate, never-trimmed ledger from the rolling
+    // team-trend window above. Only shown on Strong rows, since that ledger only ever grades
+    // signals that were themselves Strong at the time.
+    const floor = DATA.market_floors && DATA.market_floors[key];
+    const floorChipHtml = (tier.cls === 'rel-strong' && floor && floor.min_odds) ? `
+        <span class="hit-chip floor-chip">Take at <b>${floor.min_odds.toFixed(2)}+</b> odds for a 5% edge <span class="hit-n">(market hit ${floor.win_rate}% in ${floor.n} bets since ${seasonLabel(floor.since_season)})</span></span>` : '';
     const hitRow = `
       <div class="hit-compare">
         <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
         <span class="hit-chip"><b>${opponentLabel}</b>${oppVerb}${lineSuffix} in <b>${oppHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${oppN})</span></span>
+        ${floorChipHtml}
       </div>`;
 
     const valueHtml = hasProjection ? `
@@ -705,7 +722,7 @@
 
     const rows = sortedKeys.map(k => {
       const [teamLabel, oppLabel, side, teamVerb, oppVerb] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
-      return renderSignalRow(fx.signals[k], scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb);
+      return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb);
     }).join('');
 
     const notes = [];

@@ -1,0 +1,1871 @@
+season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_total
+1920,2019-08-10,Tottenham,Aston Villa,home_goals,Tottenham to score,UNDER,1.5,3.0,False,80.0,20
+1920,2019-08-10,Crystal Palace,Everton,match_cards,Total match cards,UNDER,3.5,4.0,False,80.0,20
+1920,2019-08-10,Watford,Brighton,away_corners,Brighton corners,UNDER,5.5,2.0,True,80.0,20
+1920,2019-08-10,Bournemouth,Sheffield United,home_corners,Bournemouth corners,UNDER,5.5,3.0,True,75.0,20
+1920,2019-08-10,West Ham,Man City,home_goals,West Ham to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-08-10,West Ham,Man City,home_corners,West Ham corners,UNDER,5.5,1.0,True,85.0,20
+1920,2019-08-10,West Ham,Man City,away_corners,Man City corners,OVER,5.5,1.0,False,80.0,20
+1920,2019-08-10,West Ham,Man City,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,80.0,20
+1920,2019-08-10,West Ham,Man City,away_sot,Man City shots on target,OVER,4.5,9.0,True,75.0,20
+1920,2019-08-10,West Ham,Man City,match_cards,Total match cards,UNDER,3.5,4.0,False,85.0,20
+1920,2019-08-11,Newcastle,Arsenal,away_sot,Arsenal shots on target,UNDER,4.5,2.0,True,75.0,20
+1920,2019-08-17,Brighton,West Ham,match_cards,Total match cards,UNDER,3.5,2.0,True,80.0,20
+1920,2019-08-17,Southampton,Liverpool,home_goals,Southampton to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-08-17,Southampton,Liverpool,away_goals,Liverpool to score,OVER,1.5,2.0,True,75.0,20
+1920,2019-08-17,Southampton,Liverpool,home_sot,Southampton shots on target,UNDER,4.5,3.0,True,80.0,20
+1920,2019-08-17,Southampton,Liverpool,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+1920,2019-08-17,Norwich,Newcastle,away_corners,Newcastle corners,UNDER,5.5,5.0,True,75.0,20
+1920,2019-08-17,Man City,Tottenham,away_goals,Tottenham to score,UNDER,1.5,2.0,False,80.0,20
+1920,2019-08-17,Everton,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-08-18,Sheffield United,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,80.0,20
+1920,2019-08-19,Wolves,Man United,away_corners,Man United corners,UNDER,5.5,6.0,False,75.0,20
+1920,2019-08-24,Man United,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,1.0,True,80.0,20
+1920,2019-08-24,Brighton,Southampton,home_corners,Brighton corners,UNDER,5.5,8.0,False,75.0,20
+1920,2019-08-24,Liverpool,Arsenal,away_goals,Arsenal to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-08-24,Watford,West Ham,away_corners,West Ham corners,UNDER,5.5,7.0,False,75.0,20
+1920,2019-08-25,Bournemouth,Man City,home_corners,Bournemouth corners,UNDER,5.5,4.0,True,90.0,20
+1920,2019-08-25,Bournemouth,Man City,home_sot,Bournemouth shots on target,UNDER,4.5,7.0,False,75.0,20
+1920,2019-08-25,Wolves,Burnley,away_sot,Burnley shots on target,UNDER,4.5,4.0,True,75.0,20
+1920,2019-08-31,Man City,Brighton,away_goals,Brighton to score,UNDER,1.5,0.0,True,90.0,20
+1920,2019-08-31,Man City,Brighton,away_corners,Brighton corners,UNDER,5.5,1.0,True,85.0,20
+1920,2019-08-31,Man City,Brighton,away_sot,Brighton shots on target,UNDER,4.5,2.0,True,90.0,20
+1920,2019-08-31,Southampton,Man United,home_sot,Southampton shots on target,UNDER,4.5,2.0,True,75.0,20
+1920,2019-08-31,Newcastle,Watford,away_goals,Watford to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-08-31,Newcastle,Watford,home_corners,Newcastle corners,UNDER,5.5,6.0,False,80.0,20
+1920,2019-08-31,Newcastle,Watford,away_sot,Watford shots on target,UNDER,4.5,3.0,True,75.0,20
+1920,2019-08-31,Burnley,Liverpool,home_corners,Burnley corners,UNDER,5.5,6.0,False,80.0,20
+1920,2019-08-31,Burnley,Liverpool,home_sot,Burnley shots on target,UNDER,4.5,2.0,True,75.0,20
+1920,2019-08-31,Burnley,Liverpool,match_cards,Total match cards,UNDER,3.5,0.0,True,80.0,20
+1920,2019-08-31,Leicester,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-08-31,West Ham,Norwich,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+1920,2019-09-01,Arsenal,Tottenham,home_goals,Arsenal to score,UNDER,1.5,2.0,False,75.0,20
+1920,2019-09-01,Everton,Wolves,away_sot,Wolves shots on target,UNDER,4.5,5.0,False,85.0,20
+1920,2019-09-14,Liverpool,Newcastle,away_goals,Newcastle to score,UNDER,1.5,1.0,True,80.0,20
+1920,2019-09-14,Liverpool,Newcastle,away_corners,Newcastle corners,UNDER,5.5,1.0,True,75.0,20
+1920,2019-09-14,Sheffield United,Southampton,away_sot,Southampton shots on target,UNDER,4.5,7.0,False,75.0,20
+1920,2019-09-14,Man United,Leicester,home_goals,Man United to score,UNDER,1.5,1.0,True,85.0,20
+1920,2019-09-20,Southampton,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,5.0,True,75.0,20
+1920,2019-09-21,Everton,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,75.0,20
+1920,2019-09-21,Man City,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,80.0,20
+1920,2019-09-21,Man City,Watford,away_corners,Watford corners,UNDER,5.5,4.0,True,75.0,20
+1920,2019-09-21,Man City,Watford,away_sot,Watford shots on target,UNDER,4.5,4.0,True,80.0,20
+1920,2019-09-21,Newcastle,Brighton,away_goals,Brighton to score,UNDER,1.5,0.0,True,80.0,20
+1920,2019-09-21,Newcastle,Brighton,away_sot,Brighton shots on target,UNDER,4.5,3.0,True,75.0,20
+1920,2019-09-22,Arsenal,Aston Villa,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,20
+1920,2019-09-22,Chelsea,Liverpool,away_goals,Liverpool to score,OVER,1.5,2.0,True,80.0,20
+1920,2019-09-22,Chelsea,Liverpool,home_corners,Chelsea corners,UNDER,5.5,6.0,False,75.0,20
+1920,2019-09-22,Chelsea,Liverpool,match_cards,Total match cards,UNDER,3.5,6.0,False,90.0,20
+1920,2019-09-22,Crystal Palace,Wolves,home_corners,Crystal Palace corners,UNDER,5.5,6.0,False,75.0,20
+1920,2019-09-22,West Ham,Man United,away_goals,Man United to score,UNDER,1.5,0.0,True,80.0,20
+1920,2019-09-28,Chelsea,Brighton,away_sot,Brighton shots on target,UNDER,4.5,1.0,True,75.0,20
+1920,2019-09-28,Wolves,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,80.0,20
+1920,2019-09-28,Wolves,Watford,away_sot,Watford shots on target,UNDER,4.5,5.0,False,75.0,20
+1920,2019-09-28,Bournemouth,West Ham,away_sot,West Ham shots on target,OVER,4.5,6.0,True,75.0,20
+1920,2019-09-28,Sheffield United,Liverpool,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,78.3,16
+1920,2019-09-28,Sheffield United,Liverpool,home_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,90.0,16
+1920,2019-09-28,Sheffield United,Liverpool,match_cards,Total match cards,UNDER,3.5,2.0,True,78.3,16
+1920,2019-09-29,Leicester,Newcastle,away_goals,Newcastle to score,UNDER,1.5,0.0,True,80.0,20
+1920,2019-09-30,Man United,Arsenal,match_cards,Total match cards,OVER,3.5,6.0,True,80.0,20
+1920,2019-10-05,Brighton,Tottenham,home_goals,Brighton to score,UNDER,1.5,3.0,False,75.0,20
+1920,2019-10-05,Liverpool,Leicester,match_cards,Total match cards,UNDER,3.5,5.0,False,80.0,20
+1920,2019-10-05,Watford,Sheffield United,home_goals,Watford to score,UNDER,1.5,0.0,True,80.7,17
+1920,2019-10-05,Watford,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,75.0,17
+1920,2019-10-06,Arsenal,Bournemouth,home_sot,Arsenal shots on target,OVER,4.5,2.0,False,75.0,20
+1920,2019-10-06,Arsenal,Bournemouth,btts,Both teams to score,YES,,False,False,85.0,20
+1920,2019-10-06,Man City,Wolves,away_corners,Wolves corners,UNDER,5.5,1.0,True,80.0,20
+1920,2019-10-06,Man City,Wolves,away_sot,Wolves shots on target,UNDER,4.5,2.0,True,80.0,20
+1920,2019-10-06,Newcastle,Man United,home_goals,Newcastle to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-10-06,Newcastle,Man United,away_goals,Man United to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-10-06,Newcastle,Man United,home_corners,Newcastle corners,UNDER,5.5,4.0,True,75.0,20
+1920,2019-10-19,Chelsea,Newcastle,away_corners,Newcastle corners,UNDER,5.5,0.0,True,80.0,20
+1920,2019-10-19,Chelsea,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,0.0,True,75.0,20
+1920,2019-10-19,Wolves,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,80.0,20
+1920,2019-10-19,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,1.0,True,85.0,20
+1920,2019-10-19,Crystal Palace,Man City,match_cards,Total match cards,OVER,3.5,2.0,False,75.0,20
+1920,2019-10-19,Leicester,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,80.0,20
+1920,2019-10-20,Man United,Liverpool,home_goals,Man United to score,UNDER,1.5,1.0,True,90.0,20
+1920,2019-10-25,Southampton,Leicester,home_goals,Southampton to score,UNDER,1.5,0.0,True,90.0,20
+1920,2019-10-25,Southampton,Leicester,home_corners,Southampton corners,UNDER,5.5,2.0,True,80.0,20
+1920,2019-10-26,West Ham,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,4.0,True,75.0,19
+1920,2019-10-26,Watford,Bournemouth,home_goals,Watford to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-10-26,Burnley,Chelsea,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,75.0,20
+1920,2019-10-26,Man City,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,7.0,False,77.8,19
+1920,2019-10-27,Newcastle,Wolves,home_goals,Newcastle to score,UNDER,1.5,1.0,True,80.0,20
+1920,2019-10-27,Newcastle,Wolves,away_sot,Wolves shots on target,UNDER,4.5,5.0,False,75.0,20
+1920,2019-10-27,Arsenal,Crystal Palace,match_cards,Total match cards,OVER,3.5,2.0,False,75.0,20
+1920,2019-10-27,Liverpool,Tottenham,away_sot,Tottenham shots on target,UNDER,4.5,4.0,True,80.0,20
+1920,2019-11-02,Bournemouth,Man United,away_goals,Man United to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-11-02,Bournemouth,Man United,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,20
+1920,2019-11-02,Man City,Southampton,home_goals,Man City to score,OVER,1.5,2.0,True,75.0,20
+1920,2019-11-02,Man City,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,80.0,20
+1920,2019-11-02,Man City,Southampton,away_corners,Southampton corners,UNDER,5.5,0.0,True,80.0,20
+1920,2019-11-02,Watford,Chelsea,home_sot,Watford shots on target,UNDER,4.5,3.0,True,75.0,20
+1920,2019-11-02,Aston Villa,Liverpool,home_goals,Aston Villa to score,UNDER,1.5,1.0,True,75.0,20
+1920,2019-11-02,West Ham,Newcastle,away_goals,Newcastle to score,UNDER,1.5,3.0,False,80.0,20
+1920,2019-11-02,West Ham,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,9.0,False,75.0,20
+1920,2019-11-02,Sheffield United,Burnley,home_sot,Sheffield United shots on target,UNDER,4.5,6.0,False,80.0,20
+1920,2019-11-02,Sheffield United,Burnley,away_sot,Burnley shots on target,UNDER,4.5,0.0,True,75.0,20
+1920,2019-11-03,Crystal Palace,Leicester,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,75.0,20
+1920,2019-11-03,Crystal Palace,Leicester,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,80.0,20
+1920,2019-11-03,Crystal Palace,Leicester,home_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,75.0,20
+1920,2019-11-09,Newcastle,Bournemouth,home_goals,Newcastle to score,UNDER,1.5,2.0,False,81.8,22
+1920,2019-11-09,Tottenham,Sheffield United,home_sot,Tottenham shots on target,UNDER,4.5,5.0,False,77.2,22
+1920,2019-11-09,Chelsea,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,0.0,True,81.8,22
+1920,2019-11-09,Chelsea,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,1.0,True,77.2,22
+1920,2019-11-10,Man United,Brighton,away_corners,Brighton corners,UNDER,5.5,2.0,True,77.2,22
+1920,2019-11-23,Crystal Palace,Liverpool,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,83.3,24
+1920,2019-11-23,Crystal Palace,Liverpool,home_sot,Crystal Palace shots on target,UNDER,4.5,6.0,False,87.5,24
+1920,2019-11-23,Bournemouth,Wolves,home_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,24
+1920,2019-11-23,Brighton,Leicester,home_goals,Brighton to score,UNDER,1.5,0.0,True,79.2,24
+1920,2019-11-23,Brighton,Leicester,home_corners,Brighton corners,UNDER,5.5,6.0,False,83.3,24
+1920,2019-11-24,Sheffield United,Man United,home_goals,Sheffield United to score,UNDER,1.5,3.0,False,79.2,24
+1920,2019-11-24,Sheffield United,Man United,away_goals,Man United to score,UNDER,1.5,3.0,False,79.2,24
+1920,2019-11-24,Sheffield United,Man United,home_sot,Sheffield United shots on target,UNDER,4.5,8.0,False,79.2,24
+1920,2019-11-30,Newcastle,Man City,home_goals,Newcastle to score,UNDER,1.5,2.0,False,76.9,26
+1920,2019-11-30,Newcastle,Man City,home_corners,Newcastle corners,UNDER,5.5,1.0,True,84.6,26
+1920,2019-11-30,Liverpool,Brighton,away_goals,Brighton to score,UNDER,1.5,1.0,True,84.6,26
+1920,2019-11-30,Liverpool,Brighton,away_sot,Brighton shots on target,UNDER,4.5,5.0,False,76.9,26
+1920,2019-12-01,Leicester,Everton,away_goals,Everton to score,UNDER,1.5,1.0,True,80.8,26
+1920,2019-12-01,Wolves,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,1.0,True,76.9,26
+1920,2019-12-01,Wolves,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,4.0,True,76.9,26
+1920,2019-12-04,Chelsea,Aston Villa,home_sot,Chelsea shots on target,OVER,4.5,9.0,True,78.6,28
+1920,2019-12-04,Leicester,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,89.3,28
+1920,2019-12-04,Leicester,Watford,away_sot,Watford shots on target,UNDER,4.5,1.0,True,82.2,28
+1920,2019-12-04,Liverpool,Everton,away_goals,Everton to score,UNDER,1.5,2.0,False,85.7,28
+1920,2019-12-05,Sheffield United,Newcastle,away_goals,Newcastle to score,UNDER,1.5,2.0,False,78.6,28
+1920,2019-12-07,Bournemouth,Liverpool,home_goals,Bournemouth to score,UNDER,1.5,0.0,True,80.0,30
+1920,2019-12-07,Bournemouth,Liverpool,btts,Both teams to score,YES,,False,False,76.7,30
+1920,2019-12-07,Watford,Crystal Palace,home_sot,Watford shots on target,UNDER,4.5,3.0,True,76.7,30
+1920,2019-12-08,Brighton,Wolves,home_goals,Brighton to score,UNDER,1.5,2.0,False,76.7,30
+1920,2019-12-14,Liverpool,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,90.7,32
+1920,2019-12-14,Liverpool,Watford,away_sot,Watford shots on target,UNDER,4.5,2.0,True,84.3,32
+1920,2019-12-14,Chelsea,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,4.0,True,75.0,32
+1920,2019-12-14,Leicester,Norwich,home_goals,Leicester to score,OVER,1.5,1.0,False,78.1,32
+1920,2019-12-14,Leicester,Norwich,away_goals,Norwich to score,UNDER,1.5,1.0,True,81.3,32
+1920,2019-12-15,Wolves,Tottenham,btts,Both teams to score,YES,,True,True,75.0,32
+1920,2019-12-22,Tottenham,Chelsea,home_corners,Tottenham corners,UNDER,5.5,3.0,True,76.5,34
+1920,2019-12-22,Watford,Man United,home_goals,Watford to score,UNDER,1.5,2.0,False,82.3,34
+1920,2019-12-26,Chelsea,Southampton,away_corners,Southampton corners,UNDER,5.5,1.0,True,75.0,36
+1920,2019-12-26,Sheffield United,Watford,away_goals,Watford to score,UNDER,1.5,1.0,True,80.5,36
+1920,2019-12-26,Sheffield United,Watford,away_sot,Watford shots on target,UNDER,4.5,2.0,True,83.3,36
+1920,2019-12-26,Man United,Newcastle,away_corners,Newcastle corners,UNDER,5.5,0.0,True,77.8,36
+1920,2019-12-28,West Ham,Leicester,home_goals,West Ham to score,UNDER,1.5,1.0,True,75.5,37
+1920,2019-12-29,Liverpool,Wolves,btts,Both teams to score,YES,,False,False,75.6,37
+1920,2019-12-29,Man City,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,0.0,True,76.3,38
+1920,2020-01-01,Watford,Wolves,home_goals,Watford to score,UNDER,1.5,2.0,False,77.5,40
+1920,2020-01-01,Watford,Wolves,home_sot,Watford shots on target,UNDER,4.5,3.0,True,77.5,40
+1920,2020-01-01,Newcastle,Leicester,home_goals,Newcastle to score,UNDER,1.5,0.0,True,80.0,40
+1920,2020-01-01,Newcastle,Leicester,home_corners,Newcastle corners,UNDER,5.5,4.0,True,80.0,40
+1920,2020-01-01,Brighton,Chelsea,home_corners,Brighton corners,UNDER,5.5,5.0,True,77.5,40
+1920,2020-01-02,Liverpool,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,82.3,39
+1920,2020-01-02,Liverpool,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,84.6,39
+1920,2020-01-11,Chelsea,Burnley,away_corners,Burnley corners,UNDER,5.5,3.0,True,76.2,42
+1920,2020-01-11,Chelsea,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,76.2,42
+1920,2020-01-11,Leicester,Southampton,away_goals,Southampton to score,UNDER,1.5,2.0,False,78.6,42
+1920,2020-01-11,Wolves,Newcastle,away_corners,Newcastle corners,UNDER,5.5,2.0,True,76.2,42
+1920,2020-01-18,Man City,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,2.0,True,79.6,44
+1920,2020-01-18,Man City,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,79.6,44
+1920,2020-01-18,Newcastle,Chelsea,home_corners,Newcastle corners,UNDER,5.5,1.0,True,88.7,44
+1920,2020-01-18,Newcastle,Chelsea,home_sot,Newcastle shots on target,UNDER,4.5,2.0,True,75.0,44
+1920,2020-01-19,Burnley,Leicester,home_goals,Burnley to score,UNDER,1.5,2.0,False,77.2,44
+1920,2020-01-19,Burnley,Leicester,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,75.0,44
+1920,2020-01-21,Everton,Newcastle,away_corners,Newcastle corners,UNDER,5.5,4.0,True,76.1,46
+1920,2020-01-21,Sheffield United,Man City,home_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,80.5,46
+1920,2020-01-29,West Ham,Liverpool,home_goals,West Ham to score,UNDER,1.5,0.0,True,82.7,46
+1920,2020-01-29,West Ham,Liverpool,home_sot,West Ham shots on target,UNDER,4.5,4.0,True,78.3,46
+1920,2020-02-01,Crystal Palace,Sheffield United,home_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,81.2,48
+1920,2020-02-01,Crystal Palace,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,75.0,48
+1920,2020-02-01,Liverpool,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,79.2,48
+1920,2020-02-02,Tottenham,Man City,home_corners,Tottenham corners,UNDER,5.5,2.0,True,75.0,48
+1920,2020-02-15,Norwich,Liverpool,home_goals,Norwich to score,UNDER,1.5,0.0,True,86.0,50
+1920,2020-02-15,Norwich,Liverpool,away_goals,Liverpool to score,OVER,1.5,1.0,False,76.0,50
+1920,2020-02-17,Chelsea,Man United,away_corners,Man United corners,UNDER,5.5,8.0,False,78.0,50
+1920,2020-02-23,Man United,Watford,away_sot,Watford shots on target,UNDER,4.5,2.0,True,76.9,52
+1920,2020-02-24,Liverpool,West Ham,away_goals,West Ham to score,UNDER,1.5,2.0,False,82.7,52
+1920,2020-02-24,Liverpool,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,78.8,52
+1920,2020-02-28,Norwich,Leicester,home_goals,Norwich to score,UNDER,1.5,1.0,True,77.8,54
+1920,2020-02-29,Watford,Liverpool,home_goals,Watford to score,UNDER,1.5,3.0,False,83.3,54
+1920,2020-02-29,Watford,Liverpool,home_sot,Watford shots on target,UNDER,4.5,5.0,False,87.1,54
+1920,2020-02-29,Bournemouth,Chelsea,home_corners,Bournemouth corners,UNDER,5.5,4.0,True,81.5,54
+1920,2020-02-29,Bournemouth,Chelsea,home_sot,Bournemouth shots on target,UNDER,4.5,5.0,False,77.8,54
+1920,2020-03-07,Sheffield United,Norwich,away_goals,Norwich to score,UNDER,1.5,0.0,True,78.2,55
+1920,2020-03-07,Liverpool,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,1.0,True,80.3,56
+1920,2020-03-07,Liverpool,Bournemouth,home_sot,Liverpool shots on target,OVER,4.5,6.0,True,75.0,56
+1920,2020-03-07,Liverpool,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,4.0,True,78.6,56
+1920,2020-03-08,Man United,Man City,home_corners,Man United corners,UNDER,5.5,2.0,True,76.7,55
+1920,2020-06-20,Watford,Leicester,home_goals,Watford to score,UNDER,1.5,1.0,True,75.8,58
+1920,2020-06-20,Watford,Leicester,home_sot,Watford shots on target,UNDER,4.5,4.0,True,75.9,58
+1920,2020-06-21,Newcastle,Sheffield United,home_goals,Newcastle to score,UNDER,1.5,3.0,False,79.3,58
+1920,2020-06-21,Everton,Liverpool,home_goals,Everton to score,UNDER,1.5,0.0,True,75.9,58
+1920,2020-06-22,Man City,Burnley,away_corners,Burnley corners,UNDER,5.5,1.0,True,79.3,58
+1920,2020-06-23,Leicester,Brighton,away_goals,Brighton to score,UNDER,1.5,0.0,True,75.0,60
+1920,2020-06-24,Wolves,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,4.0,True,75.0,60
+1920,2020-06-24,Liverpool,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,81.7,60
+1920,2020-06-24,Liverpool,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,0.0,True,86.7,60
+1920,2020-06-24,Man United,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,75.0,60
+1920,2020-06-24,Man United,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,78.3,60
+1920,2020-07-04,Leicester,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,76.5,64
+1920,2020-07-04,Leicester,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,1.0,True,79.7,64
+1920,2020-07-04,Man United,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,2.0,False,75.0,64
+1920,2020-07-04,Chelsea,Watford,away_corners,Watford corners,UNDER,5.5,3.0,True,76.5,64
+1920,2020-07-04,Chelsea,Watford,away_sot,Watford shots on target,UNDER,4.5,3.0,True,82.8,64
+1920,2020-07-05,Liverpool,Aston Villa,away_goals,Aston Villa to score,UNDER,1.5,0.0,True,78.2,64
+1920,2020-07-05,Southampton,Man City,home_corners,Southampton corners,UNDER,5.5,2.0,True,75.0,64
+1920,2020-07-07,Crystal Palace,Chelsea,home_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,84.8,66
+1920,2020-07-08,Brighton,Liverpool,home_goals,Brighton to score,UNDER,1.5,1.0,True,80.3,66
+1920,2020-07-08,Sheffield United,Wolves,home_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,75.8,66
+1920,2020-07-08,Man City,Newcastle,away_corners,Newcastle corners,UNDER,5.5,1.0,True,83.3,66
+1920,2020-07-11,Brighton,Man City,home_corners,Brighton corners,UNDER,5.5,2.0,True,77.9,68
+1920,2020-07-11,Sheffield United,Chelsea,home_sot,Sheffield United shots on target,UNDER,4.5,4.0,True,83.8,68
+1920,2020-07-11,Liverpool,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,79.4,68
+1920,2020-07-11,Liverpool,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,77.9,68
+1920,2020-07-11,Liverpool,Burnley,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,68
+1920,2020-07-12,Bournemouth,Leicester,home_goals,Bournemouth to score,UNDER,1.5,4.0,False,76.5,68
+1920,2020-07-14,Chelsea,Norwich,away_corners,Norwich corners,UNDER,5.5,1.0,True,75.7,70
+1920,2020-07-15,Man City,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,5.0,True,82.8,70
+1920,2020-07-15,Man City,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,3.0,True,77.1,70
+1920,2020-07-16,Leicester,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,75.7,70
+1920,2020-07-16,Leicester,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,78.6,70
+1920,2020-07-16,Crystal Palace,Man United,home_sot,Crystal Palace shots on target,UNDER,4.5,5.0,False,78.6,70
+1920,2020-07-20,Sheffield United,Everton,home_sot,Sheffield United shots on target,UNDER,4.5,0.0,True,75.0,72
+1920,2020-07-20,Wolves,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,76.3,72
+1920,2020-07-21,Watford,Man City,home_corners,Watford corners,UNDER,5.5,0.0,True,81.9,72
+1920,2020-07-21,Watford,Man City,home_sot,Watford shots on target,UNDER,4.5,0.0,True,80.5,72
+1920,2020-07-26,Man City,Norwich,away_goals,Norwich to score,UNDER,1.5,0.0,True,77.0,74
+1920,2020-07-26,Man City,Norwich,away_corners,Norwich corners,UNDER,5.5,0.0,True,79.8,74
+1920,2020-07-26,Newcastle,Liverpool,home_goals,Newcastle to score,UNDER,1.5,1.0,True,79.8,74
+1920,2020-07-26,Newcastle,Liverpool,home_sot,Newcastle shots on target,UNDER,4.5,2.0,True,77.0,74
+2021,2020-09-12,Fulham,Arsenal,home_goals,Fulham to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-09-12,Fulham,Arsenal,away_sot,Arsenal shots on target,OVER,4.5,6.0,True,75.0,20
+2021,2020-09-12,Crystal Palace,Southampton,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,80.0,20
+2021,2020-09-12,Crystal Palace,Southampton,home_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,75.0,20
+2021,2020-09-13,Tottenham,Everton,away_goals,Everton to score,UNDER,1.5,1.0,True,90.0,20
+2021,2020-09-13,Tottenham,Everton,home_sot,Tottenham shots on target,UNDER,4.5,5.0,False,75.0,20
+2021,2020-09-13,West Brom,Leicester,home_sot,West Brom shots on target,UNDER,4.5,1.0,True,75.0,20
+2021,2020-09-13,West Brom,Leicester,away_sot,Leicester shots on target,UNDER,4.5,7.0,False,75.0,20
+2021,2020-09-14,Brighton,Chelsea,home_sot,Brighton shots on target,UNDER,4.5,3.0,True,90.0,20
+2021,2020-09-14,Sheffield United,Wolves,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,80.0,20
+2021,2020-09-14,Sheffield United,Wolves,home_corners,Sheffield United corners,UNDER,5.5,12.0,False,80.0,20
+2021,2020-09-14,Sheffield United,Wolves,home_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,90.0,20
+2021,2020-09-14,Sheffield United,Wolves,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2021,2020-09-19,Man United,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,3.0,False,80.0,20
+2021,2020-09-19,Man United,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,5.0,False,80.0,20
+2021,2020-09-19,Everton,West Brom,home_goals,Everton to score,UNDER,1.5,5.0,False,75.0,20
+2021,2020-09-19,Everton,West Brom,home_corners,Everton corners,UNDER,5.5,11.0,False,80.0,20
+2021,2020-09-19,Everton,West Brom,home_sot,Everton shots on target,UNDER,4.5,7.0,False,85.0,20
+2021,2020-09-19,Leeds,Fulham,away_goals,Fulham to score,UNDER,1.5,3.0,False,75.0,20
+2021,2020-09-20,Leicester,Burnley,home_goals,Leicester to score,UNDER,1.5,4.0,False,75.0,20
+2021,2020-09-20,Leicester,Burnley,away_goals,Burnley to score,UNDER,1.5,2.0,False,75.0,20
+2021,2020-09-20,Leicester,Burnley,away_sot,Burnley shots on target,UNDER,4.5,5.0,False,80.0,20
+2021,2020-09-20,Leicester,Burnley,match_cards,Total match cards,UNDER,3.5,3.0,True,80.0,20
+2021,2020-09-20,Southampton,Tottenham,away_sot,Tottenham shots on target,UNDER,4.5,6.0,False,75.0,20
+2021,2020-09-21,Aston Villa,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-09-21,Aston Villa,Sheffield United,home_sot,Aston Villa shots on target,UNDER,4.5,2.0,True,75.0,20
+2021,2020-09-21,Aston Villa,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,80.0,20
+2021,2020-09-21,Aston Villa,Sheffield United,match_cards,Total match cards,UNDER,3.5,5.0,False,75.0,20
+2021,2020-09-21,Wolves,Man City,home_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-09-21,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,4.0,True,85.0,20
+2021,2020-09-21,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,1.0,True,75.0,20
+2021,2020-09-21,Wolves,Man City,match_cards,Total match cards,UNDER,3.5,3.0,True,80.0,20
+2021,2020-09-26,Brighton,Man United,home_goals,Brighton to score,UNDER,1.5,2.0,False,75.0,20
+2021,2020-09-26,Brighton,Man United,home_sot,Brighton shots on target,UNDER,4.5,5.0,False,80.0,20
+2021,2020-09-26,Crystal Palace,Everton,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-09-26,Crystal Palace,Everton,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,20
+2021,2020-09-26,Burnley,Southampton,home_goals,Burnley to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-09-26,Burnley,Southampton,match_cards,Total match cards,UNDER,3.5,1.0,True,80.0,20
+2021,2020-09-27,West Ham,Wolves,home_sot,West Ham shots on target,UNDER,4.5,7.0,False,75.0,20
+2021,2020-09-27,West Ham,Wolves,away_sot,Wolves shots on target,UNDER,4.5,2.0,True,80.0,20
+2021,2020-09-27,Man City,Leicester,away_goals,Leicester to score,UNDER,1.5,5.0,False,75.0,20
+2021,2020-09-27,Man City,Leicester,away_corners,Leicester corners,UNDER,5.5,4.0,True,75.0,20
+2021,2020-09-27,Man City,Leicester,match_cards,Total match cards,UNDER,3.5,4.0,False,80.0,20
+2021,2020-09-27,Tottenham,Newcastle,away_goals,Newcastle to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-09-27,Sheffield United,Leeds,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,80.0,20
+2021,2020-09-27,Sheffield United,Leeds,home_sot,Sheffield United shots on target,UNDER,4.5,4.0,True,80.0,20
+2021,2020-09-28,Fulham,Aston Villa,away_goals,Aston Villa to score,UNDER,1.5,3.0,False,75.0,20
+2021,2020-10-03,Leeds,Man City,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2021,2020-10-03,Newcastle,Burnley,home_goals,Newcastle to score,UNDER,1.5,3.0,False,75.0,20
+2021,2020-10-03,Chelsea,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,0.0,True,75.0,20
+2021,2020-10-03,Everton,Brighton,away_sot,Brighton shots on target,UNDER,4.5,3.0,True,75.0,20
+2021,2020-10-04,Aston Villa,Liverpool,home_sot,Aston Villa shots on target,UNDER,4.5,11.0,False,80.0,20
+2021,2020-10-04,Wolves,Fulham,home_corners,Wolves corners,UNDER,5.5,6.0,False,75.0,20
+2021,2020-10-04,Leicester,West Ham,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,20
+2021,2020-10-04,Arsenal,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-10-17,Man City,Arsenal,away_corners,Arsenal corners,UNDER,5.5,6.0,False,80.0,20
+2021,2020-10-17,Everton,Liverpool,home_corners,Everton corners,UNDER,5.5,2.0,True,75.0,20
+2021,2020-10-18,Leicester,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,7.0,False,75.0,20
+2021,2020-10-18,Sheffield United,Fulham,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-10-19,Leeds,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-10-19,Leeds,Wolves,match_cards,Total match cards,UNDER,3.5,3.0,True,80.0,20
+2021,2020-10-19,West Brom,Burnley,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,20
+2021,2020-10-23,Aston Villa,Leeds,home_goals,Aston Villa to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-10-23,Aston Villa,Leeds,home_sot,Aston Villa shots on target,UNDER,4.5,4.0,True,75.0,20
+2021,2020-10-24,Liverpool,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,3.0,True,75.0,20
+2021,2020-10-24,Liverpool,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,80.0,20
+2021,2020-10-25,Wolves,Newcastle,away_goals,Newcastle to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-10-25,Wolves,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,2.0,True,80.0,20
+2021,2020-10-26,Burnley,Tottenham,home_goals,Burnley to score,UNDER,1.5,0.0,True,80.0,20
+2021,2020-10-26,Burnley,Tottenham,home_sot,Burnley shots on target,UNDER,4.5,4.0,True,75.0,20
+2021,2020-10-30,Wolves,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-10-30,Wolves,Crystal Palace,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2021,2020-10-31,Liverpool,West Ham,away_corners,West Ham corners,UNDER,5.5,2.0,True,75.0,20
+2021,2020-10-31,Liverpool,West Ham,btts,Both teams to score,YES,,True,True,75.0,20
+2021,2020-10-31,Sheffield United,Man City,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,90.0,20
+2021,2020-10-31,Sheffield United,Man City,home_corners,Sheffield United corners,UNDER,5.5,2.0,True,80.0,20
+2021,2020-10-31,Sheffield United,Man City,home_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,85.0,20
+2021,2020-10-31,Sheffield United,Man City,match_cards,Total match cards,UNDER,3.5,0.0,True,80.0,20
+2021,2020-10-31,Burnley,Chelsea,home_sot,Burnley shots on target,UNDER,4.5,0.0,True,75.0,20
+2021,2020-11-01,Aston Villa,Southampton,home_sot,Aston Villa shots on target,UNDER,4.5,10.0,False,75.0,20
+2021,2020-11-01,Man United,Arsenal,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,20
+2021,2020-11-01,Tottenham,Brighton,away_sot,Brighton shots on target,UNDER,4.5,2.0,True,75.0,20
+2021,2020-11-02,Fulham,West Brom,home_corners,Fulham corners,UNDER,5.5,5.0,True,75.0,12
+2021,2020-11-02,Fulham,West Brom,away_corners,West Brom corners,UNDER,5.5,2.0,True,83.3,12
+2021,2020-11-06,Southampton,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,2.0,True,75.0,20
+2021,2020-11-06,Brighton,Burnley,away_sot,Burnley shots on target,UNDER,4.5,1.0,True,75.0,20
+2021,2020-11-07,West Ham,Fulham,home_corners,West Ham corners,UNDER,5.5,9.0,False,77.8,17
+2021,2020-11-07,West Ham,Fulham,away_corners,Fulham corners,UNDER,5.5,5.0,True,75.0,17
+2021,2020-11-07,Chelsea,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,1.0,True,80.0,20
+2021,2020-11-07,Chelsea,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,7.0,False,75.0,20
+2021,2020-11-07,Chelsea,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,80.0,20
+2021,2020-11-07,Everton,Man United,home_corners,Everton corners,UNDER,5.5,5.0,True,75.0,20
+2021,2020-11-07,Crystal Palace,Leeds,match_cards,Total match cards,UNDER,3.5,2.0,True,77.8,17
+2021,2020-11-08,Man City,Liverpool,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,20
+2021,2020-11-08,West Brom,Tottenham,home_goals,West Brom to score,UNDER,1.5,0.0,True,75.7,17
+2021,2020-11-08,West Brom,Tottenham,home_corners,West Brom corners,UNDER,5.5,9.0,False,77.8,17
+2021,2020-11-08,West Brom,Tottenham,home_sot,West Brom shots on target,UNDER,4.5,2.0,True,77.8,17
+2021,2020-11-21,Man United,West Brom,away_corners,West Brom corners,UNDER,5.5,2.0,True,77.5,18
+2021,2020-11-21,Newcastle,Chelsea,home_sot,Newcastle shots on target,UNDER,4.5,1.0,True,80.0,20
+2021,2020-11-21,Aston Villa,Brighton,away_sot,Brighton shots on target,UNDER,4.5,3.0,True,75.0,20
+2021,2020-11-21,Tottenham,Man City,home_corners,Tottenham corners,UNDER,5.5,0.0,True,80.0,20
+2021,2020-11-22,Liverpool,Leicester,away_corners,Leicester corners,UNDER,5.5,3.0,True,80.0,20
+2021,2020-11-22,Sheffield United,West Ham,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,80.0,20
+2021,2020-11-22,Sheffield United,West Ham,home_sot,Sheffield United shots on target,UNDER,4.5,5.0,False,80.0,20
+2021,2020-11-22,Fulham,Everton,home_corners,Fulham corners,UNDER,5.5,2.0,True,85.0,18
+2021,2020-11-22,Fulham,Everton,away_corners,Everton corners,UNDER,5.5,5.0,True,77.5,18
+2021,2020-11-23,Wolves,Southampton,match_cards,Total match cards,UNDER,3.5,2.0,True,75.0,20
+2021,2020-11-23,Burnley,Crystal Palace,match_cards,Total match cards,UNDER,3.5,2.0,True,75.0,20
+2021,2020-11-27,Crystal Palace,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,7.0,False,75.0,20
+2021,2020-11-28,West Brom,Sheffield United,match_cards,Total match cards,UNDER,3.5,5.0,False,78.3,19
+2021,2020-11-28,Brighton,Liverpool,home_corners,Brighton corners,UNDER,5.5,4.0,True,80.0,20
+2021,2020-11-28,Brighton,Liverpool,home_sot,Brighton shots on target,UNDER,4.5,3.0,True,80.0,20
+2021,2020-11-28,Brighton,Liverpool,btts,Both teams to score,YES,,True,True,80.0,20
+2021,2020-11-28,Man City,Burnley,away_goals,Burnley to score,UNDER,1.5,0.0,True,80.0,20
+2021,2020-11-28,Man City,Burnley,away_corners,Burnley corners,UNDER,5.5,4.0,True,75.0,20
+2021,2020-11-28,Man City,Burnley,away_sot,Burnley shots on target,UNDER,4.5,1.0,True,80.0,20
+2021,2020-11-29,Arsenal,Wolves,away_goals,Wolves to score,UNDER,1.5,2.0,False,75.0,20
+2021,2020-11-29,Arsenal,Wolves,home_sot,Arsenal shots on target,UNDER,4.5,2.0,True,75.0,20
+2021,2020-11-29,Southampton,Man United,home_corners,Southampton corners,UNDER,5.5,5.0,True,80.0,20
+2021,2020-11-30,Leicester,Fulham,away_corners,Fulham corners,UNDER,5.5,5.0,True,80.0,19
+2021,2020-12-05,Burnley,Everton,home_corners,Burnley corners,UNDER,5.5,8.0,False,80.0,20
+2021,2020-12-05,Man City,Fulham,away_corners,Fulham corners,UNDER,5.5,3.0,True,90.0,20
+2021,2020-12-05,Man City,Fulham,home_sot,Man City shots on target,OVER,4.5,6.0,True,80.0,20
+2021,2020-12-05,Chelsea,Leeds,match_cards,Total match cards,UNDER,3.5,2.0,True,75.0,20
+2021,2020-12-06,Liverpool,Wolves,away_corners,Wolves corners,UNDER,5.5,6.0,False,85.0,20
+2021,2020-12-06,Liverpool,Wolves,match_cards,Total match cards,UNDER,3.5,2.0,True,75.0,20
+2021,2020-12-06,Tottenham,Arsenal,away_goals,Arsenal to score,UNDER,1.5,0.0,True,75.0,20
+2021,2020-12-06,Tottenham,Arsenal,away_sot,Arsenal shots on target,UNDER,4.5,2.0,True,80.0,20
+2021,2020-12-06,Sheffield United,Leicester,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,75.0,20
+2021,2020-12-07,Brighton,Southampton,away_corners,Southampton corners,UNDER,5.5,3.0,True,85.0,20
+2021,2020-12-12,Wolves,Aston Villa,home_corners,Wolves corners,UNDER,5.5,5.0,True,76.8,21
+2021,2020-12-13,Fulham,Liverpool,home_corners,Fulham corners,UNDER,5.5,6.0,False,95.5,22
+2021,2020-12-13,Fulham,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,6.0,True,81.8,22
+2021,2020-12-13,Arsenal,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,76.8,21
+2021,2020-12-13,Arsenal,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,76.8,21
+2021,2020-12-13,Southampton,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,81.8,22
+2021,2020-12-15,Wolves,Chelsea,home_goals,Wolves to score,UNDER,1.5,2.0,False,75.0,24
+2021,2020-12-15,Man City,West Brom,away_goals,West Brom to score,UNDER,1.5,1.0,True,82.5,23
+2021,2020-12-15,Man City,West Brom,away_corners,West Brom corners,UNDER,5.5,2.0,True,78.4,23
+2021,2020-12-15,Man City,West Brom,home_sot,Man City shots on target,OVER,4.5,7.0,True,78.0,23
+2021,2020-12-15,Man City,West Brom,away_sot,West Brom shots on target,UNDER,4.5,1.0,True,82.5,23
+2021,2020-12-16,Liverpool,Tottenham,away_corners,Tottenham corners,UNDER,5.5,4.0,True,79.2,24
+2021,2020-12-16,Fulham,Brighton,home_corners,Fulham corners,UNDER,5.5,1.0,True,83.3,24
+2021,2020-12-16,Arsenal,Southampton,away_corners,Southampton corners,UNDER,5.5,7.0,False,75.0,24
+2021,2020-12-17,Sheffield United,Man United,home_goals,Sheffield United to score,UNDER,1.5,2.0,False,81.8,23
+2021,2020-12-17,Aston Villa,Burnley,away_corners,Burnley corners,UNDER,5.5,1.0,True,85.9,21
+2021,2020-12-17,Aston Villa,Burnley,away_sot,Burnley shots on target,UNDER,4.5,4.0,True,75.5,21
+2021,2020-12-19,Southampton,Man City,home_corners,Southampton corners,UNDER,5.5,6.0,False,80.1,25
+2021,2020-12-20,West Brom,Aston Villa,home_corners,West Brom corners,UNDER,5.5,1.0,True,83.9,24
+2021,2020-12-21,Burnley,Wolves,home_goals,Burnley to score,UNDER,1.5,2.0,False,84.3,25
+2021,2020-12-21,Burnley,Wolves,home_sot,Burnley shots on target,UNDER,4.5,4.0,True,84.3,25
+2021,2020-12-26,Arsenal,Chelsea,home_goals,Arsenal to score,UNDER,1.5,3.0,False,75.0,28
+2021,2020-12-26,Arsenal,Chelsea,home_sot,Arsenal shots on target,UNDER,4.5,7.0,False,82.2,28
+2021,2020-12-26,Man City,Newcastle,away_corners,Newcastle corners,UNDER,5.5,3.0,True,76.9,26
+2021,2020-12-26,Man City,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,2.0,True,76.9,26
+2021,2020-12-27,Liverpool,West Brom,away_goals,West Brom to score,UNDER,1.5,1.0,True,82.2,28
+2021,2020-12-27,Liverpool,West Brom,away_corners,West Brom corners,UNDER,5.5,3.0,True,82.2,28
+2021,2020-12-27,Liverpool,West Brom,home_sot,Liverpool shots on target,OVER,4.5,2.0,False,85.7,28
+2021,2020-12-27,Liverpool,West Brom,away_sot,West Brom shots on target,UNDER,4.5,3.0,True,82.2,28
+2021,2020-12-27,Leeds,Burnley,match_cards,Total match cards,UNDER,3.5,3.0,True,77.8,27
+2021,2020-12-29,Burnley,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,82.3,29
+2021,2020-12-29,Brighton,Arsenal,home_sot,Brighton shots on target,UNDER,4.5,2.0,True,76.7,30
+2021,2020-12-29,Brighton,Arsenal,away_sot,Arsenal shots on target,UNDER,4.5,3.0,True,76.7,30
+2021,2020-12-30,Newcastle,Liverpool,home_corners,Newcastle corners,UNDER,5.5,5.0,True,82.7,29
+2021,2020-12-30,Newcastle,Liverpool,home_sot,Newcastle shots on target,UNDER,4.5,2.0,True,75.7,29
+2021,2021-01-02,Crystal Palace,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,78.2,32
+2021,2021-01-02,Brighton,Wolves,home_sot,Brighton shots on target,UNDER,4.5,4.0,True,81.2,32
+2021,2021-01-02,West Brom,Arsenal,home_goals,West Brom to score,UNDER,1.5,0.0,True,78.2,32
+2021,2021-01-02,West Brom,Arsenal,home_sot,West Brom shots on target,UNDER,4.5,3.0,True,81.2,32
+2021,2021-01-04,Southampton,Liverpool,home_corners,Southampton corners,UNDER,5.5,1.0,True,81.2,32
+2021,2021-01-12,Sheffield United,Newcastle,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,75.2,33
+2021,2021-01-13,Man City,Brighton,away_goals,Brighton to score,UNDER,1.5,0.0,True,75.7,32
+2021,2021-01-13,Man City,Brighton,away_corners,Brighton corners,UNDER,5.5,4.0,True,75.3,32
+2021,2021-01-13,Man City,Brighton,away_sot,Brighton shots on target,UNDER,4.5,1.0,True,84.6,32
+2021,2021-01-16,West Ham,Burnley,away_corners,Burnley corners,UNDER,5.5,4.0,True,75.9,33
+2021,2021-01-16,West Ham,Burnley,match_cards,Total match cards,UNDER,3.5,3.0,True,75.9,33
+2021,2021-01-16,Wolves,West Brom,away_goals,West Brom to score,UNDER,1.5,3.0,False,77.5,35
+2021,2021-01-16,Wolves,West Brom,away_sot,West Brom shots on target,UNDER,4.5,5.0,False,85.8,35
+2021,2021-01-17,Man City,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,79.8,34
+2021,2021-01-17,Sheffield United,Tottenham,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,85.5,35
+2021,2021-01-18,Arsenal,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,1.0,True,77.2,35
+2021,2021-01-19,West Ham,West Brom,away_corners,West Brom corners,UNDER,5.5,1.0,True,77.8,36
+2021,2021-01-21,Liverpool,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,85.8,35
+2021,2021-01-21,Liverpool,Burnley,away_corners,Burnley corners,UNDER,5.5,0.0,True,85.7,35
+2021,2021-01-21,Liverpool,Burnley,away_sot,Burnley shots on target,UNDER,4.5,4.0,True,85.8,35
+2021,2021-01-23,Aston Villa,Newcastle,away_corners,Newcastle corners,UNDER,5.5,4.0,True,82.2,34
+2021,2021-01-26,West Brom,Man City,home_goals,West Brom to score,UNDER,1.5,0.0,True,86.6,37
+2021,2021-01-26,West Brom,Man City,home_corners,West Brom corners,UNDER,5.5,3.0,True,83.8,37
+2021,2021-01-26,West Brom,Man City,home_sot,West Brom shots on target,UNDER,4.5,1.0,True,86.6,37
+2021,2021-01-26,West Brom,Man City,away_sot,Man City shots on target,OVER,4.5,7.0,True,83.8,37
+2021,2021-01-27,Burnley,Aston Villa,home_corners,Burnley corners,UNDER,5.5,2.0,True,82.8,35
+2021,2021-01-27,Brighton,Fulham,away_corners,Fulham corners,UNDER,5.5,0.0,True,78.5,37
+2021,2021-01-27,Man United,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,2.0,False,79.0,38
+2021,2021-01-28,Tottenham,Liverpool,home_corners,Tottenham corners,UNDER,5.5,1.0,True,80.8,37
+2021,2021-01-30,Man City,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,89.8,39
+2021,2021-01-30,Man City,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,82.2,39
+2021,2021-01-30,Southampton,Aston Villa,home_corners,Southampton corners,UNDER,5.5,7.0,False,81.1,37
+2021,2021-01-31,Chelsea,Burnley,away_sot,Burnley shots on target,UNDER,4.5,0.0,True,79.6,39
+2021,2021-01-31,West Ham,Liverpool,home_corners,West Ham corners,UNDER,5.5,6.0,False,80.0,40
+2021,2021-02-03,Liverpool,Brighton,away_goals,Brighton to score,UNDER,1.5,1.0,True,78.6,42
+2021,2021-02-03,Liverpool,Brighton,away_corners,Brighton corners,UNDER,5.5,3.0,True,76.2,42
+2021,2021-02-03,Liverpool,Brighton,away_sot,Brighton shots on target,UNDER,4.5,4.0,True,81.0,42
+2021,2021-02-03,Burnley,Man City,home_goals,Burnley to score,UNDER,1.5,0.0,True,87.5,40
+2021,2021-02-03,Burnley,Man City,home_corners,Burnley corners,UNDER,5.5,1.0,True,85.0,40
+2021,2021-02-03,Burnley,Man City,home_sot,Burnley shots on target,UNDER,4.5,0.0,True,87.5,40
+2021,2021-02-03,Burnley,Man City,away_sot,Man City shots on target,OVER,4.5,6.0,True,75.0,40
+2021,2021-02-03,Fulham,Leicester,home_corners,Fulham corners,UNDER,5.5,5.0,True,78.2,41
+2021,2021-02-06,Fulham,West Ham,home_corners,Fulham corners,UNDER,5.5,7.0,False,79.2,43
+2021,2021-02-06,Burnley,Brighton,home_corners,Burnley corners,UNDER,5.5,8.0,False,79.2,43
+2021,2021-02-06,Burnley,Brighton,home_sot,Burnley shots on target,UNDER,4.5,7.0,False,83.8,43
+2021,2021-02-06,Burnley,Brighton,match_cards,Total match cards,UNDER,3.5,2.0,True,79.2,43
+2021,2021-02-07,Sheffield United,Chelsea,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,77.3,44
+2021,2021-02-07,Sheffield United,Chelsea,home_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,75.0,44
+2021,2021-02-07,Tottenham,West Brom,away_goals,West Brom to score,UNDER,1.5,0.0,True,79.0,43
+2021,2021-02-13,Man City,Tottenham,away_goals,Tottenham to score,UNDER,1.5,0.0,True,75.0,44
+2021,2021-02-13,Man City,Tottenham,away_corners,Tottenham corners,UNDER,5.5,2.0,True,77.2,44
+2021,2021-02-13,Crystal Palace,Burnley,match_cards,Total match cards,UNDER,3.5,0.0,True,78.0,45
+2021,2021-02-14,West Brom,Man United,home_corners,West Brom corners,UNDER,5.5,4.0,True,80.5,46
+2021,2021-02-15,Chelsea,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,4.0,True,76.1,46
+2021,2021-02-17,Everton,Man City,home_corners,Everton corners,UNDER,5.5,0.0,True,79.9,45
+2021,2021-02-17,Everton,Man City,home_sot,Everton shots on target,UNDER,4.5,2.0,True,75.2,45
+2021,2021-02-20,Burnley,West Brom,away_goals,West Brom to score,UNDER,1.5,0.0,True,77.0,48
+2021,2021-02-20,Burnley,West Brom,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,48
+2021,2021-02-20,Liverpool,Everton,away_corners,Everton corners,UNDER,5.5,2.0,True,82.9,47
+2021,2021-02-20,Fulham,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,75.0,48
+2021,2021-02-21,Arsenal,Man City,home_goals,Arsenal to score,UNDER,1.5,0.0,True,79.2,48
+2021,2021-02-21,Arsenal,Man City,home_sot,Arsenal shots on target,UNDER,4.5,1.0,True,79.2,48
+2021,2021-02-21,Man United,Newcastle,away_corners,Newcastle corners,UNDER,5.5,4.0,True,75.0,48
+2021,2021-02-22,Brighton,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,2.0,True,75.0,48
+2021,2021-02-27,West Brom,Brighton,home_corners,West Brom corners,UNDER,5.5,7.0,False,80.0,50
+2021,2021-02-27,West Brom,Brighton,home_sot,West Brom shots on target,UNDER,4.5,2.0,True,84.0,50
+2021,2021-02-27,Man City,West Ham,away_corners,West Ham corners,UNDER,5.5,2.0,True,76.0,50
+2021,2021-02-27,Man City,West Ham,away_sot,West Ham shots on target,UNDER,4.5,3.0,True,76.0,50
+2021,2021-02-28,Tottenham,Burnley,away_goals,Burnley to score,UNDER,1.5,0.0,True,77.4,49
+2021,2021-02-28,Tottenham,Burnley,away_corners,Burnley corners,UNDER,5.5,4.0,True,75.3,49
+2021,2021-02-28,Sheffield United,Liverpool,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,82.0,50
+2021,2021-02-28,Sheffield United,Liverpool,home_corners,Sheffield United corners,UNDER,5.5,4.0,True,76.0,50
+2021,2021-03-02,Man City,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,80.8,52
+2021,2021-03-02,Man City,Wolves,away_sot,Wolves shots on target,UNDER,4.5,1.0,True,76.9,52
+2021,2021-03-03,Crystal Palace,Man United,home_corners,Crystal Palace corners,UNDER,5.5,4.0,True,75.0,52
+2021,2021-03-03,Burnley,Leicester,home_goals,Burnley to score,UNDER,1.5,1.0,True,75.0,52
+2021,2021-03-03,Burnley,Leicester,home_sot,Burnley shots on target,UNDER,4.5,7.0,False,76.9,52
+2021,2021-03-06,Burnley,Arsenal,home_goals,Burnley to score,UNDER,1.5,1.0,True,79.2,53
+2021,2021-03-06,Burnley,Arsenal,home_corners,Burnley corners,UNDER,5.5,2.0,True,77.2,53
+2021,2021-03-06,Burnley,Arsenal,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,75.3,53
+2021,2021-03-06,Sheffield United,Southampton,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,75.2,53
+2021,2021-03-07,Liverpool,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,77.8,54
+2021,2021-03-07,Liverpool,Fulham,away_corners,Fulham corners,UNDER,5.5,4.0,True,85.2,54
+2021,2021-03-08,Chelsea,Everton,away_corners,Everton corners,UNDER,5.5,3.0,True,77.4,53
+2021,2021-03-10,Man City,Southampton,away_corners,Southampton corners,UNDER,5.5,5.0,True,79.9,55
+2021,2021-03-13,Fulham,Man City,home_goals,Fulham to score,UNDER,1.5,0.0,True,82.4,57
+2021,2021-03-13,Fulham,Man City,home_corners,Fulham corners,UNDER,5.5,4.0,True,84.2,57
+2021,2021-03-13,Fulham,Man City,home_sot,Fulham shots on target,UNDER,4.5,0.0,True,77.1,57
+2021,2021-03-14,Leicester,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,78.6,56
+2021,2021-03-15,Wolves,Liverpool,home_goals,Wolves to score,UNDER,1.5,0.0,True,75.0,56
+2021,2021-03-20,Brighton,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,1.0,True,75.0,56
+2021,2021-04-03,Chelsea,West Brom,away_goals,West Brom to score,UNDER,1.5,5.0,False,81.1,58
+2021,2021-04-03,Chelsea,West Brom,away_corners,West Brom corners,UNDER,5.5,3.0,True,77.6,58
+2021,2021-04-03,Chelsea,West Brom,away_sot,West Brom shots on target,UNDER,4.5,7.0,False,86.2,58
+2021,2021-04-09,Fulham,Wolves,home_goals,Fulham to score,UNDER,1.5,0.0,True,75.3,61
+2021,2021-04-10,Crystal Palace,Chelsea,home_corners,Crystal Palace corners,UNDER,5.5,0.0,True,75.0,60
+2021,2021-04-10,Crystal Palace,Chelsea,home_sot,Crystal Palace shots on target,UNDER,4.5,1.0,True,76.7,60
+2021,2021-04-11,Sheffield United,Arsenal,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,80.0,60
+2021,2021-04-17,Wolves,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,80.7,62
+2021,2021-04-18,Arsenal,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,76.1,63
+2021,2021-04-18,Arsenal,Fulham,away_corners,Fulham corners,UNDER,5.5,1.0,True,77.7,63
+2021,2021-04-18,Man United,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,75.8,62
+2021,2021-04-18,Man United,Burnley,away_corners,Burnley corners,UNDER,5.5,3.0,True,75.8,62
+2021,2021-04-21,Aston Villa,Man City,home_goals,Aston Villa to score,UNDER,1.5,1.0,True,77.2,62
+2021,2021-04-22,Leicester,West Brom,away_sot,West Brom shots on target,UNDER,4.5,1.0,True,77.5,62
+2021,2021-04-23,Arsenal,Everton,away_corners,Everton corners,UNDER,5.5,3.0,True,76.2,63
+2021,2021-04-24,Liverpool,Newcastle,away_corners,Newcastle corners,UNDER,5.5,3.0,True,81.2,64
+2021,2021-04-24,Sheffield United,Brighton,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,78.1,64
+2021,2021-04-24,Sheffield United,Brighton,home_sot,Sheffield United shots on target,UNDER,4.5,3.0,True,79.7,64
+2021,2021-04-25,Wolves,Burnley,away_goals,Burnley to score,UNDER,1.5,4.0,False,76.6,64
+2021,2021-04-25,Wolves,Burnley,match_cards,Total match cards,UNDER,3.5,3.0,True,76.6,64
+2021,2021-05-01,Chelsea,Fulham,away_goals,Fulham to score,UNDER,1.5,0.0,True,78.8,66
+2021,2021-05-01,Chelsea,Fulham,away_corners,Fulham corners,UNDER,5.5,8.0,False,78.8,66
+2021,2021-05-01,Crystal Palace,Man City,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,79.9,65
+2021,2021-05-01,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,2.0,True,83.0,65
+2021,2021-05-01,Crystal Palace,Man City,home_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,81.5,65
+2021,2021-05-02,Newcastle,Arsenal,home_corners,Newcastle corners,UNDER,5.5,3.0,True,75.8,66
+2021,2021-05-02,Tottenham,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,78.8,66
+2021,2021-05-03,West Brom,Wolves,home_sot,West Brom shots on target,UNDER,4.5,4.0,True,77.2,66
+2021,2021-05-08,Liverpool,Southampton,away_corners,Southampton corners,UNDER,5.5,4.0,True,80.3,66
+2021,2021-05-09,Arsenal,West Brom,away_goals,West Brom to score,UNDER,1.5,1.0,True,76.5,68
+2021,2021-05-09,Arsenal,West Brom,away_corners,West Brom corners,UNDER,5.5,6.0,False,80.9,68
+2021,2021-05-09,Arsenal,West Brom,away_sot,West Brom shots on target,UNDER,4.5,1.0,True,76.4,68
+2021,2021-05-10,Fulham,Burnley,match_cards,Total match cards,UNDER,3.5,2.0,True,75.0,68
+2021,2021-05-14,Newcastle,Man City,home_corners,Newcastle corners,UNDER,5.5,4.0,True,81.4,70
+2021,2021-05-15,Burnley,Leeds,match_cards,Total match cards,UNDER,3.5,2.0,True,78.6,70
+2021,2021-05-16,West Brom,Liverpool,home_goals,West Brom to score,UNDER,1.5,1.0,True,80.0,70
+2021,2021-05-16,West Brom,Liverpool,home_corners,West Brom corners,UNDER,5.5,9.0,False,84.3,70
+2021,2021-05-16,West Brom,Liverpool,home_sot,West Brom shots on target,UNDER,4.5,3.0,True,77.2,70
+2021,2021-05-18,Man United,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,76.3,72
+2021,2021-05-18,Man United,Fulham,away_corners,Fulham corners,UNDER,5.5,1.0,True,76.4,72
+2021,2021-05-18,Brighton,Man City,home_goals,Brighton to score,UNDER,1.5,3.0,False,77.8,72
+2021,2021-05-18,Brighton,Man City,home_corners,Brighton corners,UNDER,5.5,5.0,True,75.0,72
+2021,2021-05-18,Brighton,Man City,home_sot,Brighton shots on target,UNDER,4.5,6.0,False,76.3,72
+2021,2021-05-19,Burnley,Liverpool,home_goals,Burnley to score,UNDER,1.5,0.0,True,79.2,72
+2021,2021-05-19,Burnley,Liverpool,home_corners,Burnley corners,UNDER,5.5,6.0,False,81.9,72
+2021,2021-05-19,Burnley,Liverpool,match_cards,Total match cards,UNDER,3.5,0.0,True,81.9,72
+2021,2021-05-23,Liverpool,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,77.0,74
+2021,2021-05-23,Liverpool,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,1.0,True,75.7,74
+2021,2021-05-23,Man City,Everton,away_corners,Everton corners,UNDER,5.5,5.0,True,81.1,74
+2021,2021-05-23,Sheffield United,Burnley,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,77.1,74
+2021,2021-05-23,Sheffield United,Burnley,match_cards,Total match cards,UNDER,3.5,4.0,False,78.4,74
+2122,2021-08-13,Brentford,Arsenal,home_goals,Brentford to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-08-14,Burnley,Brighton,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-08-14,Chelsea,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,80.0,20
+2122,2021-08-14,Chelsea,Crystal Palace,home_sot,Chelsea shots on target,OVER,4.5,6.0,True,75.0,20
+2122,2021-08-14,Chelsea,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,1.0,True,75.0,20
+2122,2021-08-14,Everton,Southampton,match_cards,Total match cards,UNDER,3.5,2.0,True,80.0,20
+2122,2021-08-14,Norwich,Liverpool,home_corners,Norwich corners,UNDER,5.5,3.0,True,75.0,20
+2122,2021-08-15,Newcastle,West Ham,home_corners,Newcastle corners,UNDER,5.5,7.0,False,75.0,20
+2122,2021-08-21,Crystal Palace,Brentford,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,90.0,20
+2122,2021-08-21,Crystal Palace,Brentford,home_corners,Crystal Palace corners,UNDER,5.5,3.0,True,80.0,20
+2122,2021-08-21,Crystal Palace,Brentford,home_sot,Crystal Palace shots on target,UNDER,4.5,2.0,True,80.0,20
+2122,2021-08-21,Liverpool,Burnley,home_goals,Liverpool to score,OVER,1.5,2.0,True,75.0,20
+2122,2021-08-21,Liverpool,Burnley,away_goals,Burnley to score,UNDER,1.5,0.0,True,80.0,20
+2122,2021-08-21,Liverpool,Burnley,home_corners,Liverpool corners,OVER,5.5,8.0,True,80.0,20
+2122,2021-08-21,Liverpool,Burnley,match_cards,Total match cards,UNDER,3.5,0.0,True,85.0,20
+2122,2021-08-21,Aston Villa,Newcastle,btts,Both teams to score,YES,,False,False,80.0,20
+2122,2021-08-21,Leeds,Everton,away_goals,Everton to score,UNDER,1.5,2.0,False,80.0,20
+2122,2021-08-21,Leeds,Everton,match_cards,Total match cards,UNDER,3.5,6.0,False,75.0,20
+2122,2021-08-21,Brighton,Watford,home_goals,Brighton to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-08-21,Brighton,Watford,home_sot,Brighton shots on target,UNDER,4.5,3.0,True,80.0,20
+2122,2021-08-21,Man City,Norwich,away_corners,Norwich corners,UNDER,5.5,1.0,True,95.0,20
+2122,2021-08-22,Southampton,Man United,home_goals,Southampton to score,UNDER,1.5,1.0,True,75.0,20
+2122,2021-08-22,Southampton,Man United,btts,Both teams to score,YES,,True,True,75.0,20
+2122,2021-08-22,Wolves,Tottenham,match_cards,Total match cards,UNDER,3.5,5.0,False,75.0,20
+2122,2021-08-22,Arsenal,Chelsea,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-08-28,Brighton,Everton,home_sot,Brighton shots on target,UNDER,4.5,3.0,True,75.0,20
+2122,2021-08-28,Aston Villa,Brentford,home_corners,Aston Villa corners,UNDER,5.5,3.0,True,80.0,20
+2122,2021-08-28,Aston Villa,Brentford,home_sot,Aston Villa shots on target,UNDER,4.5,5.0,False,80.0,20
+2122,2021-08-28,West Ham,Crystal Palace,home_goals,West Ham to score,OVER,1.5,2.0,True,75.0,20
+2122,2021-08-28,West Ham,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-08-28,Norwich,Leicester,home_corners,Norwich corners,UNDER,5.5,9.0,False,75.0,20
+2122,2021-08-28,Liverpool,Chelsea,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-08-28,Newcastle,Southampton,match_cards,Total match cards,UNDER,3.5,6.0,False,75.0,20
+2122,2021-08-29,Burnley,Leeds,home_goals,Burnley to score,UNDER,1.5,1.0,True,75.0,20
+2122,2021-08-29,Burnley,Leeds,match_cards,Total match cards,UNDER,3.5,7.0,False,80.0,20
+2122,2021-08-29,Tottenham,Watford,home_sot,Tottenham shots on target,UNDER,4.5,8.0,False,80.0,20
+2122,2021-08-29,Wolves,Man United,home_goals,Wolves to score,UNDER,1.5,0.0,True,85.0,20
+2122,2021-09-11,Brentford,Brighton,away_goals,Brighton to score,UNDER,1.5,1.0,True,80.0,20
+2122,2021-09-11,Brentford,Brighton,away_corners,Brighton corners,UNDER,5.5,6.0,False,85.0,20
+2122,2021-09-11,Brentford,Brighton,away_sot,Brighton shots on target,UNDER,4.5,2.0,True,80.0,20
+2122,2021-09-11,Man United,Newcastle,away_corners,Newcastle corners,UNDER,5.5,3.0,True,80.0,20
+2122,2021-09-11,Southampton,West Ham,match_cards,Total match cards,UNDER,3.5,5.0,False,75.0,20
+2122,2021-09-11,Watford,Wolves,away_goals,Wolves to score,UNDER,1.5,2.0,False,80.0,20
+2122,2021-09-11,Watford,Wolves,home_corners,Watford corners,UNDER,5.5,6.0,False,80.0,20
+2122,2021-09-12,Leeds,Liverpool,match_cards,Total match cards,UNDER,3.5,4.0,False,80.0,20
+2122,2021-09-13,Everton,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,75.0,20
+2122,2021-09-13,Everton,Burnley,away_sot,Burnley shots on target,UNDER,4.5,6.0,False,80.0,20
+2122,2021-09-18,Norwich,Watford,home_sot,Norwich shots on target,UNDER,4.5,5.0,False,75.0,20
+2122,2021-09-18,Liverpool,Crystal Palace,home_goals,Liverpool to score,OVER,1.5,3.0,True,75.0,20
+2122,2021-09-18,Liverpool,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,75.0,20
+2122,2021-09-18,Liverpool,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,2.0,True,80.0,20
+2122,2021-09-18,Wolves,Brentford,home_goals,Wolves to score,UNDER,1.5,0.0,True,90.0,20
+2122,2021-09-18,Wolves,Brentford,away_corners,Brentford corners,UNDER,5.5,2.0,True,75.0,20
+2122,2021-09-18,Burnley,Arsenal,home_goals,Burnley to score,UNDER,1.5,0.0,True,75.0,20
+2122,2021-09-18,Burnley,Arsenal,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-09-18,Man City,Southampton,away_corners,Southampton corners,UNDER,5.5,5.0,True,80.0,20
+2122,2021-09-19,Brighton,Leicester,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-09-19,West Ham,Man United,home_corners,West Ham corners,UNDER,5.5,2.0,True,75.0,20
+2122,2021-09-19,Tottenham,Chelsea,home_goals,Tottenham to score,UNDER,1.5,0.0,True,75.0,20
+2122,2021-09-25,Chelsea,Man City,home_corners,Chelsea corners,UNDER,5.5,4.0,True,75.0,20
+2122,2021-09-25,Leicester,Burnley,match_cards,Total match cards,UNDER,3.5,6.0,False,85.0,20
+2122,2021-09-25,Man United,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,5.0,True,75.0,20
+2122,2021-09-25,Man United,Aston Villa,btts,Both teams to score,YES,,False,False,75.0,20
+2122,2021-09-25,Everton,Norwich,away_sot,Norwich shots on target,UNDER,4.5,2.0,True,75.0,20
+2122,2021-09-25,Brentford,Liverpool,home_goals,Brentford to score,UNDER,1.5,3.0,False,75.0,20
+2122,2021-09-25,Brentford,Liverpool,home_corners,Brentford corners,UNDER,5.5,2.0,True,80.0,20
+2122,2021-09-25,Brentford,Liverpool,home_sot,Brentford shots on target,UNDER,4.5,4.0,True,75.0,20
+2122,2021-09-26,Arsenal,Tottenham,match_cards,Total match cards,UNDER,3.5,3.0,True,75.0,20
+2122,2021-10-02,Burnley,Norwich,home_corners,Burnley corners,OVER,5.5,9.0,True,80.0,16
+2122,2021-10-02,Burnley,Norwich,match_cards,Total match cards,UNDER,3.5,7.0,False,76.7,16
+2122,2021-10-02,Chelsea,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,80.0,20
+2122,2021-10-03,Liverpool,Man City,away_sot,Man City shots on target,UNDER,4.5,3.0,True,80.0,20
+2122,2021-10-03,Tottenham,Aston Villa,home_goals,Tottenham to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-10-03,West Ham,Brentford,away_corners,Brentford corners,UNDER,5.5,6.0,False,80.0,16
+2122,2021-10-03,West Ham,Brentford,away_sot,Brentford shots on target,UNDER,4.5,6.0,False,85.0,16
+2122,2021-10-16,Brentford,Chelsea,home_sot,Brentford shots on target,UNDER,4.5,7.0,False,82.8,17
+2122,2021-10-16,Norwich,Brighton,home_goals,Norwich to score,UNDER,1.5,0.0,True,85.0,17
+2122,2021-10-16,Norwich,Brighton,home_sot,Norwich shots on target,UNDER,4.5,3.0,True,82.8,17
+2122,2021-10-16,Watford,Liverpool,home_goals,Watford to score,UNDER,1.5,0.0,True,75.7,17
+2122,2021-10-16,Watford,Liverpool,home_corners,Watford corners,UNDER,5.5,1.0,True,75.7,17
+2122,2021-10-16,Watford,Liverpool,away_corners,Liverpool corners,OVER,5.5,9.0,True,80.7,17
+2122,2021-10-16,Watford,Liverpool,home_sot,Watford shots on target,UNDER,4.5,2.0,True,85.7,17
+2122,2021-10-16,Leicester,Man United,btts,Both teams to score,YES,,True,True,80.0,20
+2122,2021-10-16,Aston Villa,Wolves,away_corners,Wolves corners,UNDER,5.5,7.0,False,75.0,20
+2122,2021-10-16,Man City,Burnley,away_goals,Burnley to score,UNDER,1.5,0.0,True,80.0,20
+2122,2021-10-16,Man City,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,85.0,20
+2122,2021-10-17,Newcastle,Tottenham,away_corners,Tottenham corners,UNDER,5.5,9.0,False,75.0,20
+2122,2021-10-23,Brighton,Man City,home_corners,Brighton corners,UNDER,5.5,7.0,False,80.0,20
+2122,2021-10-23,Brighton,Man City,home_sot,Brighton shots on target,UNDER,4.5,5.0,False,80.0,20
+2122,2021-10-23,Chelsea,Norwich,away_goals,Norwich to score,UNDER,1.5,0.0,True,95.0,18
+2122,2021-10-23,Chelsea,Norwich,away_sot,Norwich shots on target,UNDER,4.5,1.0,True,78.8,18
+2122,2021-10-30,Man City,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-10-30,Man City,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,1.0,True,85.0,20
+2122,2021-10-30,Man City,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,90.0,20
+2122,2021-10-30,Burnley,Brentford,home_goals,Burnley to score,UNDER,1.5,3.0,False,78.9,19
+2122,2021-10-30,Liverpool,Brighton,away_goals,Brighton to score,UNDER,1.5,2.0,False,75.0,20
+2122,2021-10-30,Liverpool,Brighton,away_sot,Brighton shots on target,UNDER,4.5,6.0,False,85.0,20
+2122,2021-10-30,Leicester,Arsenal,match_cards,Total match cards,UNDER,3.5,2.0,True,80.0,20
+2122,2021-10-30,Newcastle,Chelsea,home_goals,Newcastle to score,UNDER,1.5,0.0,True,75.0,20
+2122,2021-10-30,Tottenham,Man United,home_corners,Tottenham corners,UNDER,5.5,10.0,False,75.0,20
+2122,2021-10-31,Norwich,Leeds,home_goals,Norwich to score,UNDER,1.5,1.0,True,80.0,19
+2122,2021-11-05,Southampton,Aston Villa,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,20
+2122,2021-11-06,Chelsea,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,85.0,20
+2122,2021-11-06,Brentford,Norwich,away_goals,Norwich to score,UNDER,1.5,2.0,False,85.0,20
+2122,2021-11-06,Brentford,Norwich,away_corners,Norwich corners,UNDER,5.5,2.0,True,75.0,20
+2122,2021-11-06,Brighton,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,1.0,True,75.0,20
+2122,2021-11-20,Aston Villa,Brighton,home_sot,Aston Villa shots on target,UNDER,4.5,5.0,False,77.2,22
+2122,2021-11-20,Watford,Man United,home_corners,Watford corners,UNDER,5.5,9.0,False,77.2,22
+2122,2021-11-20,Leicester,Chelsea,home_goals,Leicester to score,UNDER,1.5,0.0,True,77.2,22
+2122,2021-11-20,Norwich,Southampton,home_goals,Norwich to score,UNDER,1.5,2.0,False,77.2,22
+2122,2021-11-21,Man City,Everton,away_corners,Everton corners,UNDER,5.5,1.0,True,81.8,22
+2122,2021-11-27,Crystal Palace,Aston Villa,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,24
+2122,2021-11-27,Liverpool,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,75.0,24
+2122,2021-11-27,Liverpool,Southampton,away_sot,Southampton shots on target,UNDER,4.5,3.0,True,79.2,24
+2122,2021-11-27,Norwich,Wolves,home_goals,Norwich to score,UNDER,1.5,0.0,True,79.2,24
+2122,2021-11-27,Norwich,Wolves,home_corners,Norwich corners,UNDER,5.5,4.0,True,75.0,24
+2122,2021-11-27,Brighton,Leeds,away_goals,Leeds to score,UNDER,1.5,0.0,True,75.0,24
+2122,2021-11-28,Man City,West Ham,away_sot,West Ham shots on target,UNDER,4.5,3.0,True,75.0,24
+2122,2021-11-28,Chelsea,Man United,away_goals,Man United to score,UNDER,1.5,1.0,True,79.2,24
+2122,2021-11-30,Newcastle,Norwich,away_corners,Norwich corners,UNDER,5.5,5.0,True,80.8,26
+2122,2021-12-01,Everton,Liverpool,home_corners,Everton corners,UNDER,5.5,3.0,True,80.8,26
+2122,2021-12-01,Watford,Chelsea,home_goals,Watford to score,UNDER,1.5,1.0,True,80.8,26
+2122,2021-12-01,Aston Villa,Man City,home_corners,Aston Villa corners,UNDER,5.5,4.0,True,80.8,26
+2122,2021-12-01,Aston Villa,Man City,home_sot,Aston Villa shots on target,UNDER,4.5,3.0,True,80.8,26
+2122,2021-12-04,West Ham,Chelsea,home_goals,West Ham to score,UNDER,1.5,3.0,False,78.5,28
+2122,2021-12-04,Southampton,Brighton,home_goals,Southampton to score,UNDER,1.5,1.0,True,75.0,28
+2122,2021-12-04,Watford,Man City,home_goals,Watford to score,UNDER,1.5,1.0,True,75.0,28
+2122,2021-12-04,Watford,Man City,home_corners,Watford corners,UNDER,5.5,5.0,True,78.6,28
+2122,2021-12-04,Watford,Man City,away_corners,Man City corners,OVER,5.5,11.0,True,75.0,28
+2122,2021-12-04,Watford,Man City,home_sot,Watford shots on target,UNDER,4.5,4.0,True,75.0,28
+2122,2021-12-04,Wolves,Liverpool,home_corners,Wolves corners,UNDER,5.5,2.0,True,78.6,28
+2122,2021-12-04,Wolves,Liverpool,home_sot,Wolves shots on target,UNDER,4.5,1.0,True,82.2,28
+2122,2021-12-05,Leeds,Brentford,away_corners,Brentford corners,UNDER,5.5,1.0,True,75.0,28
+2122,2021-12-11,Norwich,Man United,home_goals,Norwich to score,UNDER,1.5,0.0,True,76.7,30
+2122,2021-12-11,Liverpool,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,3.0,True,80.0,30
+2122,2021-12-11,Liverpool,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,0.0,True,83.3,30
+2122,2021-12-11,Chelsea,Leeds,away_goals,Leeds to score,UNDER,1.5,2.0,False,86.7,30
+2122,2021-12-11,Man City,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,80.0,30
+2122,2021-12-11,Man City,Wolves,away_corners,Wolves corners,UNDER,5.5,1.0,True,83.3,30
+2122,2021-12-11,Man City,Wolves,away_sot,Wolves shots on target,UNDER,4.5,1.0,True,83.3,30
+2122,2021-12-14,Man City,Leeds,away_goals,Leeds to score,UNDER,1.5,0.0,True,81.2,32
+2122,2021-12-14,Man City,Leeds,away_corners,Leeds corners,UNDER,5.5,2.0,True,78.2,32
+2122,2021-12-14,Man City,Leeds,away_sot,Leeds shots on target,UNDER,4.5,3.0,True,75.0,32
+2122,2021-12-15,Brighton,Wolves,home_goals,Brighton to score,UNDER,1.5,0.0,True,77.2,31
+2122,2021-12-16,Chelsea,Everton,away_corners,Everton corners,UNDER,5.5,1.0,True,75.0,32
+2122,2021-12-16,Liverpool,Newcastle,away_goals,Newcastle to score,UNDER,1.5,1.0,True,75.0,32
+2122,2021-12-16,Liverpool,Newcastle,away_corners,Newcastle corners,UNDER,5.5,0.0,True,75.0,32
+2122,2021-12-16,Liverpool,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,2.0,True,81.3,32
+2122,2021-12-19,Newcastle,Man City,home_goals,Newcastle to score,UNDER,1.5,0.0,True,82.3,34
+2122,2021-12-19,Newcastle,Man City,home_corners,Newcastle corners,UNDER,5.5,3.0,True,79.4,34
+2122,2021-12-19,Newcastle,Man City,home_sot,Newcastle shots on target,UNDER,4.5,1.0,True,82.3,34
+2122,2021-12-19,Wolves,Chelsea,home_goals,Wolves to score,UNDER,1.5,0.0,True,82.3,34
+2122,2021-12-19,Tottenham,Liverpool,home_corners,Tottenham corners,UNDER,5.5,6.0,False,76.2,31
+2122,2021-12-19,Tottenham,Liverpool,home_sot,Tottenham shots on target,UNDER,4.5,5.0,False,79.2,31
+2122,2021-12-26,Man City,Leicester,away_corners,Leicester corners,UNDER,5.5,4.0,True,78.5,34
+2122,2021-12-28,Leicester,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,4.0,False,76.8,35
+2122,2021-12-29,Chelsea,Brighton,away_goals,Brighton to score,UNDER,1.5,1.0,True,80.0,36
+2122,2021-12-29,Brentford,Man City,home_corners,Brentford corners,UNDER,5.5,3.0,True,82.7,36
+2122,2022-01-01,Arsenal,Man City,home_corners,Arsenal corners,UNDER,5.5,5.0,True,79.1,39
+2122,2022-01-03,Man United,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,36
+2122,2022-01-15,Wolves,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,77.1,39
+2122,2022-01-16,Liverpool,Brentford,away_corners,Brentford corners,UNDER,5.5,0.0,True,77.5,40
+2122,2022-01-16,Liverpool,Brentford,home_sot,Liverpool shots on target,OVER,4.5,13.0,True,75.0,40
+2122,2022-01-16,Liverpool,Brentford,away_sot,Brentford shots on target,UNDER,4.5,1.0,True,75.0,40
+2122,2022-01-18,Brighton,Chelsea,home_goals,Brighton to score,UNDER,1.5,1.0,True,78.2,42
+2122,2022-01-22,Southampton,Man City,home_goals,Southampton to score,UNDER,1.5,1.0,True,78.9,43
+2122,2022-01-23,Crystal Palace,Liverpool,home_sot,Crystal Palace shots on target,UNDER,4.5,5.0,False,76.2,42
+2122,2022-02-08,Burnley,Man United,home_goals,Burnley to score,UNDER,1.5,1.0,True,75.8,41
+2122,2022-02-09,Man City,Brentford,away_goals,Brentford to score,UNDER,1.5,0.0,True,76.1,46
+2122,2022-02-09,Man City,Brentford,away_corners,Brentford corners,UNDER,5.5,3.0,True,82.7,46
+2122,2022-02-09,Man City,Brentford,away_sot,Brentford shots on target,UNDER,4.5,2.0,True,78.2,46
+2122,2022-02-10,Liverpool,Leicester,away_corners,Leicester corners,UNDER,5.5,6.0,False,75.9,42
+2122,2022-02-10,Liverpool,Leicester,home_sot,Liverpool shots on target,OVER,4.5,11.0,True,75.7,42
+2122,2022-02-12,Norwich,Man City,home_goals,Norwich to score,UNDER,1.5,0.0,True,85.0,47
+2122,2022-02-12,Norwich,Man City,home_corners,Norwich corners,UNDER,5.5,4.0,True,84.8,47
+2122,2022-02-12,Norwich,Man City,away_corners,Man City corners,OVER,5.5,12.0,True,78.5,47
+2122,2022-02-12,Norwich,Man City,home_sot,Norwich shots on target,UNDER,4.5,3.0,True,87.2,47
+2122,2022-02-12,Watford,Brighton,home_goals,Watford to score,UNDER,1.5,0.0,True,77.3,44
+2122,2022-02-13,Burnley,Liverpool,home_goals,Burnley to score,UNDER,1.5,0.0,True,77.0,43
+2122,2022-02-13,Burnley,Liverpool,home_corners,Burnley corners,UNDER,5.5,5.0,True,76.7,43
+2122,2022-02-13,Burnley,Liverpool,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,81.3,43
+2122,2022-02-19,Brighton,Burnley,away_goals,Burnley to score,UNDER,1.5,3.0,False,78.0,45
+2122,2022-02-19,Liverpool,Norwich,away_goals,Norwich to score,UNDER,1.5,1.0,True,79.2,48
+2122,2022-02-19,Liverpool,Norwich,away_corners,Norwich corners,UNDER,5.5,4.0,True,77.1,48
+2122,2022-02-19,Liverpool,Norwich,home_sot,Liverpool shots on target,OVER,4.5,8.0,True,75.0,48
+2122,2022-02-19,Liverpool,Norwich,away_sot,Norwich shots on target,UNDER,4.5,1.0,True,81.2,48
+2122,2022-02-19,Man City,Tottenham,away_corners,Tottenham corners,UNDER,5.5,0.0,True,75.2,47
+2122,2022-02-26,Man United,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,76.5,51
+2122,2022-02-26,Everton,Man City,home_corners,Everton corners,UNDER,5.5,3.0,True,85.1,49
+2122,2022-03-05,Burnley,Chelsea,home_goals,Burnley to score,UNDER,1.5,0.0,True,84.0,50
+2122,2022-03-10,Norwich,Chelsea,home_goals,Norwich to score,UNDER,1.5,1.0,True,86.8,53
+2122,2022-03-10,Wolves,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,79.7,54
+2122,2022-03-12,Brighton,Liverpool,home_goals,Brighton to score,UNDER,1.5,0.0,True,75.9,54
+2122,2022-03-13,Chelsea,Newcastle,away_goals,Newcastle to score,UNDER,1.5,0.0,True,79.7,54
+2122,2022-03-14,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,2.0,True,78.6,56
+2122,2022-03-14,Crystal Palace,Man City,home_sot,Crystal Palace shots on target,UNDER,4.5,1.0,True,75.0,56
+2122,2022-03-18,Wolves,Leeds,away_goals,Leeds to score,UNDER,1.5,3.0,False,75.9,58
+2122,2022-04-02,Burnley,Man City,home_goals,Burnley to score,UNDER,1.5,0.0,True,83.8,56
+2122,2022-04-02,Burnley,Man City,home_corners,Burnley corners,UNDER,5.5,1.0,True,85.3,56
+2122,2022-04-02,Burnley,Man City,home_sot,Burnley shots on target,UNDER,4.5,1.0,True,85.6,56
+2122,2022-04-02,Liverpool,Watford,away_goals,Watford to score,UNDER,1.5,0.0,True,77.6,58
+2122,2022-04-02,Chelsea,Brentford,away_goals,Brentford to score,UNDER,1.5,4.0,False,78.0,58
+2122,2022-04-08,Newcastle,Wolves,home_goals,Newcastle to score,UNDER,1.5,1.0,True,76.9,61
+2122,2022-04-09,Southampton,Chelsea,home_goals,Southampton to score,UNDER,1.5,0.0,True,78.1,59
+2122,2022-04-16,Man United,Norwich,away_goals,Norwich to score,UNDER,1.5,2.0,False,77.5,62
+2122,2022-04-20,Man City,Brighton,away_goals,Brighton to score,UNDER,1.5,0.0,True,79.5,63
+2122,2022-04-20,Man City,Brighton,away_sot,Brighton shots on target,UNDER,4.5,1.0,True,77.9,63
+2122,2022-04-23,Man City,Watford,away_goals,Watford to score,UNDER,1.5,1.0,True,81.2,64
+2122,2022-04-23,Man City,Watford,away_corners,Watford corners,UNDER,5.5,4.0,True,82.8,64
+2122,2022-04-23,Man City,Watford,away_sot,Watford shots on target,UNDER,4.5,2.0,True,78.1,64
+2122,2022-04-24,Liverpool,Everton,away_corners,Everton corners,UNDER,5.5,1.0,True,77.8,63
+2122,2022-04-24,Burnley,Wolves,home_goals,Burnley to score,UNDER,1.5,1.0,True,79.7,64
+2122,2022-04-30,Wolves,Brighton,away_goals,Brighton to score,UNDER,1.5,3.0,False,77.7,67
+2122,2022-04-30,Leeds,Man City,home_goals,Leeds to score,UNDER,1.5,0.0,True,75.8,66
+2122,2022-04-30,Leeds,Man City,home_corners,Leeds corners,UNDER,5.5,3.0,True,80.3,66
+2122,2022-05-01,Everton,Chelsea,home_goals,Everton to score,UNDER,1.5,1.0,True,76.8,65
+2122,2022-05-01,Everton,Chelsea,home_corners,Everton corners,UNDER,5.5,3.0,True,75.4,65
+2122,2022-05-07,Chelsea,Wolves,away_goals,Wolves to score,UNDER,1.5,2.0,False,76.4,68
+2122,2022-05-08,Man City,Newcastle,away_goals,Newcastle to score,UNDER,1.5,0.0,True,78.3,69
+2122,2022-05-08,Man City,Newcastle,away_corners,Newcastle corners,UNDER,5.5,2.0,True,82.8,69
+2122,2022-05-08,Man City,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,3.0,True,79.9,69
+2122,2022-05-11,Leeds,Chelsea,home_goals,Leeds to score,UNDER,1.5,0.0,True,75.8,70
+2122,2022-05-11,Wolves,Man City,home_goals,Wolves to score,UNDER,1.5,1.0,True,75.7,70
+2122,2022-05-11,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,6.0,False,84.2,70
+2122,2022-05-11,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,3.0,True,78.6,70
+2122,2022-05-15,West Ham,Man City,home_corners,West Ham corners,UNDER,5.5,4.0,True,80.6,72
+2122,2022-05-15,Wolves,Norwich,away_goals,Norwich to score,UNDER,1.5,1.0,True,79.2,72
+2122,2022-05-17,Southampton,Liverpool,home_goals,Southampton to score,UNDER,1.5,1.0,True,76.4,72
+2122,2022-05-22,Chelsea,Watford,away_goals,Watford to score,UNDER,1.5,1.0,True,82.4,74
+2122,2022-05-22,Man City,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,1.0,True,77.0,74
+2122,2022-05-22,Man City,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,2.0,True,75.7,74
+2122,2022-05-22,Norwich,Tottenham,home_goals,Norwich to score,UNDER,1.5,0.0,True,75.7,74
+2122,2022-05-22,Norwich,Tottenham,home_sot,Norwich shots on target,UNDER,4.5,0.0,True,75.7,74
+2122,2022-05-22,Liverpool,Wolves,away_corners,Wolves corners,UNDER,5.5,3.0,True,75.7,74
+2223,2022-08-06,Fulham,Liverpool,home_goals,Fulham to score,UNDER,1.5,2.0,False,80.0,20
+2223,2022-08-06,Bournemouth,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,2.0,True,75.0,20
+2223,2022-08-06,Leeds,Wolves,home_corners,Leeds corners,UNDER,5.5,6.0,False,75.0,20
+2223,2022-08-06,Newcastle,Nott'm Forest,home_goals,Newcastle to score,UNDER,1.5,2.0,False,80.0,20
+2223,2022-08-06,Tottenham,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,95.0,20
+2223,2022-08-06,Tottenham,Southampton,home_sot,Tottenham shots on target,OVER,4.5,8.0,True,75.0,20
+2223,2022-08-06,Tottenham,Southampton,away_sot,Southampton shots on target,UNDER,4.5,2.0,True,75.0,20
+2223,2022-08-06,Everton,Chelsea,home_corners,Everton corners,UNDER,5.5,4.0,True,85.0,20
+2223,2022-08-06,Everton,Chelsea,home_sot,Everton shots on target,UNDER,4.5,4.0,True,80.0,20
+2223,2022-08-07,West Ham,Man City,home_corners,West Ham corners,UNDER,5.5,1.0,True,80.0,20
+2223,2022-08-07,West Ham,Man City,home_sot,West Ham shots on target,UNDER,4.5,1.0,True,85.0,20
+2223,2022-08-07,West Ham,Man City,away_sot,Man City shots on target,OVER,4.5,2.0,False,75.0,20
+2223,2022-08-13,Aston Villa,Everton,away_corners,Everton corners,UNDER,5.5,8.0,False,80.0,20
+2223,2022-08-13,Southampton,Leeds,home_goals,Southampton to score,UNDER,1.5,2.0,False,75.0,20
+2223,2022-08-13,Man City,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,1.0,True,85.0,20
+2223,2022-08-13,Man City,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,1.0,True,90.0,20
+2223,2022-08-13,Wolves,Fulham,home_corners,Wolves corners,UNDER,5.5,5.0,True,75.0,20
+2223,2022-08-14,Nott'm Forest,West Ham,away_goals,West Ham to score,UNDER,1.5,0.0,True,80.0,20
+2223,2022-08-14,Chelsea,Tottenham,home_goals,Chelsea to score,UNDER,1.5,2.0,False,75.0,20
+2223,2022-08-14,Chelsea,Tottenham,away_corners,Tottenham corners,UNDER,5.5,5.0,True,80.0,20
+2223,2022-08-15,Liverpool,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,1.0,True,75.0,20
+2223,2022-08-15,Liverpool,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,2.0,True,85.0,20
+2223,2022-08-20,Tottenham,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,85.0,20
+2223,2022-08-20,Tottenham,Wolves,away_sot,Wolves shots on target,UNDER,4.5,3.0,True,75.0,20
+2223,2022-08-20,Everton,Nott'm Forest,home_goals,Everton to score,UNDER,1.5,1.0,True,80.0,20
+2223,2022-08-20,Crystal Palace,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,2.0,True,75.0,20
+2223,2022-08-20,Crystal Palace,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,5.0,False,75.0,20
+2223,2022-08-20,Leicester,Southampton,home_sot,Leicester shots on target,OVER,4.5,1.0,False,75.0,20
+2223,2022-08-20,Bournemouth,Arsenal,home_sot,Bournemouth shots on target,UNDER,4.5,1.0,True,80.0,20
+2223,2022-08-21,Leeds,Chelsea,home_corners,Leeds corners,UNDER,5.5,4.0,True,85.0,20
+2223,2022-08-21,Leeds,Chelsea,home_sot,Leeds shots on target,UNDER,4.5,6.0,False,75.0,20
+2223,2022-08-21,West Ham,Brighton,home_goals,West Ham to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-08-21,Newcastle,Man City,home_corners,Newcastle corners,UNDER,5.5,5.0,True,85.0,20
+2223,2022-08-21,Newcastle,Man City,home_sot,Newcastle shots on target,UNDER,4.5,6.0,False,80.0,20
+2223,2022-08-22,Man United,Liverpool,home_goals,Man United to score,UNDER,1.5,2.0,False,80.0,20
+2223,2022-08-27,Chelsea,Leicester,away_corners,Leicester corners,UNDER,5.5,11.0,False,85.0,20
+2223,2022-08-27,Man City,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,1.0,True,80.0,20
+2223,2022-08-27,Liverpool,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,1.0,True,85.0,20
+2223,2022-08-27,Liverpool,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,2.0,True,85.0,20
+2223,2022-08-28,Wolves,Newcastle,home_goals,Wolves to score,UNDER,1.5,1.0,True,85.0,20
+2223,2022-08-28,Wolves,Newcastle,away_corners,Newcastle corners,UNDER,5.5,13.0,False,75.0,20
+2223,2022-08-28,Nott'm Forest,Tottenham,home_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,85.0,20
+2223,2022-08-30,Southampton,Chelsea,home_corners,Southampton corners,UNDER,5.5,5.0,True,75.0,20
+2223,2022-08-30,Southampton,Chelsea,home_sot,Southampton shots on target,UNDER,4.5,7.0,False,75.0,20
+2223,2022-08-30,Southampton,Chelsea,away_sot,Chelsea shots on target,OVER,4.5,4.0,False,75.0,20
+2223,2022-08-30,Fulham,Brighton,away_corners,Brighton corners,UNDER,5.5,3.0,True,80.0,20
+2223,2022-08-31,Liverpool,Newcastle,away_corners,Newcastle corners,UNDER,5.5,0.0,True,80.0,20
+2223,2022-08-31,West Ham,Tottenham,home_goals,West Ham to score,UNDER,1.5,1.0,True,85.0,20
+2223,2022-08-31,West Ham,Tottenham,home_sot,West Ham shots on target,UNDER,4.5,4.0,True,85.0,20
+2223,2022-08-31,Man City,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,1.0,True,75.0,20
+2223,2022-08-31,Man City,Nott'm Forest,home_sot,Man City shots on target,OVER,4.5,9.0,True,75.0,20
+2223,2022-08-31,Bournemouth,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-08-31,Bournemouth,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,75.0,20
+2223,2022-08-31,Arsenal,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,3.0,True,85.0,20
+2223,2022-09-03,Tottenham,Fulham,home_corners,Tottenham corners,UNDER,5.5,10.0,False,75.0,20
+2223,2022-09-03,Tottenham,Fulham,away_sot,Fulham shots on target,UNDER,4.5,3.0,True,80.0,20
+2223,2022-09-03,Aston Villa,Man City,away_goals,Man City to score,OVER,1.5,1.0,False,75.0,20
+2223,2022-09-03,Aston Villa,Man City,home_corners,Aston Villa corners,UNDER,5.5,1.0,True,90.0,20
+2223,2022-09-03,Aston Villa,Man City,home_sot,Aston Villa shots on target,UNDER,4.5,1.0,True,80.0,20
+2223,2022-09-03,Aston Villa,Man City,away_sot,Man City shots on target,OVER,4.5,4.0,False,75.0,20
+2223,2022-09-03,Nott'm Forest,Bournemouth,home_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.0,20
+2223,2022-09-03,Chelsea,West Ham,away_corners,West Ham corners,UNDER,5.5,3.0,True,85.0,20
+2223,2022-09-03,Everton,Liverpool,home_goals,Everton to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-09-03,Everton,Liverpool,home_corners,Everton corners,UNDER,5.5,7.0,False,80.0,20
+2223,2022-09-03,Everton,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,8.0,True,75.0,20
+2223,2022-09-03,Everton,Liverpool,btts,Both teams to score,YES,,False,False,80.0,20
+2223,2022-09-04,Man United,Arsenal,home_goals,Man United to score,UNDER,1.5,3.0,False,75.0,20
+2223,2022-09-16,Aston Villa,Southampton,home_corners,Aston Villa corners,UNDER,5.5,6.0,False,80.0,20
+2223,2022-09-16,Aston Villa,Southampton,btts,Both teams to score,YES,,False,False,75.0,20
+2223,2022-09-17,Wolves,Man City,home_goals,Wolves to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-09-17,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,5.0,True,85.0,20
+2223,2022-09-17,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,1.0,True,85.0,20
+2223,2022-09-17,Tottenham,Leicester,away_sot,Leicester shots on target,UNDER,4.5,7.0,False,75.0,20
+2223,2022-10-01,Liverpool,Brighton,away_corners,Brighton corners,UNDER,5.5,2.0,True,75.0,20
+2223,2022-10-01,Crystal Palace,Chelsea,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,90.0,20
+2223,2022-10-01,Bournemouth,Brentford,home_corners,Bournemouth corners,UNDER,5.5,7.0,False,77.8,17
+2223,2022-10-01,West Ham,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-10-01,West Ham,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,75.0,20
+2223,2022-10-02,Man City,Man United,away_corners,Man United corners,UNDER,5.5,1.0,True,75.0,20
+2223,2022-10-02,Leeds,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,9.0,False,80.0,20
+2223,2022-10-08,Bournemouth,Leicester,home_sot,Bournemouth shots on target,UNDER,4.5,4.0,True,80.0,18
+2223,2022-10-08,Chelsea,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,85.0,20
+2223,2022-10-08,Chelsea,Wolves,away_corners,Wolves corners,UNDER,5.5,2.0,True,85.0,20
+2223,2022-10-08,Man City,Southampton,away_corners,Southampton corners,UNDER,5.5,1.0,True,90.0,20
+2223,2022-10-08,Man City,Southampton,away_sot,Southampton shots on target,UNDER,4.5,0.0,True,75.0,20
+2223,2022-10-09,Crystal Palace,Leeds,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,90.0,20
+2223,2022-10-09,Everton,Man United,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2223,2022-10-15,Tottenham,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,80.0,20
+2223,2022-10-15,Tottenham,Everton,away_sot,Everton shots on target,UNDER,4.5,0.0,True,75.0,20
+2223,2022-10-15,Leicester,Crystal Palace,btts,Both teams to score,YES,,False,False,75.0,20
+2223,2022-10-16,Aston Villa,Chelsea,home_goals,Aston Villa to score,UNDER,1.5,0.0,True,75.0,20
+2223,2022-10-16,Aston Villa,Chelsea,home_corners,Aston Villa corners,UNDER,5.5,7.0,False,85.0,20
+2223,2022-10-16,Leeds,Arsenal,home_corners,Leeds corners,UNDER,5.5,6.0,False,80.0,20
+2223,2022-10-16,Liverpool,Man City,match_cards,Total match cards,UNDER,3.5,4.0,False,75.0,20
+2223,2022-10-16,Southampton,West Ham,home_corners,Southampton corners,UNDER,5.5,4.0,True,75.0,20
+2223,2022-10-16,Southampton,West Ham,home_sot,Southampton shots on target,UNDER,4.5,8.0,False,75.0,20
+2223,2022-10-18,Brighton,Nott'm Forest,away_sot,Nott'm Forest shots on target,UNDER,4.5,0.0,True,80.0,20
+2223,2022-10-18,Crystal Palace,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,85.0,20
+2223,2022-10-18,Crystal Palace,Wolves,home_corners,Crystal Palace corners,UNDER,5.5,4.0,True,75.0,20
+2223,2022-10-18,Crystal Palace,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,75.0,20
+2223,2022-10-19,Newcastle,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,85.0,20
+2223,2022-10-20,Leicester,Leeds,home_corners,Leicester corners,UNDER,5.5,2.0,True,75.0,20
+2223,2022-10-20,Fulham,Aston Villa,home_corners,Fulham corners,UNDER,5.5,9.0,False,80.0,20
+2223,2022-10-20,Fulham,Aston Villa,home_sot,Fulham shots on target,UNDER,4.5,8.0,False,80.0,20
+2223,2022-10-22,Everton,Crystal Palace,home_goals,Everton to score,UNDER,1.5,3.0,False,80.5,21
+2223,2022-10-22,Nott'm Forest,Liverpool,home_sot,Nott'm Forest shots on target,UNDER,4.5,7.0,False,75.9,21
+2223,2022-10-22,Man City,Brighton,away_corners,Brighton corners,UNDER,5.5,3.0,True,75.0,20
+2223,2022-10-23,Leeds,Fulham,away_corners,Fulham corners,UNDER,5.5,6.0,False,76.3,21
+2223,2022-10-23,Wolves,Leicester,home_sot,Wolves shots on target,UNDER,4.5,5.0,False,81.8,22
+2223,2022-10-23,Southampton,Arsenal,home_corners,Southampton corners,UNDER,5.5,9.0,False,85.9,21
+2223,2022-10-23,Southampton,Arsenal,home_sot,Southampton shots on target,UNDER,4.5,3.0,True,76.8,21
+2223,2022-10-24,West Ham,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,3.0,True,81.8,22
+2223,2022-10-29,Newcastle,Aston Villa,away_goals,Aston Villa to score,UNDER,1.5,0.0,True,83.3,24
+2223,2022-10-29,Crystal Palace,Southampton,home_corners,Crystal Palace corners,UNDER,5.5,8.0,False,75.0,23
+2223,2022-10-29,Leicester,Man City,home_corners,Leicester corners,UNDER,5.5,3.0,True,87.5,23
+2223,2022-10-29,Brentford,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,24
+2223,2022-10-29,Bournemouth,Tottenham,home_sot,Bournemouth shots on target,UNDER,4.5,4.0,True,79.2,24
+2223,2022-10-29,Brighton,Chelsea,away_sot,Chelsea shots on target,UNDER,4.5,7.0,False,77.2,22
+2223,2022-10-30,Arsenal,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,78.0,23
+2223,2022-10-30,Arsenal,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,4.0,True,78.4,23
+2223,2022-10-30,Arsenal,Nott'm Forest,away_sot,Nott'm Forest shots on target,UNDER,4.5,2.0,True,83.0,23
+2223,2022-11-05,Wolves,Brighton,home_goals,Wolves to score,UNDER,1.5,2.0,False,79.2,25
+2223,2022-11-05,Wolves,Brighton,home_sot,Wolves shots on target,UNDER,4.5,5.0,False,79.8,25
+2223,2022-11-05,Man City,Fulham,away_corners,Fulham corners,UNDER,5.5,0.0,True,80.8,25
+2223,2022-11-06,West Ham,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,5.0,True,80.5,25
+2223,2022-11-06,West Ham,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,6.0,False,76.0,25
+2223,2022-11-06,Chelsea,Arsenal,home_sot,Chelsea shots on target,UNDER,4.5,1.0,True,79.2,24
+2223,2022-11-06,Aston Villa,Man United,home_goals,Aston Villa to score,UNDER,1.5,3.0,False,79.8,25
+2223,2022-11-06,Southampton,Newcastle,home_goals,Southampton to score,UNDER,1.5,1.0,True,80.8,26
+2223,2022-11-06,Southampton,Newcastle,home_corners,Southampton corners,UNDER,5.5,8.0,False,76.9,26
+2223,2022-11-12,Man City,Brentford,away_corners,Brentford corners,UNDER,5.5,2.0,True,75.0,27
+2223,2022-11-12,West Ham,Leicester,away_corners,Leicester corners,UNDER,5.5,2.0,True,75.0,28
+2223,2022-11-12,Wolves,Arsenal,home_goals,Wolves to score,UNDER,1.5,0.0,True,84.9,27
+2223,2022-11-12,Wolves,Arsenal,home_corners,Wolves corners,UNDER,5.5,6.0,False,78.0,27
+2223,2022-11-12,Wolves,Arsenal,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,85.4,27
+2223,2022-12-26,Everton,Wolves,away_goals,Wolves to score,UNDER,1.5,2.0,False,80.0,30
+2223,2022-12-26,Arsenal,West Ham,away_goals,West Ham to score,UNDER,1.5,1.0,True,79.3,29
+2223,2022-12-26,Arsenal,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,79.8,29
+2223,2022-12-26,Leicester,Newcastle,home_corners,Leicester corners,UNDER,5.5,5.0,True,76.7,30
+2223,2022-12-26,Crystal Palace,Fulham,home_corners,Crystal Palace corners,UNDER,5.5,1.0,True,76.5,29
+2223,2022-12-27,Man United,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,75.7,29
+2223,2022-12-28,Leeds,Man City,home_corners,Leeds corners,UNDER,5.5,3.0,True,78.5,28
+2223,2022-12-30,Liverpool,Leicester,away_corners,Leicester corners,UNDER,5.5,5.0,True,80.6,31
+2223,2022-12-31,Man City,Everton,away_goals,Everton to score,UNDER,1.5,1.0,True,80.4,31
+2223,2022-12-31,Man City,Everton,away_corners,Everton corners,UNDER,5.5,1.0,True,84.4,31
+2223,2022-12-31,Wolves,Man United,home_goals,Wolves to score,UNDER,1.5,0.0,True,80.4,31
+2223,2023-01-01,Nott'm Forest,Chelsea,home_goals,Nott'm Forest to score,UNDER,1.5,1.0,True,77.2,31
+2223,2023-01-02,Brentford,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,6.0,True,75.8,33
+2223,2023-01-04,Aston Villa,Wolves,away_sot,Wolves shots on target,UNDER,4.5,3.0,True,76.5,34
+2223,2023-01-05,Chelsea,Man City,home_corners,Chelsea corners,UNDER,5.5,3.0,True,78.1,32
+2223,2023-01-14,Man United,Man City,home_corners,Man United corners,UNDER,5.5,1.0,True,85.3,34
+2223,2023-01-19,Man City,Tottenham,away_corners,Tottenham corners,UNDER,5.5,3.0,True,79.0,37
+2223,2023-01-21,Leicester,Brighton,home_corners,Leicester corners,UNDER,5.5,5.0,True,78.3,37
+2223,2023-01-21,Crystal Palace,Newcastle,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,79.0,38
+2223,2023-01-21,Crystal Palace,Newcastle,home_corners,Crystal Palace corners,UNDER,5.5,3.0,True,78.9,38
+2223,2023-01-22,Man City,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,79.0,38
+2223,2023-01-22,Man City,Wolves,away_corners,Wolves corners,UNDER,5.5,7.0,False,81.6,38
+2223,2023-01-22,Man City,Wolves,away_sot,Wolves shots on target,UNDER,4.5,1.0,True,81.6,38
+2223,2023-01-22,Arsenal,Man United,away_corners,Man United corners,UNDER,5.5,4.0,True,75.8,37
+2223,2023-02-04,Everton,Arsenal,home_goals,Everton to score,UNDER,1.5,1.0,True,81.8,39
+2223,2023-02-04,Everton,Arsenal,home_sot,Everton shots on target,UNDER,4.5,4.0,True,79.6,39
+2223,2023-02-04,Brighton,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,2.0,True,79.3,39
+2223,2023-02-04,Newcastle,West Ham,away_goals,West Ham to score,UNDER,1.5,1.0,True,82.5,40
+2223,2023-02-04,Newcastle,West Ham,away_corners,West Ham corners,UNDER,5.5,2.0,True,75.0,40
+2223,2023-02-04,Wolves,Liverpool,home_goals,Wolves to score,UNDER,1.5,3.0,False,76.6,39
+2223,2023-02-05,Tottenham,Man City,home_corners,Tottenham corners,UNDER,5.5,4.0,True,76.0,41
+2223,2023-02-11,West Ham,Chelsea,home_goals,West Ham to score,UNDER,1.5,1.0,True,76.2,42
+2223,2023-02-11,Bournemouth,Newcastle,home_goals,Bournemouth to score,UNDER,1.5,1.0,True,78.6,42
+2223,2023-02-11,Bournemouth,Newcastle,home_corners,Bournemouth corners,UNDER,5.5,4.0,True,76.2,42
+2223,2023-02-11,Bournemouth,Newcastle,home_sot,Bournemouth shots on target,UNDER,4.5,5.0,False,78.6,42
+2223,2023-02-11,Crystal Palace,Brighton,home_corners,Crystal Palace corners,UNDER,5.5,1.0,True,80.5,41
+2223,2023-02-12,Man City,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,4.0,True,81.0,42
+2223,2023-02-13,Liverpool,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,75.2,41
+2223,2023-02-15,Arsenal,Man City,home_corners,Arsenal corners,UNDER,5.5,1.0,True,78.7,43
+2223,2023-02-18,Nott'm Forest,Man City,home_goals,Nott'm Forest to score,UNDER,1.5,1.0,True,77.8,45
+2223,2023-02-18,Nott'm Forest,Man City,home_corners,Nott'm Forest corners,UNDER,5.5,0.0,True,86.5,45
+2223,2023-02-18,Nott'm Forest,Man City,home_sot,Nott'm Forest shots on target,UNDER,4.5,1.0,True,75.4,45
+2223,2023-02-18,Brighton,Fulham,away_corners,Fulham corners,UNDER,5.5,2.0,True,75.3,44
+2223,2023-02-18,Chelsea,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,79.5,44
+2223,2023-02-25,Crystal Palace,Liverpool,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,77.8,45
+2223,2023-02-25,Bournemouth,Man City,home_corners,Bournemouth corners,UNDER,5.5,4.0,True,84.8,47
+2223,2023-02-25,Bournemouth,Man City,home_sot,Bournemouth shots on target,UNDER,4.5,2.0,True,82.9,47
+2223,2023-02-25,Leicester,Arsenal,home_corners,Leicester corners,UNDER,5.5,0.0,True,78.3,46
+2223,2023-03-01,Arsenal,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,81.2,48
+2223,2023-03-01,Arsenal,Everton,away_sot,Everton shots on target,UNDER,4.5,5.0,False,75.0,48
+2223,2023-03-04,Arsenal,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,1.0,True,77.5,49
+2223,2023-03-04,Arsenal,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,4.0,True,79.7,49
+2223,2023-03-05,Liverpool,Man United,away_corners,Man United corners,UNDER,5.5,3.0,True,75.0,48
+2223,2023-03-11,Everton,Brentford,home_goals,Everton to score,UNDER,1.5,1.0,True,75.5,50
+2223,2023-03-11,Bournemouth,Liverpool,home_corners,Bournemouth corners,UNDER,5.5,3.0,True,78.0,50
+2223,2023-03-11,Crystal Palace,Man City,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,76.5,51
+2223,2023-03-11,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,2.0,True,88.1,51
+2223,2023-03-11,Crystal Palace,Man City,home_sot,Crystal Palace shots on target,UNDER,4.5,0.0,True,78.3,51
+2223,2023-03-12,Fulham,Arsenal,home_corners,Fulham corners,UNDER,5.5,4.0,True,76.9,52
+2223,2023-03-12,Man United,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,78.0,50
+2223,2023-03-12,Newcastle,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,83.9,50
+2223,2023-03-15,Brighton,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,82.0,50
+2223,2023-03-15,Brighton,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,76.2,50
+2223,2023-03-17,Nott'm Forest,Newcastle,home_goals,Nott'm Forest to score,UNDER,1.5,1.0,True,82.4,51
+2223,2023-03-17,Nott'm Forest,Newcastle,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,76.5,51
+2223,2023-03-18,Chelsea,Everton,away_goals,Everton to score,UNDER,1.5,2.0,False,82.9,53
+2223,2023-03-19,Arsenal,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,81.5,54
+2223,2023-03-19,Arsenal,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,75.9,54
+2223,2023-04-04,Bournemouth,Brighton,home_corners,Bournemouth corners,UNDER,5.5,5.0,True,79.8,54
+2223,2023-04-04,Bournemouth,Brighton,home_sot,Bournemouth shots on target,UNDER,4.5,3.0,True,79.5,54
+2223,2023-04-05,West Ham,Newcastle,home_goals,West Ham to score,UNDER,1.5,1.0,True,81.5,54
+2223,2023-04-08,Tottenham,Brighton,home_corners,Tottenham corners,UNDER,5.5,3.0,True,75.3,56
+2223,2023-04-08,Southampton,Man City,home_goals,Southampton to score,UNDER,1.5,1.0,True,80.7,57
+2223,2023-04-08,Southampton,Man City,home_corners,Southampton corners,UNDER,5.5,0.0,True,86.2,57
+2223,2023-04-08,Wolves,Chelsea,home_goals,Wolves to score,UNDER,1.5,1.0,True,77.6,58
+2223,2023-04-08,Man United,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,78.8,57
+2223,2023-04-15,Man City,Leicester,away_corners,Leicester corners,UNDER,5.5,2.0,True,88.3,59
+2223,2023-04-15,Southampton,Crystal Palace,home_goals,Southampton to score,UNDER,1.5,0.0,True,78.3,60
+2223,2023-04-16,Nott'm Forest,Man United,home_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,77.8,59
+2223,2023-04-21,Arsenal,Southampton,away_goals,Southampton to score,UNDER,1.5,3.0,False,75.8,62
+2223,2023-04-21,Arsenal,Southampton,away_corners,Southampton corners,UNDER,5.5,2.0,True,77.4,62
+2223,2023-04-22,Liverpool,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.3,61
+2223,2023-04-22,Liverpool,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,78.7,61
+2223,2023-04-22,Crystal Palace,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,80.7,62
+2223,2023-04-25,Leeds,Leicester,away_corners,Leicester corners,UNDER,5.5,6.0,False,75.0,64
+2223,2023-04-25,Wolves,Crystal Palace,home_goals,Wolves to score,UNDER,1.5,2.0,False,78.1,64
+2223,2023-04-26,Nott'm Forest,Brighton,home_corners,Nott'm Forest corners,UNDER,5.5,2.0,True,82.2,61
+2223,2023-04-26,Man City,Arsenal,away_corners,Arsenal corners,UNDER,5.5,3.0,True,78.0,62
+2223,2023-04-27,Everton,Newcastle,home_goals,Everton to score,UNDER,1.5,1.0,True,85.7,63
+2223,2023-04-29,Brighton,Wolves,away_corners,Wolves corners,UNDER,5.5,5.0,True,75.2,63
+2223,2023-04-29,Brighton,Wolves,away_sot,Wolves shots on target,UNDER,4.5,2.0,True,77.8,63
+2223,2023-04-30,Fulham,Man City,home_corners,Fulham corners,UNDER,5.5,2.0,True,82.8,63
+2223,2023-04-30,Newcastle,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,83.1,65
+2223,2023-05-03,Liverpool,Fulham,away_corners,Fulham corners,UNDER,5.5,5.0,True,75.8,66
+2223,2023-05-03,Man City,West Ham,away_goals,West Ham to score,UNDER,1.5,0.0,True,77.0,65
+2223,2023-05-03,Man City,West Ham,away_corners,West Ham corners,UNDER,5.5,3.0,True,81.8,65
+2223,2023-05-03,Man City,West Ham,away_sot,West Ham shots on target,UNDER,4.5,2.0,True,78.6,65
+2223,2023-05-06,Man City,Leeds,away_corners,Leeds corners,UNDER,5.5,1.0,True,77.9,67
+2223,2023-05-06,Wolves,Aston Villa,home_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,68
+2223,2023-05-08,Brighton,Everton,away_corners,Everton corners,UNDER,5.5,1.0,True,77.5,66
+2223,2023-05-13,Man United,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,76.8,69
+2223,2023-05-14,Everton,Man City,home_goals,Everton to score,UNDER,1.5,0.0,True,82.7,69
+2223,2023-05-14,Everton,Man City,home_corners,Everton corners,UNDER,5.5,8.0,False,84.2,69
+2223,2023-05-15,Leicester,Liverpool,home_corners,Leicester corners,UNDER,5.5,4.0,True,80.0,70
+2223,2023-05-20,Nott'm Forest,Arsenal,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,80.6,72
+2223,2023-05-21,Man City,Chelsea,away_goals,Chelsea to score,UNDER,1.5,0.0,True,75.8,70
+2223,2023-05-21,Man City,Chelsea,away_sot,Chelsea shots on target,UNDER,4.5,6.0,False,75.8,70
+2223,2023-05-21,Brighton,Southampton,away_corners,Southampton corners,UNDER,5.5,3.0,True,77.6,71
+2223,2023-05-22,Newcastle,Leicester,away_corners,Leicester corners,UNDER,5.5,1.0,True,76.4,72
+2223,2023-05-28,Chelsea,Newcastle,home_goals,Chelsea to score,UNDER,1.5,1.0,True,75.7,74
+2223,2023-05-28,Southampton,Liverpool,home_corners,Southampton corners,UNDER,5.5,2.0,True,78.4,74
+2223,2023-05-28,Brentford,Man City,home_corners,Brentford corners,UNDER,5.5,3.0,True,78.4,74
+2324,2023-08-11,Burnley,Man City,home_goals,Burnley to score,UNDER,1.5,0.0,True,85.0,20
+2324,2023-08-12,Sheffield United,Crystal Palace,home_sot,Sheffield United shots on target,UNDER,4.5,1.0,True,80.0,20
+2324,2023-08-12,Arsenal,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,85.0,20
+2324,2023-08-12,Bournemouth,West Ham,match_cards,Total match cards,UNDER,3.5,5.0,False,85.0,20
+2324,2023-08-12,Brighton,Luton,home_goals,Brighton to score,UNDER,1.5,4.0,False,80.0,20
+2324,2023-08-13,Chelsea,Liverpool,home_corners,Chelsea corners,UNDER,5.5,4.0,True,85.0,20
+2324,2023-08-14,Man United,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,85.0,20
+2324,2023-08-14,Man United,Wolves,away_sot,Wolves shots on target,UNDER,4.5,6.0,False,75.0,20
+2324,2023-08-18,Nott'm Forest,Sheffield United,home_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-08-18,Nott'm Forest,Sheffield United,home_corners,Nott'm Forest corners,UNDER,5.5,6.0,False,80.0,20
+2324,2023-08-18,Nott'm Forest,Sheffield United,home_sot,Nott'm Forest shots on target,UNDER,4.5,4.0,True,75.0,20
+2324,2023-08-19,Liverpool,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,20
+2324,2023-08-19,Liverpool,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,2.0,True,80.0,20
+2324,2023-08-20,Aston Villa,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,85.0,20
+2324,2023-08-25,Chelsea,Luton,home_goals,Chelsea to score,UNDER,1.5,3.0,False,85.0,20
+2324,2023-08-26,Arsenal,Fulham,away_corners,Fulham corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-08-26,Bournemouth,Tottenham,away_sot,Tottenham shots on target,OVER,4.5,6.0,True,75.0,20
+2324,2023-08-26,Brighton,West Ham,away_corners,West Ham corners,UNDER,5.5,4.0,True,80.0,20
+2324,2023-08-26,Man United,Nott'm Forest,home_corners,Man United corners,OVER,5.5,11.0,True,75.0,20
+2324,2023-08-26,Man United,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-08-26,Man United,Nott'm Forest,home_sot,Man United shots on target,OVER,4.5,9.0,True,75.0,20
+2324,2023-08-27,Sheffield United,Man City,home_goals,Sheffield United to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-08-27,Sheffield United,Man City,home_corners,Sheffield United corners,UNDER,5.5,1.0,True,75.0,20
+2324,2023-08-27,Sheffield United,Man City,home_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,80.0,20
+2324,2023-09-01,Luton,West Ham,away_corners,West Ham corners,UNDER,5.5,6.0,False,75.0,20
+2324,2023-09-01,Luton,West Ham,away_sot,West Ham shots on target,UNDER,4.5,3.0,True,75.0,20
+2324,2023-09-02,Brentford,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,2.0,False,90.0,20
+2324,2023-09-02,Sheffield United,Everton,away_goals,Everton to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-09-02,Man City,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-09-02,Man City,Fulham,away_corners,Fulham corners,UNDER,5.5,5.0,True,80.0,20
+2324,2023-09-02,Man City,Fulham,away_sot,Fulham shots on target,UNDER,4.5,4.0,True,85.0,20
+2324,2023-09-02,Brighton,Newcastle,btts,Both teams to score,YES,,True,True,75.0,20
+2324,2023-09-02,Chelsea,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,0.0,True,85.0,20
+2324,2023-09-02,Chelsea,Nott'm Forest,away_sot,Nott'm Forest shots on target,UNDER,4.5,3.0,True,75.0,20
+2324,2023-09-02,Chelsea,Nott'm Forest,btts,Both teams to score,YES,,False,False,80.0,20
+2324,2023-09-03,Crystal Palace,Wolves,away_goals,Wolves to score,UNDER,1.5,2.0,False,80.0,20
+2324,2023-09-03,Crystal Palace,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,80.0,20
+2324,2023-09-03,Liverpool,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-09-16,Wolves,Liverpool,home_goals,Wolves to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-09-16,Wolves,Liverpool,home_corners,Wolves corners,UNDER,5.5,4.0,True,85.0,20
+2324,2023-09-16,Newcastle,Brentford,away_corners,Brentford corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-09-16,West Ham,Man City,home_goals,West Ham to score,UNDER,1.5,1.0,True,75.0,20
+2324,2023-09-16,West Ham,Man City,home_corners,West Ham corners,UNDER,5.5,4.0,True,80.0,20
+2324,2023-09-16,West Ham,Man City,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,80.0,20
+2324,2023-09-16,Fulham,Luton,home_sot,Fulham shots on target,UNDER,4.5,2.0,True,80.0,20
+2324,2023-09-16,Aston Villa,Crystal Palace,home_sot,Aston Villa shots on target,UNDER,4.5,5.0,False,80.0,20
+2324,2023-09-17,Bournemouth,Chelsea,home_corners,Bournemouth corners,UNDER,5.5,1.0,True,75.0,20
+2324,2023-09-18,Nott'm Forest,Burnley,home_corners,Nott'm Forest corners,UNDER,5.5,5.0,True,85.0,20
+2324,2023-09-23,Man City,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,80.0,20
+2324,2023-09-23,Man City,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,6.0,False,85.0,20
+2324,2023-09-23,Man City,Nott'm Forest,away_sot,Nott'm Forest shots on target,UNDER,4.5,3.0,True,90.0,20
+2324,2023-09-23,Brentford,Everton,away_goals,Everton to score,UNDER,1.5,3.0,False,75.0,20
+2324,2023-09-23,Crystal Palace,Fulham,away_sot,Fulham shots on target,UNDER,4.5,5.0,False,90.0,20
+2324,2023-09-23,Luton,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-09-24,Arsenal,Tottenham,away_corners,Tottenham corners,UNDER,5.5,4.0,True,75.0,20
+2324,2023-09-24,Brighton,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,20
+2324,2023-09-24,Brighton,Bournemouth,home_sot,Brighton shots on target,OVER,4.5,4.0,False,85.0,20
+2324,2023-09-24,Chelsea,Aston Villa,home_goals,Chelsea to score,UNDER,1.5,0.0,True,75.0,20
+2324,2023-09-24,Chelsea,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,11.0,False,75.0,20
+2324,2023-09-24,Liverpool,West Ham,away_goals,West Ham to score,UNDER,1.5,1.0,True,75.0,20
+2324,2023-09-24,Liverpool,West Ham,home_corners,Liverpool corners,OVER,5.5,7.0,True,75.0,20
+2324,2023-09-24,Liverpool,West Ham,away_corners,West Ham corners,UNDER,5.5,4.0,True,90.0,20
+2324,2023-09-24,Liverpool,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,75.0,20
+2324,2023-09-24,Sheffield United,Newcastle,home_corners,Sheffield United corners,UNDER,5.5,2.0,True,80.0,20
+2324,2023-09-30,Aston Villa,Brighton,match_cards,Total match cards,OVER,3.5,8.0,True,85.0,20
+2324,2023-09-30,Aston Villa,Brighton,btts,Both teams to score,YES,,True,True,80.0,20
+2324,2023-09-30,Everton,Luton,away_goals,Luton to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-09-30,Bournemouth,Arsenal,home_goals,Bournemouth to score,UNDER,1.5,0.0,True,80.0,20
+2324,2023-09-30,Bournemouth,Arsenal,home_corners,Bournemouth corners,UNDER,5.5,6.0,False,80.0,20
+2324,2023-09-30,Wolves,Man City,home_goals,Wolves to score,UNDER,1.5,2.0,False,95.0,20
+2324,2023-09-30,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,0.0,True,75.0,20
+2324,2023-09-30,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,1.0,True,75.0,20
+2324,2023-09-30,Tottenham,Liverpool,home_corners,Tottenham corners,UNDER,5.5,12.0,False,80.0,20
+2324,2023-10-02,Fulham,Chelsea,home_corners,Fulham corners,UNDER,5.5,8.0,False,80.0,20
+2324,2023-10-02,Fulham,Chelsea,home_sot,Fulham shots on target,UNDER,4.5,3.0,True,75.0,20
+2324,2023-10-03,Luton,Burnley,away_sot,Burnley shots on target,UNDER,4.5,4.0,True,75.0,12
+2324,2023-10-07,Crystal Palace,Nott'm Forest,away_sot,Nott'm Forest shots on target,UNDER,4.5,5.0,False,90.0,20
+2324,2023-10-07,Fulham,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,4.0,True,82.8,17
+2324,2023-10-07,Everton,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,0.0,True,75.0,20
+2324,2023-10-07,Burnley,Chelsea,home_goals,Burnley to score,UNDER,1.5,1.0,True,75.7,17
+2324,2023-10-07,Burnley,Chelsea,home_sot,Burnley shots on target,UNDER,4.5,3.0,True,85.0,17
+2324,2023-10-07,Luton,Tottenham,home_sot,Luton shots on target,UNDER,4.5,2.0,True,80.0,17
+2324,2023-10-07,Luton,Tottenham,btts,Both teams to score,YES,,False,False,75.7,17
+2324,2023-10-08,Arsenal,Man City,away_corners,Man City corners,UNDER,5.5,4.0,True,75.0,20
+2324,2023-10-08,Wolves,Aston Villa,home_goals,Wolves to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-10-08,Wolves,Aston Villa,home_sot,Wolves shots on target,UNDER,4.5,3.0,True,75.0,20
+2324,2023-10-08,Wolves,Aston Villa,match_cards,Total match cards,OVER,3.5,5.0,True,80.0,20
+2324,2023-10-08,West Ham,Newcastle,home_corners,West Ham corners,UNDER,5.5,4.0,True,75.0,20
+2324,2023-10-08,Brighton,Liverpool,home_corners,Brighton corners,UNDER,5.5,8.0,False,85.0,20
+2324,2023-10-08,Brighton,Liverpool,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2324,2023-10-08,Brighton,Liverpool,btts,Both teams to score,YES,,True,True,90.0,20
+2324,2023-10-21,Man City,Brighton,away_corners,Brighton corners,UNDER,5.5,2.0,True,75.0,20
+2324,2023-10-21,Man City,Brighton,match_cards,Total match cards,OVER,3.5,5.0,True,75.0,20
+2324,2023-10-21,Man City,Brighton,btts,Both teams to score,YES,,True,True,75.0,20
+2324,2023-10-21,Brentford,Burnley,home_corners,Brentford corners,UNDER,5.5,5.0,True,77.5,18
+2324,2023-10-21,Bournemouth,Wolves,home_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,20
+2324,2023-10-21,Newcastle,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,75.0,20
+2324,2023-10-21,Newcastle,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,8.0,False,85.0,20
+2324,2023-10-21,Nott'm Forest,Luton,away_goals,Luton to score,UNDER,1.5,2.0,False,78.8,18
+2324,2023-10-21,Nott'm Forest,Luton,home_sot,Nott'm Forest shots on target,UNDER,4.5,8.0,False,76.2,18
+2324,2023-10-21,Nott'm Forest,Luton,away_sot,Luton shots on target,UNDER,4.5,4.0,True,85.0,18
+2324,2023-10-21,Chelsea,Arsenal,home_goals,Chelsea to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-10-21,Chelsea,Arsenal,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,20
+2324,2023-10-21,Sheffield United,Man United,home_corners,Sheffield United corners,UNDER,5.5,5.0,True,78.8,18
+2324,2023-10-22,Aston Villa,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,75.0,20
+2324,2023-10-22,Aston Villa,West Ham,btts,Both teams to score,YES,,True,True,80.0,20
+2324,2023-10-23,Tottenham,Fulham,home_sot,Tottenham shots on target,OVER,4.5,5.0,True,75.0,20
+2324,2023-10-27,Crystal Palace,Tottenham,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-10-28,Chelsea,Brentford,match_cards,Total match cards,OVER,3.5,5.0,True,85.0,20
+2324,2023-10-28,Arsenal,Sheffield United,home_goals,Arsenal to score,OVER,1.5,5.0,True,79.5,19
+2324,2023-10-28,Arsenal,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,79.5,19
+2324,2023-10-28,Arsenal,Sheffield United,home_corners,Arsenal corners,OVER,5.5,6.0,True,83.9,19
+2324,2023-10-28,Arsenal,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,1.0,True,89.5,19
+2324,2023-10-28,Wolves,Newcastle,home_corners,Wolves corners,UNDER,5.5,8.0,False,75.0,20
+2324,2023-10-28,Wolves,Newcastle,match_cards,Total match cards,OVER,3.5,5.0,True,80.0,20
+2324,2023-10-29,West Ham,Everton,home_sot,West Ham shots on target,UNDER,4.5,2.0,True,75.0,20
+2324,2023-10-29,Aston Villa,Luton,away_goals,Luton to score,UNDER,1.5,1.0,True,78.9,19
+2324,2023-10-29,Aston Villa,Luton,away_sot,Luton shots on target,UNDER,4.5,1.0,True,95.0,19
+2324,2023-10-29,Man United,Man City,home_goals,Man United to score,UNDER,1.5,0.0,True,75.0,20
+2324,2023-10-29,Man United,Man City,home_sot,Man United shots on target,UNDER,4.5,3.0,True,75.0,20
+2324,2023-10-29,Man United,Man City,match_cards,Total match cards,OVER,3.5,5.0,True,80.0,20
+2324,2023-10-29,Liverpool,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-10-29,Liverpool,Nott'm Forest,btts,Both teams to score,YES,,False,False,75.0,20
+2324,2023-10-29,Brighton,Fulham,home_corners,Brighton corners,UNDER,5.5,7.0,False,75.0,20
+2324,2023-10-29,Brighton,Fulham,away_corners,Fulham corners,UNDER,5.5,3.0,True,75.0,20
+2324,2023-10-29,Brighton,Fulham,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2324,2023-11-04,Fulham,Man United,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,20
+2324,2023-11-04,Burnley,Crystal Palace,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,80.0,20
+2324,2023-11-04,Man City,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,1.0,True,85.0,20
+2324,2023-11-04,Man City,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,1.0,True,80.0,20
+2324,2023-11-04,Man City,Bournemouth,match_cards,Total match cards,OVER,3.5,1.0,False,75.0,20
+2324,2023-11-04,Sheffield United,Wolves,home_goals,Sheffield United to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-11-04,Newcastle,Arsenal,match_cards,Total match cards,OVER,3.5,6.0,True,80.0,20
+2324,2023-11-05,Luton,Liverpool,home_goals,Luton to score,UNDER,1.5,1.0,True,80.0,20
+2324,2023-11-05,Luton,Liverpool,home_sot,Luton shots on target,UNDER,4.5,5.0,False,85.0,20
+2324,2023-11-05,Nott'm Forest,Aston Villa,home_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.0,20
+2324,2023-11-05,Nott'm Forest,Aston Villa,home_sot,Nott'm Forest shots on target,UNDER,4.5,3.0,True,85.0,20
+2324,2023-11-05,Nott'm Forest,Aston Villa,match_cards,Total match cards,OVER,3.5,2.0,False,75.0,20
+2324,2023-11-06,Tottenham,Chelsea,match_cards,Total match cards,OVER,3.5,8.0,True,90.0,20
+2324,2023-11-11,Bournemouth,Newcastle,match_cards,Total match cards,OVER,3.5,3.0,False,77.2,22
+2324,2023-11-11,Arsenal,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,77.2,22
+2324,2023-11-11,Arsenal,Burnley,away_sot,Burnley shots on target,UNDER,4.5,5.0,False,86.3,22
+2324,2023-11-11,Wolves,Tottenham,match_cards,Total match cards,OVER,3.5,7.0,True,86.3,22
+2324,2023-11-12,Chelsea,Man City,home_sot,Chelsea shots on target,UNDER,4.5,9.0,False,77.2,22
+2324,2023-11-12,Chelsea,Man City,match_cards,Total match cards,OVER,3.5,8.0,True,86.3,22
+2324,2023-11-12,Aston Villa,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,77.2,22
+2324,2023-11-12,Aston Villa,Fulham,away_sot,Fulham shots on target,UNDER,4.5,5.0,False,81.8,22
+2324,2023-11-12,Brighton,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,3.0,True,86.3,22
+2324,2023-11-12,Brighton,Sheffield United,btts,Both teams to score,YES,,True,True,81.8,22
+2324,2023-11-12,Liverpool,Brentford,away_corners,Brentford corners,UNDER,5.5,8.0,False,81.8,22
+2324,2023-11-25,Brentford,Arsenal,home_corners,Brentford corners,UNDER,5.5,1.0,True,83.3,24
+2324,2023-11-25,Nott'm Forest,Brighton,home_corners,Nott'm Forest corners,UNDER,5.5,6.0,False,79.2,24
+2324,2023-11-25,Nott'm Forest,Brighton,match_cards,Total match cards,OVER,3.5,7.0,True,79.2,24
+2324,2023-11-25,Nott'm Forest,Brighton,btts,Both teams to score,YES,,True,True,79.2,24
+2324,2023-11-25,Luton,Crystal Palace,home_sot,Luton shots on target,UNDER,4.5,3.0,True,75.0,24
+2324,2023-11-25,Newcastle,Chelsea,match_cards,Total match cards,OVER,3.5,9.0,True,91.7,24
+2324,2023-11-26,Tottenham,Aston Villa,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,24
+2324,2023-11-27,Fulham,Wolves,match_cards,Total match cards,OVER,3.5,4.0,True,79.2,24
+2324,2023-12-02,Arsenal,Wolves,away_corners,Wolves corners,UNDER,5.5,0.0,True,80.8,26
+2324,2023-12-02,Arsenal,Wolves,match_cards,Total match cards,OVER,3.5,3.0,False,76.9,26
+2324,2023-12-02,Newcastle,Man United,match_cards,Total match cards,OVER,3.5,3.0,False,80.8,26
+2324,2023-12-02,Burnley,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,1.0,True,84.6,26
+2324,2023-12-03,Chelsea,Brighton,match_cards,Total match cards,OVER,3.5,9.0,True,92.3,26
+2324,2023-12-03,Chelsea,Brighton,btts,Both teams to score,YES,,True,True,76.9,26
+2324,2023-12-03,Liverpool,Fulham,away_goals,Fulham to score,UNDER,1.5,3.0,False,80.8,26
+2324,2023-12-03,Man City,Tottenham,match_cards,Total match cards,OVER,3.5,8.0,True,80.8,26
+2324,2023-12-05,Wolves,Burnley,home_corners,Wolves corners,UNDER,5.5,6.0,False,75.0,28
+2324,2023-12-05,Wolves,Burnley,match_cards,Total match cards,OVER,3.5,6.0,True,78.6,28
+2324,2023-12-05,Luton,Arsenal,home_goals,Luton to score,UNDER,1.5,3.0,False,78.6,28
+2324,2023-12-05,Luton,Arsenal,home_corners,Luton corners,UNDER,5.5,3.0,True,78.6,28
+2324,2023-12-05,Luton,Arsenal,away_corners,Arsenal corners,OVER,5.5,8.0,True,75.0,28
+2324,2023-12-05,Luton,Arsenal,home_sot,Luton shots on target,UNDER,4.5,4.0,True,85.8,28
+2324,2023-12-06,Brighton,Brentford,away_corners,Brentford corners,UNDER,5.5,3.0,True,75.0,28
+2324,2023-12-06,Brighton,Brentford,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,28
+2324,2023-12-06,Brighton,Brentford,btts,Both teams to score,YES,,True,True,78.5,28
+2324,2023-12-06,Fulham,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,1.0,True,75.0,28
+2324,2023-12-06,Sheffield United,Liverpool,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,82.2,28
+2324,2023-12-06,Sheffield United,Liverpool,away_goals,Liverpool to score,OVER,1.5,2.0,True,75.0,28
+2324,2023-12-06,Sheffield United,Liverpool,home_corners,Sheffield United corners,UNDER,5.5,2.0,True,82.2,28
+2324,2023-12-06,Man United,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,85.7,28
+2324,2023-12-06,Aston Villa,Man City,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,28
+2324,2023-12-07,Tottenham,West Ham,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,28
+2324,2023-12-07,Tottenham,West Ham,btts,Both teams to score,YES,,True,True,78.6,28
+2324,2023-12-09,Crystal Palace,Liverpool,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,80.0,30
+2324,2023-12-09,Brighton,Burnley,match_cards,Total match cards,OVER,3.5,4.0,True,80.0,30
+2324,2023-12-09,Brighton,Burnley,btts,Both teams to score,YES,,True,True,76.7,30
+2324,2023-12-09,Wolves,Nott'm Forest,match_cards,Total match cards,OVER,3.5,1.0,False,76.7,30
+2324,2023-12-10,Fulham,West Ham,away_corners,West Ham corners,UNDER,5.5,6.0,False,76.7,30
+2324,2023-12-10,Luton,Man City,home_goals,Luton to score,UNDER,1.5,1.0,True,76.7,30
+2324,2023-12-10,Luton,Man City,home_sot,Luton shots on target,UNDER,4.5,2.0,True,90.0,30
+2324,2023-12-10,Tottenham,Newcastle,match_cards,Total match cards,OVER,3.5,4.0,True,80.0,30
+2324,2023-12-15,Nott'm Forest,Tottenham,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,32
+2324,2023-12-16,Man City,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,2.0,False,81.2,32
+2324,2023-12-16,Man City,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,2.0,True,81.2,32
+2324,2023-12-16,Burnley,Everton,home_sot,Burnley shots on target,UNDER,4.5,2.0,True,78.1,32
+2324,2023-12-16,Chelsea,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,6.0,False,78.2,32
+2324,2023-12-16,Chelsea,Sheffield United,match_cards,Total match cards,OVER,3.5,4.0,True,78.1,32
+2324,2023-12-17,West Ham,Wolves,btts,Both teams to score,YES,,False,False,81.2,32
+2324,2023-12-17,Liverpool,Man United,away_goals,Man United to score,UNDER,1.5,0.0,True,75.0,32
+2324,2023-12-17,Arsenal,Brighton,btts,Both teams to score,YES,,False,False,75.0,32
+2324,2023-12-21,Crystal Palace,Brighton,match_cards,Total match cards,OVER,3.5,7.0,True,76.5,34
+2324,2023-12-22,Aston Villa,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,1.0,True,82.3,34
+2324,2023-12-22,Aston Villa,Sheffield United,home_sot,Aston Villa shots on target,OVER,4.5,4.0,False,76.5,34
+2324,2023-12-22,Aston Villa,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,76.5,34
+2324,2023-12-23,Luton,Newcastle,home_sot,Luton shots on target,UNDER,4.5,5.0,False,79.2,33
+2324,2023-12-24,Wolves,Chelsea,match_cards,Total match cards,OVER,3.5,8.0,True,91.2,34
+2324,2023-12-26,Man United,Aston Villa,home_goals,Man United to score,UNDER,1.5,3.0,False,75.0,36
+2324,2023-12-26,Man United,Aston Villa,match_cards,Total match cards,OVER,3.5,4.0,True,77.8,36
+2324,2023-12-26,Burnley,Liverpool,home_goals,Burnley to score,UNDER,1.5,0.0,True,80.5,36
+2324,2023-12-27,Brentford,Wolves,match_cards,Total match cards,OVER,3.5,2.0,False,76.9,35
+2324,2023-12-27,Chelsea,Crystal Palace,match_cards,Total match cards,OVER,3.5,5.0,True,83.3,36
+2324,2023-12-28,Brighton,Tottenham,match_cards,Total match cards,OVER,3.5,5.0,True,88.9,36
+2324,2023-12-28,Brighton,Tottenham,btts,Both teams to score,YES,,True,True,83.3,36
+2324,2023-12-28,Arsenal,West Ham,away_corners,West Ham corners,UNDER,5.5,3.0,True,80.6,36
+2324,2023-12-28,Arsenal,West Ham,away_sot,West Ham shots on target,UNDER,4.5,3.0,True,75.0,36
+2324,2023-12-30,Aston Villa,Burnley,away_goals,Burnley to score,UNDER,1.5,2.0,False,76.3,38
+2324,2023-12-30,Man City,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,0.0,True,81.0,37
+2324,2023-12-30,Man City,Sheffield United,away_sot,Sheffield United shots on target,UNDER,4.5,2.0,True,83.9,37
+2324,2023-12-31,Fulham,Arsenal,home_corners,Fulham corners,UNDER,5.5,5.0,True,79.0,38
+2324,2023-12-31,Tottenham,Bournemouth,match_cards,Total match cards,OVER,3.5,6.0,True,78.1,37
+2324,2024-01-02,West Ham,Brighton,match_cards,Total match cards,OVER,3.5,1.0,False,76.3,38
+2324,2024-01-02,West Ham,Brighton,btts,Both teams to score,YES,,False,False,81.6,38
+2324,2024-01-13,Chelsea,Fulham,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,40
+2324,2024-01-14,Man United,Tottenham,match_cards,Total match cards,OVER,3.5,3.0,False,85.0,40
+2324,2024-01-20,Arsenal,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,7.0,False,82.5,40
+2324,2024-01-20,Arsenal,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,5.0,False,77.5,40
+2324,2024-01-21,Sheffield United,West Ham,home_goals,Sheffield United to score,UNDER,1.5,2.0,False,75.0,40
+2324,2024-01-22,Brighton,Wolves,match_cards,Total match cards,OVER,3.5,5.0,True,82.5,40
+2324,2024-01-22,Brighton,Wolves,btts,Both teams to score,YES,,False,False,82.5,40
+2324,2024-01-30,Luton,Brighton,btts,Both teams to score,YES,,False,False,80.3,41
+2324,2024-01-30,Nott'm Forest,Arsenal,home_corners,Nott'm Forest corners,UNDER,5.5,2.0,True,81.0,42
+2324,2024-01-30,Nott'm Forest,Arsenal,home_sot,Nott'm Forest shots on target,UNDER,4.5,3.0,True,76.2,42
+2324,2024-01-31,Liverpool,Chelsea,match_cards,Total match cards,OVER,3.5,6.0,True,78.5,42
+2324,2024-01-31,Tottenham,Brentford,match_cards,Total match cards,OVER,3.5,5.0,True,75.3,41
+2324,2024-01-31,Man City,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,75.6,41
+2324,2024-01-31,Man City,Burnley,away_sot,Burnley shots on target,UNDER,4.5,3.0,True,78.2,41
+2324,2024-02-01,Wolves,Man United,match_cards,Total match cards,OVER,3.5,7.0,True,78.6,42
+2324,2024-02-03,Sheffield United,Aston Villa,home_corners,Sheffield United corners,UNDER,5.5,3.0,True,75.0,44
+2324,2024-02-03,Brighton,Crystal Palace,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,44
+2324,2024-02-04,Chelsea,Wolves,match_cards,Total match cards,OVER,3.5,5.0,True,90.9,44
+2324,2024-02-10,Tottenham,Brighton,match_cards,Total match cards,OVER,3.5,5.0,True,84.8,46
+2324,2024-02-10,Tottenham,Brighton,btts,Both teams to score,YES,,True,True,80.4,46
+2324,2024-02-10,Liverpool,Burnley,away_goals,Burnley to score,UNDER,1.5,1.0,True,76.1,46
+2324,2024-02-11,Aston Villa,Man United,match_cards,Total match cards,OVER,3.5,5.0,True,76.1,46
+2324,2024-02-11,West Ham,Arsenal,home_corners,West Ham corners,UNDER,5.5,2.0,True,80.4,46
+2324,2024-02-11,West Ham,Arsenal,home_sot,West Ham shots on target,UNDER,4.5,1.0,True,76.1,46
+2324,2024-02-12,Crystal Palace,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,82.6,46
+2324,2024-02-17,Burnley,Arsenal,home_goals,Burnley to score,UNDER,1.5,0.0,True,75.0,48
+2324,2024-02-17,Burnley,Arsenal,home_corners,Burnley corners,UNDER,5.5,4.0,True,75.0,48
+2324,2024-02-17,Burnley,Arsenal,home_sot,Burnley shots on target,UNDER,4.5,0.0,True,79.2,48
+2324,2024-02-17,Tottenham,Wolves,match_cards,Total match cards,OVER,3.5,1.0,False,83.3,48
+2324,2024-02-17,Tottenham,Wolves,btts,Both teams to score,YES,,True,True,75.0,48
+2324,2024-02-17,Man City,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,80.5,47
+2324,2024-02-18,Sheffield United,Brighton,home_corners,Sheffield United corners,UNDER,5.5,5.0,True,79.2,48
+2324,2024-03-02,Nott'm Forest,Liverpool,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,52
+2324,2024-03-02,Brentford,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,80.8,51
+2324,2024-03-04,Sheffield United,Arsenal,home_goals,Sheffield United to score,UNDER,1.5,0.0,True,76.9,52
+2324,2024-03-04,Sheffield United,Arsenal,home_corners,Sheffield United corners,UNDER,5.5,0.0,True,88.4,52
+2324,2024-03-04,Sheffield United,Arsenal,home_sot,Sheffield United shots on target,UNDER,4.5,0.0,True,78.8,52
+2324,2024-03-09,Arsenal,Brentford,away_corners,Brentford corners,UNDER,5.5,4.0,True,79.7,54
+2324,2024-03-10,Aston Villa,Tottenham,match_cards,Total match cards,OVER,3.5,3.0,False,77.3,53
+2324,2024-03-10,Aston Villa,Tottenham,btts,Both teams to score,YES,,False,False,75.6,53
+2324,2024-03-10,Brighton,Nott'm Forest,match_cards,Total match cards,OVER,3.5,8.0,True,76.0,54
+2324,2024-03-11,Chelsea,Newcastle,match_cards,Total match cards,OVER,3.5,4.0,True,81.5,53
+2324,2024-03-30,Chelsea,Burnley,match_cards,Total match cards,OVER,3.5,5.0,True,84.5,56
+2324,2024-03-30,Aston Villa,Wolves,match_cards,Total match cards,OVER,3.5,7.0,True,75.5,57
+2324,2024-03-30,Tottenham,Luton,btts,Both teams to score,YES,,True,True,77.2,57
+2324,2024-04-03,Arsenal,Luton,away_sot,Luton shots on target,UNDER,4.5,1.0,True,79.8,59
+2324,2024-04-03,Brentford,Brighton,match_cards,Total match cards,OVER,3.5,2.0,False,76.5,59
+2324,2024-04-04,Liverpool,Sheffield United,away_goals,Sheffield United to score,UNDER,1.5,1.0,True,77.6,58
+2324,2024-04-04,Liverpool,Sheffield United,away_corners,Sheffield United corners,UNDER,5.5,1.0,True,82.8,58
+2324,2024-04-04,Chelsea,Man United,match_cards,Total match cards,OVER,3.5,3.0,False,86.2,57
+2324,2024-04-06,Crystal Palace,Man City,home_goals,Crystal Palace to score,UNDER,1.5,2.0,False,80.0,60
+2324,2024-04-06,Crystal Palace,Man City,home_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,76.7,60
+2324,2024-04-07,Sheffield United,Chelsea,match_cards,Total match cards,OVER,3.5,6.0,True,76.7,59
+2324,2024-04-13,Man City,Luton,away_sot,Luton shots on target,UNDER,4.5,2.0,True,77.9,63
+2324,2024-04-14,Liverpool,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,1.0,True,77.4,62
+2324,2024-04-20,Wolves,Arsenal,home_corners,Wolves corners,UNDER,5.5,1.0,True,79.7,64
+2324,2024-04-24,Everton,Liverpool,home_goals,Everton to score,UNDER,1.5,2.0,False,77.2,66
+2324,2024-04-27,West Ham,Liverpool,home_corners,West Ham corners,UNDER,5.5,5.0,True,75.0,68
+2324,2024-04-27,Aston Villa,Chelsea,match_cards,Total match cards,OVER,3.5,8.0,True,86.7,66
+2324,2024-05-02,Chelsea,Tottenham,match_cards,Total match cards,OVER,3.5,1.0,False,86.4,66
+2324,2024-05-05,Brighton,Aston Villa,match_cards,Total match cards,OVER,3.5,3.0,False,76.8,69
+2324,2024-05-05,Chelsea,West Ham,match_cards,Total match cards,OVER,3.5,4.0,True,77.0,69
+2324,2024-05-11,Nott'm Forest,Chelsea,match_cards,Total match cards,OVER,3.5,5.0,True,77.7,71
+2324,2024-05-15,Brighton,Chelsea,match_cards,Total match cards,OVER,3.5,5.0,True,84.7,72
+2324,2024-05-19,Arsenal,Everton,away_goals,Everton to score,UNDER,1.5,1.0,True,75.7,74
+2324,2024-05-19,Man City,West Ham,away_sot,West Ham shots on target,UNDER,4.5,2.0,True,75.7,74
+2324,2024-05-19,Liverpool,Wolves,away_corners,Wolves corners,UNDER,5.5,2.0,True,77.0,74
+2324,2024-05-19,Chelsea,Bournemouth,match_cards,Total match cards,OVER,3.5,5.0,True,82.4,74
+2425,2024-08-17,Everton,Brighton,away_goals,Brighton to score,UNDER,1.5,3.0,False,85.0,20
+2425,2024-08-17,Arsenal,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,80.0,20
+2425,2024-08-17,Arsenal,Wolves,away_sot,Wolves shots on target,UNDER,4.5,3.0,True,85.0,20
+2425,2024-08-24,Fulham,Leicester,home_goals,Fulham to score,UNDER,1.5,2.0,False,80.0,20
+2425,2024-08-24,Southampton,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,10.0,False,85.0,20
+2425,2024-08-24,Aston Villa,Arsenal,home_sot,Aston Villa shots on target,UNDER,4.5,3.0,True,90.0,20
+2425,2024-08-25,Bournemouth,Newcastle,home_goals,Bournemouth to score,UNDER,1.5,1.0,True,75.0,20
+2425,2024-08-25,Bournemouth,Newcastle,match_cards,Total match cards,OVER,3.5,4.0,True,80.0,20
+2425,2024-08-25,Wolves,Chelsea,away_goals,Chelsea to score,OVER,1.5,6.0,True,75.0,20
+2425,2024-08-25,Wolves,Chelsea,away_sot,Chelsea shots on target,OVER,4.5,8.0,True,75.0,20
+2425,2024-08-25,Wolves,Chelsea,match_cards,Total match cards,OVER,3.5,5.0,True,80.0,20
+2425,2024-08-31,Arsenal,Brighton,away_goals,Brighton to score,UNDER,1.5,1.0,True,80.0,20
+2425,2024-08-31,Arsenal,Brighton,away_sot,Brighton shots on target,UNDER,4.5,4.0,True,80.0,20
+2425,2024-08-31,Nott'm Forest,Wolves,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,20
+2425,2024-08-31,Leicester,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,5.0,False,75.0,20
+2425,2024-08-31,West Ham,Man City,away_goals,Man City to score,OVER,1.5,3.0,True,80.0,20
+2425,2024-08-31,West Ham,Man City,home_corners,West Ham corners,UNDER,5.5,3.0,True,75.0,20
+2425,2024-08-31,West Ham,Man City,home_sot,West Ham shots on target,UNDER,4.5,2.0,True,85.0,20
+2425,2024-08-31,West Ham,Man City,away_sot,Man City shots on target,OVER,4.5,8.0,True,80.0,20
+2425,2024-09-01,Man United,Liverpool,away_corners,Liverpool corners,OVER,5.5,2.0,False,75.0,20
+2425,2024-09-01,Man United,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,3.0,False,85.0,20
+2425,2024-09-14,Bournemouth,Chelsea,match_cards,Total match cards,OVER,3.5,14.0,True,85.0,20
+2425,2024-09-14,Man City,Brentford,away_corners,Brentford corners,UNDER,5.5,3.0,True,75.0,20
+2425,2024-09-14,Liverpool,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,2.0,True,85.0,20
+2425,2024-09-15,Wolves,Newcastle,away_sot,Newcastle shots on target,OVER,4.5,6.0,True,80.0,20
+2425,2024-09-15,Wolves,Newcastle,match_cards,Total match cards,OVER,3.5,6.0,True,90.0,20
+2425,2024-09-21,Liverpool,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,9.0,False,75.0,20
+2425,2024-09-21,Liverpool,Bournemouth,home_sot,Liverpool shots on target,OVER,4.5,13.0,True,75.0,20
+2425,2024-09-21,West Ham,Chelsea,home_sot,West Ham shots on target,UNDER,4.5,7.0,False,75.0,20
+2425,2024-09-21,West Ham,Chelsea,away_sot,Chelsea shots on target,OVER,4.5,5.0,True,75.0,20
+2425,2024-09-21,Aston Villa,Wolves,away_corners,Wolves corners,UNDER,5.5,5.0,True,85.0,20
+2425,2024-09-21,Aston Villa,Wolves,match_cards,Total match cards,OVER,3.5,9.0,True,80.0,20
+2425,2024-09-21,Tottenham,Brentford,home_corners,Tottenham corners,OVER,5.5,9.0,True,80.0,20
+2425,2024-09-28,Newcastle,Man City,away_sot,Man City shots on target,OVER,4.5,6.0,True,85.0,20
+2425,2024-09-28,Newcastle,Man City,match_cards,Total match cards,OVER,3.5,8.0,True,75.0,20
+2425,2024-09-28,Newcastle,Man City,btts,Both teams to score,YES,,True,True,75.0,20
+2425,2024-09-28,Chelsea,Brighton,match_cards,Total match cards,OVER,3.5,5.0,True,75.0,20
+2425,2024-09-28,Arsenal,Leicester,away_sot,Leicester shots on target,UNDER,4.5,3.0,True,75.0,20
+2425,2024-09-28,Wolves,Liverpool,away_goals,Liverpool to score,OVER,1.5,2.0,True,75.0,20
+2425,2024-09-28,Wolves,Liverpool,home_corners,Wolves corners,UNDER,5.5,2.0,True,85.0,20
+2425,2024-09-28,Wolves,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,6.0,True,85.0,20
+2425,2024-09-28,Wolves,Liverpool,match_cards,Total match cards,OVER,3.5,5.0,True,75.0,20
+2425,2024-09-28,Everton,Crystal Palace,home_corners,Everton corners,UNDER,5.5,5.0,True,75.0,20
+2425,2024-09-30,Bournemouth,Southampton,match_cards,Total match cards,OVER,3.5,7.0,True,75.0,20
+2425,2024-10-05,Leicester,Bournemouth,btts,Both teams to score,YES,,False,False,80.0,16
+2425,2024-10-05,Everton,Newcastle,btts,Both teams to score,YES,,False,False,75.0,20
+2425,2024-10-05,West Ham,Ipswich,match_cards,Total match cards,OVER,3.5,1.0,False,80.0,16
+2425,2024-10-05,Man City,Fulham,away_goals,Fulham to score,UNDER,1.5,2.0,False,80.0,20
+2425,2024-10-05,Crystal Palace,Liverpool,home_corners,Crystal Palace corners,UNDER,5.5,3.0,True,75.0,20
+2425,2024-10-05,Brentford,Wolves,match_cards,Total match cards,OVER,3.5,5.0,True,80.0,20
+2425,2024-10-05,Brentford,Wolves,btts,Both teams to score,YES,,True,True,75.0,20
+2425,2024-10-05,Arsenal,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,85.0,16
+2425,2024-10-05,Arsenal,Southampton,away_sot,Southampton shots on target,UNDER,4.5,2.0,True,81.7,16
+2425,2024-10-05,Arsenal,Southampton,match_cards,Total match cards,OVER,3.5,3.0,False,81.7,16
+2425,2024-10-06,Chelsea,Nott'm Forest,match_cards,Total match cards,OVER,3.5,9.0,True,80.0,20
+2425,2024-10-19,Tottenham,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,75.0,20
+2425,2024-10-19,Man United,Brentford,match_cards,Total match cards,OVER,3.5,4.0,True,80.0,20
+2425,2024-10-19,Newcastle,Brighton,match_cards,Total match cards,OVER,3.5,4.0,True,85.0,20
+2425,2024-10-19,Newcastle,Brighton,btts,Both teams to score,YES,,False,False,75.0,20
+2425,2024-10-19,Bournemouth,Arsenal,home_goals,Bournemouth to score,UNDER,1.5,2.0,False,80.0,20
+2425,2024-10-19,Bournemouth,Arsenal,match_cards,Total match cards,OVER,3.5,3.0,False,85.0,20
+2425,2024-10-20,Wolves,Man City,home_goals,Wolves to score,UNDER,1.5,1.0,True,80.0,20
+2425,2024-10-20,Wolves,Man City,away_goals,Man City to score,OVER,1.5,2.0,True,90.0,20
+2425,2024-10-20,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,1.0,True,90.0,20
+2425,2024-10-20,Wolves,Man City,away_corners,Man City corners,OVER,5.5,18.0,True,80.0,20
+2425,2024-10-20,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,75.0,20
+2425,2024-10-20,Wolves,Man City,away_sot,Man City shots on target,OVER,4.5,7.0,True,90.0,20
+2425,2024-10-20,Wolves,Man City,match_cards,Total match cards,OVER,3.5,5.0,True,75.0,20
+2425,2024-10-20,Wolves,Man City,btts,Both teams to score,YES,,True,True,75.0,20
+2425,2024-10-20,Liverpool,Chelsea,match_cards,Total match cards,OVER,3.5,7.0,True,85.0,20
+2425,2024-10-25,Leicester,Nott'm Forest,home_sot,Leicester shots on target,UNDER,4.5,1.0,True,80.0,18
+2425,2024-10-25,Leicester,Nott'm Forest,match_cards,Total match cards,OVER,3.5,7.0,True,76.2,18
+2425,2024-10-26,Aston Villa,Bournemouth,match_cards,Total match cards,OVER,3.5,13.0,True,80.0,20
+2425,2024-10-26,Brentford,Ipswich,match_cards,Total match cards,OVER,3.5,2.0,False,82.5,18
+2425,2024-10-26,Brentford,Ipswich,btts,Both teams to score,YES,,True,True,76.2,18
+2425,2024-10-26,Brighton,Wolves,away_corners,Wolves corners,UNDER,5.5,6.0,False,75.0,20
+2425,2024-10-26,Brighton,Wolves,match_cards,Total match cards,OVER,3.5,6.0,True,85.0,20
+2425,2024-10-26,Man City,Southampton,home_goals,Man City to score,OVER,1.5,1.0,False,76.2,18
+2425,2024-10-26,Man City,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,83.8,18
+2425,2024-10-26,Man City,Southampton,home_corners,Man City corners,OVER,5.5,12.0,True,77.5,18
+2425,2024-10-26,Man City,Southampton,away_corners,Southampton corners,UNDER,5.5,1.0,True,76.2,18
+2425,2024-10-26,Man City,Southampton,home_sot,Man City shots on target,OVER,4.5,8.0,True,87.5,18
+2425,2024-10-26,Man City,Southampton,away_sot,Southampton shots on target,UNDER,4.5,2.0,True,77.5,18
+2425,2024-10-27,Chelsea,Newcastle,match_cards,Total match cards,OVER,3.5,9.0,True,90.0,20
+2425,2024-10-27,Crystal Palace,Tottenham,home_corners,Crystal Palace corners,UNDER,5.5,8.0,False,75.0,20
+2425,2024-10-27,West Ham,Man United,match_cards,Total match cards,OVER,3.5,6.0,True,75.0,20
+2425,2024-10-27,Arsenal,Liverpool,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,20
+2425,2024-11-02,Bournemouth,Man City,home_goals,Bournemouth to score,UNDER,1.5,2.0,False,75.0,20
+2425,2024-11-02,Bournemouth,Man City,away_sot,Man City shots on target,OVER,4.5,4.0,False,80.0,20
+2425,2024-11-02,Bournemouth,Man City,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2425,2024-11-02,Ipswich,Leicester,btts,Both teams to score,YES,,True,True,77.8,18
+2425,2024-11-02,Wolves,Crystal Palace,home_corners,Wolves corners,UNDER,5.5,3.0,True,75.0,20
+2425,2024-11-02,Wolves,Crystal Palace,away_sot,Crystal Palace shots on target,OVER,4.5,7.0,True,75.0,20
+2425,2024-11-02,Wolves,Crystal Palace,match_cards,Total match cards,OVER,3.5,3.0,False,80.0,20
+2425,2024-11-02,Newcastle,Arsenal,match_cards,Total match cards,OVER,3.5,8.0,True,85.0,20
+2425,2024-11-02,Nott'm Forest,West Ham,away_goals,West Ham to score,UNDER,1.5,0.0,True,80.0,20
+2425,2024-11-02,Nott'm Forest,West Ham,away_sot,West Ham shots on target,UNDER,4.5,2.0,True,75.0,20
+2425,2024-11-02,Nott'm Forest,West Ham,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,20
+2425,2024-11-02,Liverpool,Brighton,match_cards,Total match cards,OVER,3.5,2.0,False,85.0,20
+2425,2024-11-03,Tottenham,Aston Villa,match_cards,Total match cards,OVER,3.5,2.0,False,80.0,20
+2425,2024-11-03,Man United,Chelsea,match_cards,Total match cards,OVER,3.5,8.0,True,90.0,20
+2425,2024-11-04,Fulham,Brentford,match_cards,Total match cards,OVER,3.5,3.0,False,80.0,20
+2425,2024-11-04,Fulham,Brentford,btts,Both teams to score,YES,,True,True,85.0,20
+2425,2024-11-09,Liverpool,Aston Villa,match_cards,Total match cards,OVER,3.5,3.0,False,85.0,20
+2425,2024-11-09,Brighton,Man City,home_corners,Brighton corners,UNDER,5.5,0.0,True,75.0,20
+2425,2024-11-09,Brighton,Man City,btts,Both teams to score,YES,,True,True,75.0,20
+2425,2024-11-09,Wolves,Southampton,match_cards,Total match cards,OVER,3.5,5.0,True,85.0,20
+2425,2024-11-09,Crystal Palace,Fulham,home_goals,Crystal Palace to score,UNDER,1.5,0.0,True,80.0,20
+2425,2024-11-09,Brentford,Bournemouth,away_corners,Bournemouth corners,OVER,5.5,4.0,False,80.0,20
+2425,2024-11-09,Brentford,Bournemouth,btts,Both teams to score,YES,,True,True,75.0,20
+2425,2024-11-10,Chelsea,Arsenal,match_cards,Total match cards,OVER,3.5,6.0,True,85.0,20
+2425,2024-11-10,Tottenham,Ipswich,away_goals,Ipswich to score,UNDER,1.5,2.0,False,80.0,20
+2425,2024-11-10,Tottenham,Ipswich,home_corners,Tottenham corners,OVER,5.5,12.0,True,75.0,20
+2425,2024-11-10,Tottenham,Ipswich,home_sot,Tottenham shots on target,OVER,4.5,5.0,True,75.0,20
+2425,2024-11-10,Tottenham,Ipswich,away_sot,Ipswich shots on target,UNDER,4.5,3.0,True,75.0,20
+2425,2024-11-10,Man United,Leicester,away_sot,Leicester shots on target,UNDER,4.5,5.0,False,85.0,20
+2425,2024-11-10,Man United,Leicester,match_cards,Total match cards,OVER,3.5,1.0,False,80.0,20
+2425,2024-11-10,Nott'm Forest,Newcastle,home_goals,Nott'm Forest to score,UNDER,1.5,1.0,True,75.0,20
+2425,2024-11-10,Nott'm Forest,Newcastle,away_goals,Newcastle to score,UNDER,1.5,3.0,False,85.0,20
+2425,2024-11-10,Nott'm Forest,Newcastle,match_cards,Total match cards,OVER,3.5,2.0,False,95.0,20
+2425,2024-11-23,Arsenal,Nott'm Forest,match_cards,Total match cards,OVER,3.5,5.0,True,86.3,22
+2425,2024-11-23,Fulham,Wolves,home_corners,Fulham corners,OVER,5.5,7.0,True,77.2,22
+2425,2024-11-23,Fulham,Wolves,match_cards,Total match cards,OVER,3.5,3.0,False,77.2,22
+2425,2024-11-23,Fulham,Wolves,btts,Both teams to score,YES,,True,True,77.2,22
+2425,2024-11-23,Leicester,Chelsea,match_cards,Total match cards,OVER,3.5,7.0,True,77.2,22
+2425,2024-11-23,Leicester,Chelsea,btts,Both teams to score,YES,,True,True,77.2,22
+2425,2024-11-24,Ipswich,Man United,match_cards,Total match cards,OVER,3.5,0.0,False,77.2,22
+2425,2024-11-24,Southampton,Liverpool,home_goals,Southampton to score,UNDER,1.5,2.0,False,90.9,22
+2425,2024-11-24,Southampton,Liverpool,home_sot,Southampton shots on target,UNDER,4.5,5.0,False,77.2,22
+2425,2024-11-24,Southampton,Liverpool,match_cards,Total match cards,OVER,3.5,7.0,True,81.8,22
+2425,2024-11-25,Newcastle,West Ham,away_goals,West Ham to score,UNDER,1.5,2.0,False,77.2,22
+2425,2024-11-29,Brighton,Southampton,match_cards,Total match cards,OVER,3.5,6.0,True,79.2,24
+2425,2024-11-30,West Ham,Arsenal,home_sot,West Ham shots on target,UNDER,4.5,5.0,False,75.0,24
+2425,2024-11-30,Wolves,Bournemouth,home_corners,Wolves corners,UNDER,5.5,3.0,True,75.0,24
+2425,2024-11-30,Wolves,Bournemouth,away_corners,Bournemouth corners,OVER,5.5,4.0,False,83.3,24
+2425,2024-11-30,Wolves,Bournemouth,match_cards,Total match cards,OVER,3.5,5.0,True,79.2,24
+2425,2024-11-30,Wolves,Bournemouth,btts,Both teams to score,YES,,True,True,75.0,24
+2425,2024-11-30,Crystal Palace,Newcastle,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,75.0,24
+2425,2024-11-30,Brentford,Leicester,btts,Both teams to score,YES,,True,True,83.3,24
+2425,2024-11-30,Nott'm Forest,Ipswich,away_goals,Ipswich to score,UNDER,1.5,0.0,True,75.0,24
+2425,2024-11-30,Nott'm Forest,Ipswich,match_cards,Total match cards,OVER,3.5,4.0,True,79.2,24
+2425,2024-12-01,Liverpool,Man City,match_cards,Total match cards,OVER,3.5,4.0,True,79.2,24
+2425,2024-12-01,Chelsea,Aston Villa,match_cards,Total match cards,OVER,3.5,4.0,True,83.3,24
+2425,2024-12-01,Chelsea,Aston Villa,btts,Both teams to score,YES,,False,False,75.0,24
+2425,2024-12-04,Man City,Nott'm Forest,match_cards,Total match cards,OVER,3.5,6.0,True,84.6,26
+2425,2024-12-04,Newcastle,Liverpool,home_goals,Newcastle to score,UNDER,1.5,3.0,False,80.8,26
+2425,2024-12-04,Newcastle,Liverpool,match_cards,Total match cards,OVER,3.5,7.0,True,80.8,26
+2425,2024-12-04,Southampton,Chelsea,home_goals,Southampton to score,UNDER,1.5,1.0,True,76.9,26
+2425,2024-12-04,Southampton,Chelsea,match_cards,Total match cards,OVER,3.5,2.0,False,88.4,26
+2425,2024-12-04,Arsenal,Man United,match_cards,Total match cards,OVER,3.5,4.0,True,80.8,26
+2425,2024-12-04,Aston Villa,Brentford,btts,Both teams to score,YES,,True,True,76.9,26
+2425,2024-12-05,Fulham,Brighton,btts,Both teams to score,YES,,True,True,76.9,26
+2425,2024-12-07,Man United,Nott'm Forest,match_cards,Total match cards,OVER,3.5,2.0,False,85.8,28
+2425,2024-12-07,Aston Villa,Southampton,match_cards,Total match cards,OVER,3.5,4.0,True,78.6,28
+2425,2024-12-07,Brentford,Newcastle,btts,Both teams to score,YES,,True,True,75.0,28
+2425,2024-12-08,Ipswich,Bournemouth,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,28
+2425,2024-12-08,Leicester,Brighton,btts,Both teams to score,YES,,True,True,82.2,28
+2425,2024-12-08,Tottenham,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,78.6,28
+2425,2024-12-14,Nott'm Forest,Aston Villa,match_cards,Total match cards,OVER,3.5,1.0,False,83.3,30
+2425,2024-12-14,Newcastle,Leicester,btts,Both teams to score,YES,,False,False,76.7,30
+2425,2024-12-15,Chelsea,Brentford,away_corners,Brentford corners,UNDER,5.5,5.0,True,83.3,30
+2425,2024-12-15,Chelsea,Brentford,btts,Both teams to score,YES,,True,True,80.0,30
+2425,2024-12-15,Man City,Man United,away_corners,Man United corners,UNDER,5.5,2.0,True,80.0,30
+2425,2024-12-15,Southampton,Tottenham,home_goals,Southampton to score,UNDER,1.5,0.0,True,80.0,30
+2425,2024-12-15,Southampton,Tottenham,away_corners,Tottenham corners,OVER,5.5,5.0,False,80.0,30
+2425,2024-12-15,Southampton,Tottenham,away_sot,Tottenham shots on target,OVER,4.5,9.0,True,76.7,30
+2425,2024-12-15,Southampton,Tottenham,match_cards,Total match cards,OVER,3.5,4.0,True,76.7,30
+2425,2024-12-21,West Ham,Brighton,btts,Both teams to score,YES,,True,True,75.0,32
+2425,2024-12-22,Tottenham,Liverpool,match_cards,Total match cards,OVER,3.5,3.0,False,80.8,31
+2425,2024-12-22,Leicester,Wolves,btts,Both teams to score,YES,,False,False,81.2,32
+2425,2024-12-22,Everton,Chelsea,home_corners,Everton corners,UNDER,5.5,2.0,True,77.1,31
+2425,2024-12-22,Fulham,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,81.2,32
+2425,2024-12-26,Liverpool,Leicester,home_goals,Liverpool to score,OVER,1.5,3.0,True,79.0,33
+2425,2024-12-26,Wolves,Man United,home_corners,Wolves corners,UNDER,5.5,4.0,True,76.5,34
+2425,2024-12-26,Nott'm Forest,Tottenham,match_cards,Total match cards,OVER,3.5,6.0,True,76.5,34
+2425,2024-12-26,Man City,Everton,away_corners,Everton corners,UNDER,5.5,5.0,True,78.5,33
+2425,2024-12-27,Brighton,Brentford,btts,Both teams to score,YES,,False,False,82.4,34
+2425,2024-12-29,Leicester,Man City,home_corners,Leicester corners,UNDER,5.5,4.0,True,80.6,36
+2425,2024-12-29,Leicester,Man City,home_sot,Leicester shots on target,UNDER,4.5,4.0,True,75.0,36
+2425,2024-12-29,Leicester,Man City,away_sot,Man City shots on target,OVER,4.5,5.0,True,75.0,36
+2425,2024-12-29,Leicester,Man City,btts,Both teams to score,YES,,False,False,75.0,36
+2425,2024-12-29,Tottenham,Wolves,home_corners,Tottenham corners,OVER,5.5,5.0,False,75.0,36
+2425,2024-12-29,Tottenham,Wolves,away_corners,Wolves corners,UNDER,5.5,5.0,True,77.8,36
+2425,2024-12-30,Aston Villa,Brighton,match_cards,Total match cards,OVER,3.5,5.0,True,75.0,36
+2425,2024-12-30,Ipswich,Chelsea,home_corners,Ipswich corners,UNDER,5.5,4.0,True,80.6,36
+2425,2025-01-01,Brentford,Arsenal,home_corners,Brentford corners,UNDER,5.5,4.0,True,77.8,36
+2425,2025-01-04,Crystal Palace,Chelsea,match_cards,Total match cards,OVER,3.5,2.0,False,76.3,38
+2425,2025-01-06,Wolves,Nott'm Forest,match_cards,Total match cards,OVER,3.5,3.0,False,76.3,38
+2425,2025-01-14,Nott'm Forest,Liverpool,match_cards,Total match cards,OVER,3.5,3.0,False,79.5,39
+2425,2025-01-14,Brentford,Man City,home_corners,Brentford corners,UNDER,5.5,4.0,True,85.0,40
+2425,2025-01-14,Brentford,Man City,away_sot,Man City shots on target,OVER,4.5,8.0,True,77.5,40
+2425,2025-01-14,Chelsea,Bournemouth,match_cards,Total match cards,OVER,3.5,5.0,True,77.5,40
+2425,2025-01-18,Leicester,Fulham,btts,Both teams to score,YES,,False,False,76.2,42
+2425,2025-01-18,Brentford,Liverpool,away_goals,Liverpool to score,OVER,1.5,2.0,True,75.8,41
+2425,2025-01-18,Brentford,Liverpool,home_corners,Brentford corners,UNDER,5.5,2.0,True,75.5,41
+2425,2025-01-18,Brentford,Liverpool,away_sot,Liverpool shots on target,OVER,4.5,8.0,True,78.1,41
+2425,2025-01-19,Nott'm Forest,Southampton,away_goals,Southampton to score,UNDER,1.5,2.0,False,83.3,42
+2425,2025-01-19,Nott'm Forest,Southampton,match_cards,Total match cards,OVER,3.5,4.0,True,76.2,42
+2425,2025-01-19,Ipswich,Man City,home_corners,Ipswich corners,UNDER,5.5,4.0,True,83.3,42
+2425,2025-01-19,Ipswich,Man City,away_sot,Man City shots on target,OVER,4.5,9.0,True,76.2,42
+2425,2025-01-20,Chelsea,Wolves,away_corners,Wolves corners,UNDER,5.5,6.0,False,88.1,42
+2425,2025-01-25,Bournemouth,Nott'm Forest,match_cards,Total match cards,OVER,3.5,5.0,True,77.3,44
+2425,2025-01-25,Liverpool,Ipswich,home_sot,Liverpool shots on target,OVER,4.5,6.0,True,76.8,43
+2425,2025-01-25,Southampton,Newcastle,home_goals,Southampton to score,UNDER,1.5,1.0,True,79.6,44
+2425,2025-01-25,Wolves,Arsenal,home_corners,Wolves corners,UNDER,5.5,1.0,True,84.1,44
+2425,2025-02-01,Wolves,Aston Villa,home_corners,Wolves corners,UNDER,5.5,5.0,True,78.3,46
+2425,2025-02-01,Bournemouth,Liverpool,match_cards,Total match cards,OVER,3.5,5.0,True,75.5,45
+2425,2025-02-01,Nott'm Forest,Brighton,match_cards,Total match cards,OVER,3.5,4.0,True,78.3,46
+2425,2025-02-14,Brighton,Chelsea,match_cards,Total match cards,OVER,3.5,3.0,False,81.2,48
+2425,2025-02-15,Southampton,Bournemouth,home_goals,Southampton to score,UNDER,1.5,1.0,True,75.0,48
+2425,2025-02-15,Southampton,Bournemouth,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,48
+2425,2025-02-15,Fulham,Nott'm Forest,match_cards,Total match cards,OVER,3.5,0.0,False,75.0,48
+2425,2025-02-15,Aston Villa,Ipswich,away_corners,Ipswich corners,UNDER,5.5,1.0,True,75.0,48
+2425,2025-02-15,Leicester,Arsenal,home_goals,Leicester to score,UNDER,1.5,0.0,True,75.0,48
+2425,2025-02-15,Leicester,Arsenal,home_corners,Leicester corners,UNDER,5.5,3.0,True,79.2,48
+2425,2025-02-15,Leicester,Arsenal,home_sot,Leicester shots on target,UNDER,4.5,2.0,True,83.3,48
+2425,2025-02-16,Liverpool,Wolves,home_goals,Liverpool to score,OVER,1.5,2.0,True,79.2,48
+2425,2025-02-16,Liverpool,Wolves,away_corners,Wolves corners,UNDER,5.5,3.0,True,81.2,48
+2425,2025-02-19,Aston Villa,Liverpool,match_cards,Total match cards,OVER,3.5,1.0,False,76.0,50
+2425,2025-02-22,Aston Villa,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,76.5,51
+2425,2025-02-22,Arsenal,West Ham,away_sot,West Ham shots on target,UNDER,4.5,2.0,True,78.0,50
+2425,2025-02-25,Brighton,Bournemouth,match_cards,Total match cards,OVER,3.5,3.0,False,76.9,52
+2425,2025-02-25,Chelsea,Southampton,away_corners,Southampton corners,UNDER,5.5,2.0,True,78.8,52
+2425,2025-02-25,Chelsea,Southampton,home_sot,Chelsea shots on target,OVER,4.5,10.0,True,75.0,52
+2425,2025-02-25,Chelsea,Southampton,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,52
+2425,2025-02-26,Nott'm Forest,Arsenal,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,52
+2425,2025-03-08,Nott'm Forest,Man City,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,77.8,54
+2425,2025-03-08,Liverpool,Southampton,home_goals,Liverpool to score,OVER,1.5,3.0,True,76.2,55
+2425,2025-03-08,Liverpool,Southampton,away_goals,Southampton to score,UNDER,1.5,1.0,True,78.3,55
+2425,2025-03-08,Liverpool,Southampton,home_sot,Liverpool shots on target,OVER,4.5,7.0,True,76.6,55
+2425,2025-03-09,Chelsea,Leicester,away_corners,Leicester corners,UNDER,5.5,2.0,True,81.5,54
+2425,2025-03-09,Man United,Arsenal,home_corners,Man United corners,UNDER,5.5,2.0,True,77.8,54
+2425,2025-04-02,Man City,Leicester,away_corners,Leicester corners,UNDER,5.5,0.0,True,82.8,58
+2425,2025-04-02,Man City,Leicester,away_sot,Leicester shots on target,UNDER,4.5,0.0,True,79.3,58
+2425,2025-04-05,Aston Villa,Nott'm Forest,match_cards,Total match cards,OVER,3.5,4.0,True,75.0,60
+2425,2025-04-05,Everton,Arsenal,home_corners,Everton corners,UNDER,5.5,3.0,True,80.0,60
+2425,2025-04-06,Brentford,Chelsea,home_corners,Brentford corners,UNDER,5.5,3.0,True,78.3,60
+2425,2025-04-06,Man United,Man City,home_corners,Man United corners,UNDER,5.5,5.0,True,80.0,60
+2425,2025-04-12,Brighton,Leicester,away_sot,Leicester shots on target,UNDER,4.5,6.0,False,75.8,62
+2425,2025-04-12,Arsenal,Brentford,away_corners,Brentford corners,UNDER,5.5,5.0,True,80.7,62
+2425,2025-04-12,Man City,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,75.2,61
+2425,2025-04-13,Chelsea,Ipswich,away_corners,Ipswich corners,UNDER,5.5,4.0,True,80.7,62
+2425,2025-04-19,Everton,Man City,home_corners,Everton corners,UNDER,5.5,2.0,True,81.2,64
+2425,2025-04-20,Leicester,Liverpool,home_goals,Leicester to score,UNDER,1.5,0.0,True,75.0,64
+2425,2025-04-20,Leicester,Liverpool,away_goals,Liverpool to score,OVER,1.5,1.0,False,82.8,64
+2425,2025-04-20,Leicester,Liverpool,home_sot,Leicester shots on target,UNDER,4.5,0.0,True,78.2,64
+2425,2025-04-20,Ipswich,Arsenal,home_goals,Ipswich to score,UNDER,1.5,0.0,True,75.0,64
+2425,2025-04-20,Ipswich,Arsenal,home_corners,Ipswich corners,UNDER,5.5,0.0,True,82.8,64
+2425,2025-04-20,Ipswich,Arsenal,home_sot,Ipswich shots on target,UNDER,4.5,0.0,True,76.6,64
+2425,2025-04-23,Arsenal,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,6.0,False,75.8,66
+2425,2025-04-26,Southampton,Fulham,home_goals,Southampton to score,UNDER,1.5,1.0,True,75.8,66
+2425,2025-04-26,Chelsea,Everton,away_corners,Everton corners,UNDER,5.5,2.0,True,77.2,66
+2425,2025-05-02,Man City,Wolves,away_corners,Wolves corners,UNDER,5.5,5.0,True,86.8,68
+2425,2025-05-10,Southampton,Man City,home_corners,Southampton corners,UNDER,5.5,1.0,True,84.2,70
+2425,2025-05-10,Southampton,Man City,home_sot,Southampton shots on target,UNDER,4.5,0.0,True,80.0,70
+2425,2025-05-10,Southampton,Man City,away_sot,Man City shots on target,OVER,4.5,5.0,True,77.1,70
+2425,2025-05-10,Bournemouth,Aston Villa,match_cards,Total match cards,OVER,3.5,8.0,True,77.2,70
+2425,2025-05-18,Everton,Southampton,away_goals,Southampton to score,UNDER,1.5,0.0,True,79.2,72
+2425,2025-05-25,Southampton,Arsenal,home_goals,Southampton to score,UNDER,1.5,1.0,True,82.5,74
+2425,2025-05-25,Southampton,Arsenal,home_corners,Southampton corners,UNDER,5.5,5.0,True,81.1,74
+2425,2025-05-25,Southampton,Arsenal,home_sot,Southampton shots on target,UNDER,4.5,2.0,True,82.4,74
+2425,2025-05-25,Nott'm Forest,Chelsea,home_corners,Nott'm Forest corners,UNDER,5.5,7.0,False,77.0,74
+2425,2025-05-25,Nott'm Forest,Chelsea,match_cards,Total match cards,OVER,3.5,4.0,True,77.1,74
+2526,2025-08-15,Liverpool,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,7.0,False,75.0,20
+2526,2025-08-16,Wolves,Man City,home_corners,Wolves corners,UNDER,5.5,4.0,True,80.0,20
+2526,2025-08-16,Wolves,Man City,away_corners,Man City corners,UNDER,5.5,6.0,False,80.0,20
+2526,2025-08-16,Wolves,Man City,home_sot,Wolves shots on target,UNDER,4.5,3.0,True,80.0,20
+2526,2025-08-16,Aston Villa,Newcastle,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2526,2025-08-16,Brighton,Fulham,home_corners,Brighton corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-08-16,Sunderland,West Ham,home_goals,Sunderland to score,UNDER,1.5,3.0,False,80.0,20
+2526,2025-08-16,Sunderland,West Ham,away_corners,West Ham corners,UNDER,5.5,7.0,False,85.0,20
+2526,2025-08-16,Sunderland,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-08-16,Tottenham,Burnley,home_goals,Tottenham to score,UNDER,1.5,3.0,False,90.0,20
+2526,2025-08-16,Tottenham,Burnley,home_corners,Tottenham corners,UNDER,5.5,6.0,False,85.0,20
+2526,2025-08-16,Tottenham,Burnley,home_sot,Tottenham shots on target,UNDER,4.5,6.0,False,85.0,20
+2526,2025-08-17,Chelsea,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,80.0,20
+2526,2025-08-18,Leeds,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-08-18,Leeds,Everton,away_corners,Everton corners,UNDER,5.5,2.0,True,90.0,20
+2526,2025-08-22,West Ham,Chelsea,home_sot,West Ham shots on target,UNDER,4.5,4.0,True,85.0,20
+2526,2025-08-23,Arsenal,Leeds,home_corners,Arsenal corners,UNDER,5.5,2.0,True,75.0,20
+2526,2025-08-23,Burnley,Sunderland,away_goals,Sunderland to score,UNDER,1.5,0.0,True,90.0,20
+2526,2025-08-23,Burnley,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,1.0,True,75.0,20
+2526,2025-08-23,Man City,Tottenham,away_goals,Tottenham to score,UNDER,1.5,2.0,False,80.0,20
+2526,2025-08-23,Man City,Tottenham,away_corners,Tottenham corners,UNDER,5.5,2.0,True,85.0,20
+2526,2025-08-23,Man City,Tottenham,away_sot,Tottenham shots on target,UNDER,4.5,5.0,False,85.0,20
+2526,2025-08-23,Bournemouth,Wolves,home_sot,Bournemouth shots on target,UNDER,4.5,4.0,True,80.0,20
+2526,2025-08-24,Crystal Palace,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,20
+2526,2025-08-24,Everton,Brighton,home_corners,Everton corners,UNDER,5.5,2.0,True,85.0,20
+2526,2025-08-30,Chelsea,Fulham,away_goals,Fulham to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-08-30,Sunderland,Brentford,home_goals,Sunderland to score,UNDER,1.5,2.0,False,75.0,20
+2526,2025-08-30,Sunderland,Brentford,away_corners,Brentford corners,UNDER,5.5,4.0,True,80.0,20
+2526,2025-08-30,Man United,Burnley,home_goals,Man United to score,UNDER,1.5,3.0,False,85.0,20
+2526,2025-08-30,Wolves,Everton,away_corners,Everton corners,UNDER,5.5,2.0,True,80.0,20
+2526,2025-08-30,Tottenham,Bournemouth,home_corners,Tottenham corners,UNDER,5.5,0.0,True,75.0,20
+2526,2025-08-31,Brighton,Man City,home_corners,Brighton corners,UNDER,5.5,3.0,True,85.0,20
+2526,2025-08-31,Nott'm Forest,West Ham,btts,Both teams to score,YES,,False,False,75.0,20
+2526,2025-08-31,Liverpool,Arsenal,btts,Both teams to score,YES,,False,False,75.0,20
+2526,2025-08-31,Aston Villa,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-09-13,Everton,Aston Villa,home_corners,Everton corners,UNDER,5.5,10.0,False,75.0,20
+2526,2025-09-13,Arsenal,Nott'm Forest,away_corners,Nott'm Forest corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-09-13,Crystal Palace,Sunderland,away_goals,Sunderland to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-09-13,Crystal Palace,Sunderland,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,75.0,20
+2526,2025-09-13,Crystal Palace,Sunderland,home_sot,Crystal Palace shots on target,UNDER,4.5,6.0,False,80.0,20
+2526,2025-09-13,Crystal Palace,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,0.0,True,80.0,20
+2526,2025-09-13,Fulham,Leeds,home_goals,Fulham to score,UNDER,1.5,1.0,True,85.0,20
+2526,2025-09-13,Fulham,Leeds,home_corners,Fulham corners,UNDER,5.5,3.0,True,80.0,20
+2526,2025-09-13,Fulham,Leeds,home_sot,Fulham shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-09-13,Newcastle,Wolves,away_sot,Wolves shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-09-14,Burnley,Liverpool,home_corners,Burnley corners,UNDER,5.5,1.0,True,75.0,20
+2526,2025-09-14,Man City,Man United,away_corners,Man United corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-09-20,Brighton,Tottenham,away_corners,Tottenham corners,UNDER,5.5,10.0,False,80.0,20
+2526,2025-09-20,Wolves,Leeds,home_goals,Wolves to score,UNDER,1.5,1.0,True,80.0,20
+2526,2025-09-20,Wolves,Leeds,home_corners,Wolves corners,UNDER,5.5,4.0,True,85.0,20
+2526,2025-09-20,Wolves,Leeds,home_sot,Wolves shots on target,UNDER,4.5,6.0,False,85.0,20
+2526,2025-09-20,Wolves,Leeds,away_sot,Leeds shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-09-20,Liverpool,Everton,away_corners,Everton corners,UNDER,5.5,4.0,True,80.0,20
+2526,2025-09-20,Fulham,Brentford,away_corners,Brentford corners,UNDER,5.5,10.0,False,75.0,20
+2526,2025-09-20,Man United,Chelsea,home_goals,Man United to score,UNDER,1.5,2.0,False,75.0,20
+2526,2025-09-20,West Ham,Crystal Palace,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,80.0,20
+2526,2025-09-21,Bournemouth,Newcastle,away_goals,Newcastle to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-09-21,Bournemouth,Newcastle,home_sot,Bournemouth shots on target,UNDER,4.5,2.0,True,75.0,20
+2526,2025-09-21,Sunderland,Aston Villa,home_goals,Sunderland to score,UNDER,1.5,1.0,True,75.0,20
+2526,2025-09-21,Sunderland,Aston Villa,away_goals,Aston Villa to score,UNDER,1.5,1.0,True,75.0,20
+2526,2025-09-21,Sunderland,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,5.0,True,75.0,20
+2526,2025-09-21,Sunderland,Aston Villa,home_sot,Sunderland shots on target,UNDER,4.5,4.0,True,80.0,20
+2526,2025-09-21,Sunderland,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,2.0,True,80.0,20
+2526,2025-09-21,Arsenal,Man City,home_corners,Arsenal corners,UNDER,5.5,11.0,False,75.0,20
+2526,2025-09-27,Crystal Palace,Liverpool,away_sot,Liverpool shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-09-27,Leeds,Bournemouth,away_goals,Bournemouth to score,UNDER,1.5,2.0,False,75.0,20
+2526,2025-09-27,Leeds,Bournemouth,away_corners,Bournemouth corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-09-27,Leeds,Bournemouth,away_sot,Bournemouth shots on target,UNDER,4.5,5.0,False,75.0,20
+2526,2025-09-27,Chelsea,Brighton,away_corners,Brighton corners,UNDER,5.5,7.0,False,75.0,20
+2526,2025-09-27,Chelsea,Brighton,away_sot,Brighton shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-09-27,Nott'm Forest,Sunderland,home_corners,Nott'm Forest corners,UNDER,5.5,7.0,False,80.0,20
+2526,2025-09-27,Tottenham,Wolves,home_sot,Tottenham shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-09-27,Man City,Burnley,away_corners,Burnley corners,UNDER,5.5,2.0,True,85.0,20
+2526,2025-09-28,Aston Villa,Fulham,home_goals,Aston Villa to score,UNDER,1.5,3.0,False,75.0,20
+2526,2025-09-28,Aston Villa,Fulham,home_sot,Aston Villa shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-09-28,Aston Villa,Fulham,away_sot,Fulham shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-10-03,Bournemouth,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,75.0,20
+2526,2025-10-03,Bournemouth,Fulham,away_corners,Fulham corners,UNDER,5.5,3.0,True,80.0,20
+2526,2025-10-03,Bournemouth,Fulham,away_sot,Fulham shots on target,UNDER,4.5,4.0,True,75.0,20
+2526,2025-10-04,Chelsea,Liverpool,away_sot,Liverpool shots on target,UNDER,4.5,2.0,True,80.0,20
+2526,2025-10-04,Arsenal,West Ham,away_goals,West Ham to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-10-04,Leeds,Tottenham,away_corners,Tottenham corners,UNDER,5.5,1.0,True,80.0,16
+2526,2025-10-04,Man United,Sunderland,away_corners,Sunderland corners,UNDER,5.5,3.0,True,76.7,16
+2526,2025-10-04,Man United,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,3.0,True,76.7,16
+2526,2025-10-05,Brentford,Man City,home_corners,Brentford corners,UNDER,5.5,3.0,True,80.0,20
+2526,2025-10-05,Newcastle,Nott'm Forest,home_goals,Newcastle to score,UNDER,1.5,2.0,False,75.0,20
+2526,2025-10-05,Newcastle,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-10-05,Wolves,Brighton,home_sot,Wolves shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-10-05,Aston Villa,Burnley,away_corners,Burnley corners,UNDER,5.5,4.0,True,75.0,16
+2526,2025-10-05,Aston Villa,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,86.7,16
+2526,2025-10-05,Everton,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-10-05,Everton,Crystal Palace,home_sot,Everton shots on target,UNDER,4.5,7.0,False,80.0,20
+2526,2025-10-18,Nott'm Forest,Chelsea,home_sot,Nott'm Forest shots on target,UNDER,4.5,2.0,True,75.0,20
+2526,2025-10-18,Burnley,Leeds,home_corners,Burnley corners,UNDER,5.5,1.0,True,100.0,14
+2526,2025-10-18,Crystal Palace,Bournemouth,home_corners,Crystal Palace corners,UNDER,5.5,6.0,False,80.0,20
+2526,2025-10-18,Man City,Everton,away_corners,Everton corners,UNDER,5.5,3.0,True,90.0,20
+2526,2025-10-18,Sunderland,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,75.7,17
+2526,2025-10-18,Sunderland,Wolves,home_sot,Sunderland shots on target,UNDER,4.5,2.0,True,77.8,17
+2526,2025-10-18,Fulham,Arsenal,home_goals,Fulham to score,UNDER,1.5,0.0,True,85.0,20
+2526,2025-10-18,Fulham,Arsenal,home_corners,Fulham corners,UNDER,5.5,6.0,False,80.0,20
+2526,2025-10-18,Fulham,Arsenal,home_sot,Fulham shots on target,UNDER,4.5,0.0,True,75.0,20
+2526,2025-10-19,Tottenham,Aston Villa,home_sot,Tottenham shots on target,UNDER,4.5,3.0,True,80.0,20
+2526,2025-10-19,Liverpool,Man United,home_sot,Liverpool shots on target,UNDER,4.5,6.0,False,75.0,20
+2526,2025-10-25,Brentford,Liverpool,btts,Both teams to score,YES,,True,True,75.0,20
+2526,2025-10-25,Man United,Brighton,home_corners,Man United corners,UNDER,5.5,1.0,True,85.0,20
+2526,2025-10-25,Chelsea,Sunderland,away_corners,Sunderland corners,UNDER,5.5,1.0,True,78.8,18
+2526,2025-10-25,Chelsea,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,4.0,True,93.8,18
+2526,2025-10-25,Newcastle,Fulham,away_goals,Fulham to score,UNDER,1.5,1.0,True,75.0,20
+2526,2025-10-25,Newcastle,Fulham,away_sot,Fulham shots on target,UNDER,4.5,5.0,False,80.0,20
+2526,2025-10-26,Arsenal,Crystal Palace,away_goals,Crystal Palace to score,UNDER,1.5,0.0,True,75.0,20
+2526,2025-10-26,Arsenal,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,3.0,True,75.0,20
+2526,2025-10-26,Aston Villa,Man City,home_sot,Aston Villa shots on target,UNDER,4.5,3.0,True,80.0,20
+2526,2025-10-26,Wolves,Burnley,away_corners,Burnley corners,UNDER,5.5,3.0,True,75.0,18
+2526,2025-10-26,Wolves,Burnley,away_sot,Burnley shots on target,UNDER,4.5,7.0,False,78.8,18
+2526,2025-11-01,Brighton,Leeds,home_corners,Brighton corners,UNDER,5.5,4.0,True,75.0,19
+2526,2025-11-01,Brighton,Leeds,away_corners,Leeds corners,UNDER,5.5,7.0,False,83.9,19
+2526,2025-11-01,Brighton,Leeds,away_sot,Leeds shots on target,UNDER,4.5,2.0,True,78.9,19
+2526,2025-11-01,Burnley,Arsenal,home_goals,Burnley to score,UNDER,1.5,0.0,True,77.8,19
+2526,2025-11-01,Burnley,Arsenal,home_corners,Burnley corners,UNDER,5.5,1.0,True,90.0,19
+2526,2025-11-01,Burnley,Arsenal,home_sot,Burnley shots on target,UNDER,4.5,0.0,True,83.9,19
+2526,2025-11-01,Fulham,Wolves,home_sot,Fulham shots on target,UNDER,4.5,6.0,False,80.0,20
+2526,2025-11-01,Nott'm Forest,Man United,home_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.0,20
+2526,2025-11-01,Tottenham,Chelsea,home_sot,Tottenham shots on target,UNDER,4.5,1.0,True,85.0,20
+2526,2025-11-01,Liverpool,Aston Villa,home_sot,Liverpool shots on target,UNDER,4.5,4.0,True,80.0,20
+2526,2025-11-01,Liverpool,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,3.0,True,75.0,20
+2526,2025-11-02,West Ham,Newcastle,home_goals,West Ham to score,UNDER,1.5,3.0,False,75.0,20
+2526,2025-11-03,Sunderland,Everton,home_sot,Sunderland shots on target,UNDER,4.5,3.0,True,79.5,19
+2526,2025-11-08,Chelsea,Wolves,away_corners,Wolves corners,UNDER,5.5,1.0,True,80.0,20
+2526,2025-11-08,Chelsea,Wolves,away_sot,Wolves shots on target,UNDER,4.5,0.0,True,90.0,20
+2526,2025-11-08,Sunderland,Arsenal,home_goals,Sunderland to score,UNDER,1.5,2.0,False,80.0,20
+2526,2025-11-08,Sunderland,Arsenal,home_corners,Sunderland corners,UNDER,5.5,2.0,True,85.0,20
+2526,2025-11-08,Sunderland,Arsenal,home_sot,Sunderland shots on target,UNDER,4.5,2.0,True,90.0,20
+2526,2025-11-08,Everton,Fulham,away_sot,Fulham shots on target,UNDER,4.5,4.0,True,80.0,20
+2526,2025-11-09,Man City,Liverpool,away_corners,Liverpool corners,UNDER,5.5,7.0,False,75.0,20
+2526,2025-11-09,Nott'm Forest,Leeds,home_corners,Nott'm Forest corners,UNDER,5.5,6.0,False,85.0,20
+2526,2025-11-09,Aston Villa,Bournemouth,home_sot,Aston Villa shots on target,UNDER,4.5,8.0,False,75.0,20
+2526,2025-11-09,Brentford,Newcastle,home_corners,Brentford corners,UNDER,5.5,6.0,False,75.0,20
+2526,2025-11-09,Crystal Palace,Brighton,home_corners,Crystal Palace corners,UNDER,5.5,4.0,True,75.0,20
+2526,2025-11-22,Wolves,Crystal Palace,home_goals,Wolves to score,UNDER,1.5,0.0,True,81.8,22
+2526,2025-11-22,Wolves,Crystal Palace,home_sot,Wolves shots on target,UNDER,4.5,1.0,True,81.8,22
+2526,2025-11-22,Burnley,Chelsea,home_corners,Burnley corners,UNDER,5.5,1.0,True,86.3,22
+2526,2025-11-22,Burnley,Chelsea,home_sot,Burnley shots on target,UNDER,4.5,2.0,True,86.3,22
+2526,2025-11-22,Brighton,Brentford,away_corners,Brentford corners,UNDER,5.5,4.0,True,77.2,22
+2526,2025-11-22,Fulham,Sunderland,home_goals,Fulham to score,UNDER,1.5,1.0,True,77.2,22
+2526,2025-11-22,Newcastle,Man City,home_goals,Newcastle to score,UNDER,1.5,2.0,False,77.2,22
+2526,2025-11-22,Newcastle,Man City,home_sot,Newcastle shots on target,UNDER,4.5,5.0,False,77.2,22
+2526,2025-11-23,Arsenal,Tottenham,away_sot,Tottenham shots on target,UNDER,4.5,2.0,True,81.8,22
+2526,2025-11-23,Leeds,Aston Villa,home_goals,Leeds to score,UNDER,1.5,1.0,True,77.2,22
+2526,2025-11-23,Leeds,Aston Villa,home_sot,Leeds shots on target,UNDER,4.5,5.0,False,90.9,22
+2526,2025-11-24,Man United,Everton,home_corners,Man United corners,UNDER,5.5,9.0,False,77.2,22
+2526,2025-11-29,Tottenham,Fulham,away_goals,Fulham to score,UNDER,1.5,2.0,False,75.0,24
+2526,2025-11-29,Tottenham,Fulham,away_sot,Fulham shots on target,UNDER,4.5,3.0,True,75.0,24
+2526,2025-11-29,Sunderland,Bournemouth,home_corners,Sunderland corners,UNDER,5.5,6.0,False,75.0,24
+2526,2025-11-29,Sunderland,Bournemouth,home_sot,Sunderland shots on target,UNDER,4.5,6.0,False,75.0,24
+2526,2025-11-29,Everton,Newcastle,away_sot,Newcastle shots on target,UNDER,4.5,8.0,False,75.0,24
+2526,2025-11-29,Brentford,Burnley,away_corners,Burnley corners,UNDER,5.5,6.0,False,79.2,24
+2526,2025-11-29,Man City,Leeds,away_goals,Leeds to score,UNDER,1.5,2.0,False,75.0,24
+2526,2025-11-29,Man City,Leeds,away_corners,Leeds corners,UNDER,5.5,1.0,True,79.2,24
+2526,2025-11-30,Aston Villa,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,83.3,24
+2526,2025-11-30,Aston Villa,Wolves,home_sot,Aston Villa shots on target,UNDER,4.5,6.0,False,75.0,24
+2526,2025-11-30,Aston Villa,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,87.5,24
+2526,2025-12-03,Arsenal,Brentford,away_corners,Brentford corners,UNDER,5.5,8.0,False,80.8,26
+2526,2025-12-03,Arsenal,Brentford,away_sot,Brentford shots on target,UNDER,4.5,1.0,True,80.8,26
+2526,2025-12-03,Brighton,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,10.0,False,80.8,26
+2526,2025-12-03,Burnley,Crystal Palace,home_corners,Burnley corners,UNDER,5.5,3.0,True,76.9,26
+2526,2025-12-03,Burnley,Crystal Palace,home_sot,Burnley shots on target,UNDER,4.5,4.0,True,76.9,26
+2526,2025-12-03,Wolves,Nott'm Forest,home_corners,Wolves corners,UNDER,5.5,3.0,True,76.9,26
+2526,2025-12-03,Leeds,Chelsea,home_corners,Leeds corners,UNDER,5.5,4.0,True,76.9,26
+2526,2025-12-03,Leeds,Chelsea,home_sot,Leeds shots on target,UNDER,4.5,5.0,False,88.5,26
+2526,2025-12-06,Aston Villa,Arsenal,home_goals,Aston Villa to score,UNDER,1.5,2.0,False,75.0,28
+2526,2025-12-06,Aston Villa,Arsenal,home_sot,Aston Villa shots on target,UNDER,4.5,6.0,False,82.2,28
+2526,2025-12-06,Man City,Sunderland,away_corners,Sunderland corners,UNDER,5.5,5.0,True,82.2,28
+2526,2025-12-07,Brighton,West Ham,away_sot,West Ham shots on target,UNDER,4.5,5.0,False,78.6,28
+2526,2025-12-07,Fulham,Crystal Palace,home_goals,Fulham to score,UNDER,1.5,1.0,True,75.0,28
+2526,2025-12-07,Fulham,Crystal Palace,home_sot,Fulham shots on target,UNDER,4.5,4.0,True,75.0,28
+2526,2025-12-08,Wolves,Man United,home_corners,Wolves corners,UNDER,5.5,1.0,True,78.6,28
+2526,2025-12-08,Wolves,Man United,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,78.6,28
+2526,2025-12-13,Arsenal,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,86.7,30
+2526,2025-12-13,Arsenal,Wolves,away_corners,Wolves corners,UNDER,5.5,0.0,True,86.7,30
+2526,2025-12-13,Arsenal,Wolves,away_sot,Wolves shots on target,UNDER,4.5,2.0,True,86.7,30
+2526,2025-12-13,Chelsea,Everton,away_sot,Everton shots on target,UNDER,4.5,2.0,True,80.0,30
+2526,2025-12-14,Brentford,Leeds,home_corners,Brentford corners,UNDER,5.5,0.0,True,76.7,30
+2526,2025-12-14,West Ham,Aston Villa,home_goals,West Ham to score,UNDER,1.5,2.0,False,76.7,30
+2526,2025-12-14,West Ham,Aston Villa,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,76.7,30
+2526,2025-12-14,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,2.0,True,80.0,30
+2526,2025-12-20,Newcastle,Chelsea,home_sot,Newcastle shots on target,UNDER,4.5,5.0,False,75.0,32
+2526,2025-12-20,Brighton,Sunderland,away_corners,Sunderland corners,UNDER,5.5,4.0,True,78.2,32
+2526,2025-12-20,Brighton,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,6.0,False,78.1,32
+2526,2025-12-20,Everton,Arsenal,home_goals,Everton to score,UNDER,1.5,0.0,True,78.2,32
+2526,2025-12-20,Everton,Arsenal,home_sot,Everton shots on target,UNDER,4.5,1.0,True,81.2,32
+2526,2025-12-20,Leeds,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,5.0,True,84.3,32
+2526,2025-12-20,Wolves,Brentford,home_corners,Wolves corners,UNDER,5.5,3.0,True,75.0,32
+2526,2025-12-27,Burnley,Everton,home_corners,Burnley corners,UNDER,5.5,6.0,False,76.5,34
+2526,2025-12-27,Chelsea,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,8.0,False,76.5,34
+2526,2025-12-27,Liverpool,Wolves,away_corners,Wolves corners,UNDER,5.5,4.0,True,76.4,34
+2526,2025-12-28,Sunderland,Leeds,home_corners,Sunderland corners,UNDER,5.5,3.0,True,88.2,34
+2526,2025-12-30,Arsenal,Aston Villa,away_sot,Aston Villa shots on target,UNDER,4.5,3.0,True,77.8,36
+2526,2025-12-30,Man United,Wolves,away_corners,Wolves corners,UNDER,5.5,4.0,True,80.6,36
+2526,2025-12-30,Man United,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,80.6,36
+2526,2025-12-30,Burnley,Newcastle,home_sot,Burnley shots on target,UNDER,4.5,4.0,True,75.0,36
+2526,2026-01-01,Sunderland,Man City,home_corners,Sunderland corners,UNDER,5.5,3.0,True,86.1,36
+2526,2026-01-01,Sunderland,Man City,home_sot,Sunderland shots on target,UNDER,4.5,4.0,True,75.0,36
+2526,2026-01-01,Crystal Palace,Fulham,away_sot,Fulham shots on target,UNDER,4.5,5.0,False,75.0,36
+2526,2026-01-04,Tottenham,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,3.0,True,76.3,38
+2526,2026-01-04,Leeds,Man United,away_corners,Man United corners,UNDER,5.5,4.0,True,76.3,38
+2526,2026-01-07,Burnley,Man United,home_sot,Burnley shots on target,UNDER,4.5,1.0,True,77.5,40
+2526,2026-01-07,Man City,Brighton,away_corners,Brighton corners,UNDER,5.5,2.0,True,75.0,40
+2526,2026-01-07,Fulham,Chelsea,home_sot,Fulham shots on target,UNDER,4.5,5.0,False,75.0,40
+2526,2026-01-07,Brentford,Sunderland,away_corners,Sunderland corners,UNDER,5.5,4.0,True,75.0,40
+2526,2026-01-07,Everton,Wolves,away_goals,Wolves to score,UNDER,1.5,1.0,True,75.0,40
+2526,2026-01-07,Everton,Wolves,away_corners,Wolves corners,UNDER,5.5,7.0,False,77.5,40
+2526,2026-01-07,Everton,Wolves,away_sot,Wolves shots on target,UNDER,4.5,4.0,True,75.0,40
+2526,2026-01-08,Arsenal,Liverpool,away_sot,Liverpool shots on target,UNDER,4.5,0.0,True,82.5,40
+2526,2026-01-17,Man United,Man City,home_corners,Man United corners,UNDER,5.5,1.0,True,76.2,42
+2526,2026-01-17,Nott'm Forest,Arsenal,home_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,78.6,42
+2526,2026-01-17,Tottenham,West Ham,away_sot,West Ham shots on target,UNDER,4.5,4.0,True,78.6,42
+2526,2026-01-17,Sunderland,Crystal Palace,home_corners,Sunderland corners,UNDER,5.5,3.0,True,76.2,42
+2526,2026-01-18,Wolves,Newcastle,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,78.6,42
+2526,2026-01-24,Burnley,Tottenham,home_sot,Burnley shots on target,UNDER,4.5,4.0,True,79.5,44
+2526,2026-01-24,Man City,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,79.6,44
+2526,2026-01-24,Man City,Wolves,away_corners,Wolves corners,UNDER,5.5,6.0,False,86.4,44
+2526,2026-01-24,Man City,Wolves,away_sot,Wolves shots on target,UNDER,4.5,1.0,True,79.6,44
+2526,2026-01-25,Arsenal,Man United,away_corners,Man United corners,UNDER,5.5,2.0,True,75.0,44
+2526,2026-01-26,Everton,Leeds,home_corners,Everton corners,UNDER,5.5,4.0,True,75.0,44
+2526,2026-01-31,Leeds,Arsenal,home_corners,Leeds corners,UNDER,5.5,4.0,True,76.1,46
+2526,2026-01-31,Leeds,Arsenal,home_sot,Leeds shots on target,UNDER,4.5,1.0,True,76.1,46
+2526,2026-02-01,Man United,Fulham,away_sot,Fulham shots on target,UNDER,4.5,6.0,False,76.1,46
+2526,2026-02-07,Wolves,Chelsea,home_corners,Wolves corners,UNDER,5.5,3.0,True,75.0,48
+2526,2026-02-07,Arsenal,Sunderland,away_goals,Sunderland to score,UNDER,1.5,0.0,True,75.0,48
+2526,2026-02-07,Arsenal,Sunderland,away_corners,Sunderland corners,UNDER,5.5,2.0,True,87.5,48
+2526,2026-02-07,Arsenal,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,3.0,True,83.3,48
+2526,2026-02-10,West Ham,Man United,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,76.0,50
+2526,2026-02-11,Crystal Palace,Burnley,away_corners,Burnley corners,UNDER,5.5,2.0,True,76.0,50
+2526,2026-02-11,Sunderland,Liverpool,home_corners,Sunderland corners,UNDER,5.5,3.0,True,80.0,50
+2526,2026-02-12,Brentford,Arsenal,home_corners,Brentford corners,UNDER,5.5,6.0,False,76.0,50
+2526,2026-02-12,Brentford,Arsenal,home_sot,Brentford shots on target,UNDER,4.5,3.0,True,76.0,50
+2526,2026-02-18,Wolves,Arsenal,home_goals,Wolves to score,UNDER,1.5,2.0,False,86.5,52
+2526,2026-02-18,Wolves,Arsenal,home_corners,Wolves corners,UNDER,5.5,1.0,True,82.7,52
+2526,2026-02-18,Wolves,Arsenal,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,88.4,52
+2526,2026-02-21,Chelsea,Burnley,away_corners,Burnley corners,UNDER,5.5,5.0,True,76.9,52
+2526,2026-02-22,Crystal Palace,Wolves,away_goals,Wolves to score,UNDER,1.5,0.0,True,75.3,53
+2526,2026-02-22,Crystal Palace,Wolves,away_corners,Wolves corners,UNDER,5.5,3.0,True,77.2,53
+2526,2026-02-22,Crystal Palace,Wolves,away_sot,Wolves shots on target,UNDER,4.5,7.0,False,75.3,53
+2526,2026-02-22,Tottenham,Arsenal,home_sot,Tottenham shots on target,UNDER,4.5,5.0,False,80.9,53
+2526,2026-02-23,Everton,Man United,home_sot,Everton shots on target,UNDER,4.5,4.0,True,75.0,52
+2526,2026-02-27,Wolves,Aston Villa,home_goals,Wolves to score,UNDER,1.5,2.0,False,83.6,55
+2526,2026-02-27,Wolves,Aston Villa,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,76.2,55
+2526,2026-02-28,Leeds,Man City,home_corners,Leeds corners,UNDER,5.5,5.0,True,79.7,54
+2526,2026-03-01,Man United,Crystal Palace,away_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,75.9,54
+2526,2026-03-03,Everton,Burnley,away_sot,Burnley shots on target,UNDER,4.5,2.0,True,75.0,56
+2526,2026-03-03,Leeds,Sunderland,away_corners,Sunderland corners,UNDER,5.5,2.0,True,82.2,56
+2526,2026-03-03,Wolves,Liverpool,home_corners,Wolves corners,UNDER,5.5,2.0,True,77.1,57
+2526,2026-03-03,Wolves,Liverpool,home_sot,Wolves shots on target,UNDER,4.5,3.0,True,75.3,57
+2526,2026-03-04,Man City,Nott'm Forest,away_goals,Nott'm Forest to score,UNDER,1.5,2.0,False,75.0,56
+2526,2026-03-14,Arsenal,Everton,away_sot,Everton shots on target,UNDER,4.5,3.0,True,79.5,59
+2526,2026-03-14,Sunderland,Brighton,home_corners,Sunderland corners,UNDER,5.5,7.0,False,75.9,58
+2526,2026-03-14,Sunderland,Brighton,home_sot,Sunderland shots on target,UNDER,4.5,4.0,True,77.6,58
+2526,2026-03-14,West Ham,Man City,home_sot,West Ham shots on target,UNDER,4.5,1.0,True,75.8,58
+2526,2026-03-16,Brentford,Wolves,away_corners,Wolves corners,UNDER,5.5,5.0,True,76.1,59
+2526,2026-03-22,Newcastle,Sunderland,away_corners,Sunderland corners,UNDER,5.5,5.0,True,75.0,60
+2526,2026-04-11,Burnley,Brighton,home_sot,Burnley shots on target,UNDER,4.5,5.0,False,77.4,62
+2526,2026-04-12,Sunderland,Tottenham,home_corners,Sunderland corners,UNDER,5.5,2.0,True,77.4,62
+2526,2026-04-18,Leeds,Wolves,away_corners,Wolves corners,UNDER,5.5,6.0,False,79.7,64
+2526,2026-04-22,Burnley,Man City,home_corners,Burnley corners,UNDER,5.5,3.0,True,84.7,65
+2526,2026-04-22,Burnley,Man City,home_sot,Burnley shots on target,UNDER,4.5,1.0,True,76.9,65
+2526,2026-04-24,Sunderland,Nott'm Forest,home_corners,Sunderland corners,UNDER,5.5,3.0,True,75.8,66
+2526,2026-04-25,Wolves,Tottenham,home_corners,Wolves corners,UNDER,5.5,5.0,True,77.2,66
+2526,2026-04-25,Wolves,Tottenham,home_sot,Wolves shots on target,UNDER,4.5,2.0,True,78.8,66
+2526,2026-05-01,Leeds,Burnley,away_corners,Burnley corners,UNDER,5.5,0.0,True,75.0,68
+2526,2026-05-02,Arsenal,Fulham,away_sot,Fulham shots on target,UNDER,4.5,1.0,True,79.4,68
+2526,2026-05-04,Everton,Man City,home_corners,Everton corners,UNDER,5.5,5.0,True,77.8,67
+2526,2026-05-09,Brighton,Wolves,away_sot,Wolves shots on target,UNDER,4.5,1.0,True,75.8,70
+2526,2026-05-09,Man City,Brentford,away_corners,Brentford corners,UNDER,5.5,2.0,True,75.5,69
+2526,2026-05-10,West Ham,Arsenal,home_sot,West Ham shots on target,UNDER,4.5,3.0,True,84.3,70
+2526,2026-05-13,Man City,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,4.0,True,80.0,70
+2526,2026-05-18,Arsenal,Burnley,away_goals,Burnley to score,UNDER,1.5,0.0,True,75.0,72
+2526,2026-05-18,Arsenal,Burnley,away_corners,Burnley corners,UNDER,5.5,3.0,True,81.9,72
+2526,2026-05-18,Arsenal,Burnley,away_sot,Burnley shots on target,UNDER,4.5,0.0,True,83.3,72
+2526,2026-05-24,Crystal Palace,Arsenal,home_corners,Crystal Palace corners,UNDER,5.5,3.0,True,77.0,74
+2526,2026-05-24,Crystal Palace,Arsenal,home_sot,Crystal Palace shots on target,UNDER,4.5,3.0,True,79.8,74
+2526,2026-05-24,Sunderland,Chelsea,home_corners,Sunderland corners,UNDER,5.5,7.0,False,79.8,74
+2627,2026-08-21,Arsenal,Coventry,home_corners,Arsenal corners,UNDER,5.5,8.0,False,85.0,20
+2627,2026-08-21,Arsenal,Coventry,home_sot,Arsenal shots on target,UNDER,4.5,6.0,False,75.0,20
+2627,2026-08-22,Ipswich,Sunderland,away_corners,Sunderland corners,UNDER,5.5,5.0,True,75.0,20
+2627,2026-08-22,Ipswich,Sunderland,away_sot,Sunderland shots on target,UNDER,4.5,4.0,True,80.0,20
+2627,2026-08-22,Brentford,Tottenham,home_corners,Brentford corners,UNDER,5.5,7.0,False,85.0,20
+2627,2026-08-22,Brentford,Tottenham,home_sot,Brentford shots on target,UNDER,4.5,8.0,False,90.0,20
+2627,2026-08-22,Hull,Man United,btts,Both teams to score,YES,,False,False,75.0,20
+2627,2026-08-23,Man City,Bournemouth,home_corners,Man City corners,OVER,5.5,8.0,True,75.0,20
+2627,2026-08-23,Newcastle,Liverpool,home_corners,Newcastle corners,UNDER,5.5,2.0,True,75.0,20
+2627,2026-08-23,Newcastle,Liverpool,btts,Both teams to score,YES,,True,True,80.0,20
+2627,2026-08-24,Fulham,Chelsea,away_goals,Chelsea to score,UNDER,1.5,3.0,False,80.0,20

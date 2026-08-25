@@ -1,5 +1,6 @@
 seasons/
 *.csv
+!var_era_ledger.csv
 trends_data.json
 dashboard.html
 fixtures_raw.csv
