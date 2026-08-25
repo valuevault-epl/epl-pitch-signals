@@ -82,11 +82,25 @@ def load_results(div='E0'):
     return combined
 
 
-def load_fixtures():
+def load_fixtures(results=None, current_season=None):
+    """football-data.co.uk's fixtures.csv is a separate feed from the season result files, and it
+    lags: right after a round is played, the results file already has final scores for those
+    matches while fixtures.csv can still list the same already-played matches as 'upcoming' for a
+    while. So once we know the current season's completed results, drop any fixture whose
+    (HomeTeam, AwayTeam) pairing already has a result there - otherwise the dashboard would show
+    finished matches as next week's positions."""
     df = pd.read_csv(os.path.join(WORKDIR, "fixtures_raw.csv"), encoding='utf-8-sig', on_bad_lines='skip')
     e0 = df[df['Div'] == 'E0'].copy()
     e0['Date'] = pd.to_datetime(e0['Date'], format='mixed', dayfirst=True, errors='coerce')
-    return e0.dropna(subset=['Date', 'HomeTeam', 'AwayTeam']).sort_values('Date').reset_index(drop=True)
+    e0 = e0.dropna(subset=['Date', 'HomeTeam', 'AwayTeam']).sort_values('Date').reset_index(drop=True)
+
+    if results is not None and current_season is not None:
+        cur = results[results['season'] == current_season]
+        played = set(zip(cur['HomeTeam'], cur['AwayTeam']))
+        already_played = e0.apply(lambda r: (r['HomeTeam'], r['AwayTeam']) in played, axis=1)
+        e0 = e0[~already_played].reset_index(drop=True)
+
+    return e0
 
 
 MARKETS = {
@@ -258,11 +272,12 @@ if __name__ == '__main__':
     results_championship = load_results('E1')
     print(f"Loaded {len(results)} PL results (latest: {results['Date'].max()}), "
           f"{len(results_championship)} Championship results (fallback for promoted teams)")
-    fixtures = load_fixtures()
-    print(f"Loaded {len(fixtures)} upcoming fixtures")
+    current_season = current_season_code()
+    fixtures = load_fixtures(results, current_season)
+    print(f"Loaded {len(fixtures)} upcoming fixtures (already-played matches filtered out)")
 
     team_games = build_team_history(results, results_fallback=results_championship,
-                                     current_season=current_season_code())
+                                     current_season=current_season)
     league_avgs = league_averages_from_matches(results)
     trends = build_all_trends(team_games, league_avgs)
     print(f"\nComputed trends for {len(trends)} teams")

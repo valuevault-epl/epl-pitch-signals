@@ -120,7 +120,10 @@ if __name__ == '__main__':
         json.dump(data, f, indent=2, default=str)
 
     print(f"Built matchup signals for {len(fixtures_with_signals)} fixtures")
-    fx0 = fixtures_with_signals[0]
-    print(f"\nExample - {fx0['HomeTeam']} vs {fx0['AwayTeam']}:")
-    for k, v in (fx0['signals'] or {}).items():
-        print(f"  {k}: {v}")
+    if fixtures_with_signals:
+        fx0 = fixtures_with_signals[0]
+        print(f"\nExample - {fx0['HomeTeam']} vs {fx0['AwayTeam']}:")
+        for k, v in (fx0['signals'] or {}).items():
+            print(f"  {k}: {v}")
+    else:
+        print("(no upcoming fixtures currently published by the data source)")
