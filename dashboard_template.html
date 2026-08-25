@@ -557,23 +557,14 @@
     return pct.toFixed(1) + '%';
   }
 
-  // Reliability = how far the hit-rate sits from a coin-flip (50%), scaled down when the
-  // sample backing it is thin. Encoded as a tier (strong/moderate/weak) - both a color AND a
-  // text label, so it reads even without color.
-  function reliability(hitRate, nTotal) {
-    const extremity = Math.abs(hitRate - 50) / 50;       // 0 = coin flip, 1 = always/never
-    // Window size is now adaptive (see methodology) - starts at 10/team early in a season,
-    // growing toward 38/team as the season goes on. 40 combined is "deep enough to trust" at a
-    // typical mid-season point; early-season signals (leaning on last season's bridge data)
-    // land lower on this scale and so lean toward Moderate rather than Strong until the current
-    // season's own evidence has had a chance to build up.
-    const sizeFactor = Math.min(1, nTotal / 40);
-    return extremity * sizeFactor;
-  }
-
-  function reliabilityTier(score) {
-    if (score >= 0.55) return { cls: 'rel-strong', label: 'Strong' };
-    if (score >= 0.28) return { cls: 'rel-moderate', label: 'Moderate' };
+  // Reliability tier is a direct read on the blended hit rate itself - the average of both
+  // teams' own rates, already flipped to "% support for the call actually being shown" (see
+  // where teamHit/oppHit are computed below). No sample-size discount: a 75%+ blended rate is
+  // Strong whether it's backed by 10 games or 38 - depth of sample is shown separately via the
+  // n= counts on each hit-rate chip, not folded into the tier.
+  function reliabilityTier(blended) {
+    if (blended >= 75) return { cls: 'rel-strong', label: 'Strong' };
+    if (blended >= 60) return { cls: 'rel-moderate', label: 'Moderate' };
     return { cls: 'rel-weak', label: 'Weak' };
   }
 
@@ -599,10 +590,8 @@
     const oppHit = direction === 'UNDER' ? 100 - oppHitRaw : oppHitRaw;
     const teamN = sig.team_n || sig.home_team_n || 0;
     const oppN = sig.opponent_n || sig.away_team_n || 0;
-    const nTotal = teamN + oppN;
 
-    const relScore = reliability((teamHit + oppHit) / 2, nTotal);
-    const tier = reliabilityTier(relScore);
+    const tier = reliabilityTier((teamHit + oppHit) / 2);
     const relColorVar = sign === 'neg' ? 'var(--negative)' : sign === 'pos' ? 'var(--positive)' : 'var(--accent)';
     const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
 
@@ -656,9 +645,8 @@
       if (s && s.vs_line !== undefined) {
         const teamHit = s.team_hit_rate ?? s.home_team_hit_rate;
         const oppHit = s.opponent_hit_rate ?? s.away_team_hit_rate;
-        const nTotal = (s.team_n || s.home_team_n || 0) + (s.opponent_n || s.away_team_n || 0);
-        const rel = reliability((teamHit + oppHit) / 2, nTotal);
-        max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * rel));
+        const extremity = Math.abs((teamHit + oppHit) / 2 - 50) / 50;
+        max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * extremity));
       }
     }
     return max;
