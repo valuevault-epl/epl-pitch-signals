@@ -925,13 +925,21 @@
     }
 
     const lineSuffix = ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}`;
-    // Minimum live odds for a 5% edge, from this market's own accumulating Strong-signal track
-    // record since the VAR era (2019-20+) - a separate, never-trimmed ledger from the rolling
-    // team-trend window above. Only shown on Strong rows, since that ledger only ever grades
-    // signals that were themselves Strong at the time.
+    // Minimum live odds for a 5% edge, computed fresh from THIS signal's own blended hit rate at
+    // whatever line is currently selected (min_odds = 1.05 / hit_rate, i.e. the bookmaker's
+    // implied odds - 1/odds - would have to be at least 5% more generous than what the hit rate
+    // says is fair) - not a fixed market-wide lookup, so it updates correctly when a different
+    // line is picked from the dropdown. Only shown on Strong rows: the >=75% tier gate already
+    // guarantees a sane, bounded number here. The market's own long-run track record since the
+    // VAR era (a separate, never-trimmed ledger from the rolling team-trend window above) is kept
+    // alongside as context, not as the number itself.
+    const blended = (teamHit + oppHit) / 2;
+    const liveMinOdds = blended > 0 ? 1.05 / (blended / 100) : null;
     const floor = DATA.market_floors && DATA.market_floors[key];
-    const floorChipHtml = (tier.cls === 'rel-strong' && floor && floor.min_odds) ? `
-        <span class="hit-chip floor-chip">Take at <b>${floor.min_odds.toFixed(2)}+</b> odds for a 5% edge <span class="hit-n">(market hit ${floor.win_rate}% in ${floor.n} bets since ${seasonLabel(floor.since_season)})</span></span>` : '';
+    const floorContextHtml = floor
+      ? ` <span class="hit-n">(market's long-run rate since ${seasonLabel(floor.since_season)}: ${floor.win_rate}%, n=${floor.n})</span>` : '';
+    const floorChipHtml = (tier.cls === 'rel-strong' && liveMinOdds) ? `
+        <span class="hit-chip floor-chip">Take at <b>${liveMinOdds.toFixed(2)}+</b> odds for a 5% edge over implied odds, at this line's ${blended.toFixed(0)}% hit rate${floorContextHtml}</span>` : '';
     const hitRow = `
       <div class="hit-compare">
         <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
