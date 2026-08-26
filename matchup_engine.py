@@ -37,11 +37,22 @@ STRONG_HIT_RATE = 75      # matches the dashboard's own Strong tier - the search
 # Ceiling on how far the search is allowed to push the line away from the projection, in the
 # market's own units, before giving up and using whatever got closest. Also bounds the range of
 # lines offered in the dashboard's per-signal dropdown.
+#
+# Kept deliberately tight: a bookmaker prices an alt line based on ITS OWN model, not this one -
+# a line so deep that a team clears it 90%+ of the time wouldn't actually be offered anywhere
+# near the odds this search's formula would call "needed for 5% edge" (min_odds = 1.05/hit_rate
+# keeps climbing as hit_rate does, but real books shorten the price just as fast, usually faster,
+# for a line that easy - e.g. a genuinely ~90%-likely corners line prices closer to 1.10-1.15 in
+# practice, not the 1.3+ this search would ask for without a ceiling). No live odds feed exists
+# to calibrate this precisely (see README/conversation - checked, nothing free covers these
+# specific alt-line markets), so these are a deliberately conservative estimate of how far a real
+# alt-line menu plausibly stretches, not a verified figure - revisit if signals still look
+# unrealistic against real prices.
 MAX_SHIFT = {
-    'goals_for': 2.0, 'goals_against': 2.0,
-    'corners_for': 4.0, 'corners_against': 4.0,
-    'shots_on_target_for': 3.0, 'shots_on_target_against': 3.0,
-    'match_cards': 3.0,
+    'goals_for': 1.5, 'goals_against': 1.5,
+    'corners_for': 2.5, 'corners_against': 2.5,
+    'shots_on_target_for': 2.0, 'shots_on_target_against': 2.0,
+    'match_cards': 2.0,
 }
 
 
