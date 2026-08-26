@@ -119,6 +119,30 @@ def _floor_stats(sub, edge):
     }
 
 
+def _isotonic_win_rates(bands):
+    """Pool-adjacent-violators: bands are already in ascending predicted-hit-rate order, so their
+    ACTUAL win rate should never decrease as the predicted band goes up - a genuinely stronger
+    predicted band can't really require worse real odds than a weaker one. With enough bets that
+    holds; with a few hundred it sometimes doesn't purely from noise (seen directly: a market's
+    85-90% band once actually won less often than its 75-80% band on a n=33 sample). Whenever a
+    later band's raw rate would dip below an earlier one, pool them into a single weighted-average
+    block and re-check, repeating until the whole sequence is non-decreasing. Mutates nothing -
+    returns a new win_rate/min_odds per band, same length and order as the input."""
+    stack = []  # each entry: [wins, n, [band indices in this pooled block]]
+    for i, b in enumerate(bands):
+        wins, n, idxs = b['wins'], b['n'], [i]
+        while stack and (stack[-1][0] / stack[-1][1]) > (wins / n):
+            pwins, pn, pidxs = stack.pop()
+            wins, n, idxs = wins + pwins, n + pn, pidxs + idxs
+        stack.append([wins, n, idxs])
+
+    pooled_rate = [None] * len(bands)
+    for wins, n, idxs in stack:
+        for i in idxs:
+            pooled_rate[i] = wins / n
+    return pooled_rate
+
+
 def compute_floors(ledger, edge=0.05, min_band_n=30):
     """Per-market floor, PLUS per-market bands keyed by the predicted (blended) hit rate at
     grading time - e.g. "bets where the search found 80-85%" - so the dashboard can look up how
@@ -126,7 +150,9 @@ def compute_floors(ledger, edge=0.05, min_band_n=30):
     single fixture's own small sample directly as the odds threshold. A signal's live hit rate at
     whatever line is picked determines which band applies; the band's long-run win rate is what
     actually drives the displayed odds. Bands with fewer than `min_band_n` bets are dropped (too
-    thin to trust) - the dashboard falls back to the nearest band with enough data."""
+    thin to trust) - the dashboard falls back to the nearest band with enough data. Win rates are
+    then made monotonic across bands (see _isotonic_win_rates) so picking a stronger line never
+    shows worse odds than a weaker one purely because one band's raw sample happened to run cold."""
     floors = {}
     for market in ledger['market'].unique():
         sub = ledger[ledger['market'] == market]
@@ -141,6 +167,11 @@ def compute_floors(ledger, edge=0.05, min_band_n=30):
             if len(band_sub) >= min_band_n:
                 bands.append({'low': low, 'high': min(low + BAND_WIDTH, 100), **_floor_stats(band_sub, edge)})
             low += BAND_WIDTH
+
+        for b, rate in zip(bands, _isotonic_win_rates(bands)):
+            b['win_rate'] = round(rate * 100, 1)
+            b['min_odds'] = round((1 + edge) / rate, 2) if rate > 0 else None
+
         floor['bands'] = bands
         floors[market] = floor
     return floors
