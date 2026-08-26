@@ -1,4 +1,5 @@
 seasons/
+player_cache/
 *.csv
 !var_era_ledger.csv
 trends_data.json

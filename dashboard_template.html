@@ -754,6 +754,7 @@
   <div class="view-tabs" role="tablist" aria-label="View">
     <button class="view-tab active" data-view="fixtures">Fixtures</button>
     <button class="view-tab" data-view="signals">All Signals</button>
+    <button class="view-tab" data-view="players">Players</button>
   </div>
 
   <div class="view-panel" id="panel-fixtures">
@@ -776,6 +777,26 @@
     </div>
     <div class="signal-list-wrap">
       <table class="signal-list" id="signal-list">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="view-panel" id="panel-players" hidden>
+    <p class="section-sub">Goals, shots, and assists - the player markets with genuine per-match history available (see methodology; cards aren't included, the free source only has season totals for those). Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not confirmed lineups.</p>
+    <div class="filter-row" role="group" aria-label="Filter players">
+      <span class="controls-label">Show</span>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-strong" checked> Strong</label>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-moderate" checked> Moderate</label>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-weak"> Weak</label>
+      <span class="controls-label" style="margin-left:14px;">Market</span>
+      <label class="filter-check"><input type="checkbox" data-pmarket="goals" checked> Goals</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="shots" checked> Shots</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="assists" checked> Assists</label>
+    </div>
+    <div class="signal-list-wrap">
+      <table class="signal-list" id="player-list">
         <thead></thead>
         <tbody></tbody>
       </table>
@@ -1154,6 +1175,7 @@
       btn.classList.add('active');
       document.getElementById('panel-fixtures').hidden = btn.dataset.view !== 'fixtures';
       document.getElementById('panel-signals').hidden = btn.dataset.view !== 'signals';
+      document.getElementById('panel-players').hidden = btn.dataset.view !== 'players';
     });
   });
 
@@ -1215,8 +1237,66 @@
     if (cell) openGameModal(cell.dataset.home, cell.dataset.away);
   });
 
+  // ---------- Players tab: flat, filterable list of goals/shots/assists signals ----------
+  function allPlayerSignalsFlat() {
+    const rows = [];
+    for (const fx of DATA.fixtures) {
+      for (const sig of (fx.player_signals || [])) {
+        const opponent = sig.side === 'H' ? fx.AwayTeam : fx.HomeTeam;
+        rows.push({
+          player: sig.player, team: sig.team, opponent,
+          market: sig.market.charAt(0).toUpperCase() + sig.market.slice(1), marketKey: sig.market,
+          call: `${sig.direction} ${sig.line}`, hitRate: sig.hit_rate,
+          modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
+        });
+      }
+    }
+    return rows;
+  }
+
+  function renderPlayerList() {
+    const activeTiers = new Set(
+      [...document.querySelectorAll('#panel-players input[data-ptier]:checked')].map(cb => cb.dataset.ptier)
+    );
+    const activeMarkets = new Set(
+      [...document.querySelectorAll('#panel-players input[data-pmarket]:checked')].map(cb => cb.dataset.pmarket)
+    );
+    // Sorted by modeled odds, not raw hit rate - a defender's "under 0.5 goals" is trivially
+    // true (100% hit rate) but worth essentially nothing (odds ~1.01, since a real book would
+    // price it just as close to certain). Odds distance from 1.0 is what actually separates a
+    // genuinely interesting signal from an obviously-true one with the same hit rate.
+    const rows = allPlayerSignalsFlat()
+      .filter(r => activeTiers.has(r.tier.cls) && activeMarkets.has(r.marketKey))
+      .sort((a, b) => b.modeledOdds - a.modeledOdds);
+
+    const thead = document.querySelector('#player-list thead');
+    const tbody = document.querySelector('#player-list tbody');
+    thead.innerHTML = '<tr><th>Player</th><th>Team</th><th>Opponent</th><th>Market</th><th>Call</th><th>Hit rate</th><th>Modeled odds</th><th>Tier</th></tr>';
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No player signals match the selected filters.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.player}</td>
+        <td>${r.team}</td>
+        <td>${r.opponent}</td>
+        <td>${r.market}</td>
+        <td class="mono-cell">${r.call}</td>
+        <td class="mono-cell">${r.hitRate.toFixed(0)}%</td>
+        <td class="mono-cell">${r.modeledOdds.toFixed(2)}</td>
+        <td><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
+      </tr>`).join('');
+  }
+
+  document.querySelectorAll('#panel-players input[data-ptier], #panel-players input[data-pmarket]').forEach(cb => {
+    cb.addEventListener('change', renderPlayerList);
+  });
+
   renderFixtures('strength');
   renderSignalList();
+  renderPlayerList();
 
   // ---------- Team trends table ----------
   const TEAM_COLS = [
