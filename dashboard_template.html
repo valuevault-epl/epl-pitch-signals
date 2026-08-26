@@ -784,15 +784,20 @@
   </div>
 
   <div class="view-panel" id="panel-players" hidden>
-    <p class="section-sub">Goals, shots, and assists - the player markets with genuine per-match history available (see methodology; cards aren't included, the free source only has season totals for those). Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not confirmed lineups.</p>
+    <p class="section-sub">Goals, shots, shots on target, and assists - the player markets with genuine per-match history available (see methodology; cards aren't included, the free source only has season totals for those). Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not confirmed lineups.</p>
     <div class="filter-row" role="group" aria-label="Filter players">
-      <span class="controls-label">Show</span>
+      <span class="controls-label">Game</span>
+      <select id="player-game-filter" class="chip-btn">
+        <option value="">All games</option>
+      </select>
+      <span class="controls-label" style="margin-left:14px;">Show</span>
       <label class="filter-check"><input type="checkbox" data-ptier="rel-strong" checked> Strong</label>
       <label class="filter-check"><input type="checkbox" data-ptier="rel-moderate" checked> Moderate</label>
       <label class="filter-check"><input type="checkbox" data-ptier="rel-weak"> Weak</label>
       <span class="controls-label" style="margin-left:14px;">Market</span>
       <label class="filter-check"><input type="checkbox" data-pmarket="goals" checked> Goals</label>
       <label class="filter-check"><input type="checkbox" data-pmarket="shots" checked> Shots</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="shots_on_target" checked> Shots on target</label>
       <label class="filter-check"><input type="checkbox" data-pmarket="assists" checked> Assists</label>
     </div>
     <div class="signal-list-wrap">
@@ -1237,21 +1242,34 @@
     if (cell) openGameModal(cell.dataset.home, cell.dataset.away);
   });
 
-  // ---------- Players tab: flat, filterable list of goals/shots/assists signals ----------
+  // ---------- Players tab: flat, filterable list of goals/shots/SoT/assists signals ----------
   function allPlayerSignalsFlat() {
     const rows = [];
     for (const fx of DATA.fixtures) {
+      const fixture = `${fx.HomeTeam} v ${fx.AwayTeam}`;
       for (const sig of (fx.player_signals || [])) {
-        const opponent = sig.side === 'H' ? fx.AwayTeam : fx.HomeTeam;
         rows.push({
-          player: sig.player, team: sig.team, opponent,
-          market: sig.market.charAt(0).toUpperCase() + sig.market.slice(1), marketKey: sig.market,
+          player: sig.player, team: sig.team, fixture,
+          market: PLAYER_MARKET_LABELS[sig.market] || sig.market, marketKey: sig.market,
           call: `${sig.direction} ${sig.line}`, hitRate: sig.hit_rate,
           modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
         });
       }
     }
     return rows;
+  }
+  const PLAYER_MARKET_LABELS = { goals: 'Goals', shots: 'Shots', shots_on_target: 'Shots on target', assists: 'Assists' };
+
+  function populateGameFilter() {
+    const sel = document.getElementById('player-game-filter');
+    const fixtures = [...DATA.fixtures].sort((a, b) => a.Date.localeCompare(b.Date));
+    for (const fx of fixtures) {
+      if (!(fx.player_signals || []).length) continue;
+      const opt = document.createElement('option');
+      opt.value = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+      opt.textContent = opt.value;
+      sel.appendChild(opt);
+    }
   }
 
   function renderPlayerList() {
@@ -1261,17 +1279,19 @@
     const activeMarkets = new Set(
       [...document.querySelectorAll('#panel-players input[data-pmarket]:checked')].map(cb => cb.dataset.pmarket)
     );
+    const gameFilter = document.getElementById('player-game-filter').value;
     // Sorted by modeled odds, not raw hit rate - a defender's "under 0.5 goals" is trivially
     // true (100% hit rate) but worth essentially nothing (odds ~1.01, since a real book would
     // price it just as close to certain). Odds distance from 1.0 is what actually separates a
     // genuinely interesting signal from an obviously-true one with the same hit rate.
     const rows = allPlayerSignalsFlat()
-      .filter(r => activeTiers.has(r.tier.cls) && activeMarkets.has(r.marketKey))
+      .filter(r => activeTiers.has(r.tier.cls) && activeMarkets.has(r.marketKey)
+        && (!gameFilter || r.fixture === gameFilter))
       .sort((a, b) => b.modeledOdds - a.modeledOdds);
 
     const thead = document.querySelector('#player-list thead');
     const tbody = document.querySelector('#player-list tbody');
-    thead.innerHTML = '<tr><th>Player</th><th>Team</th><th>Opponent</th><th>Market</th><th>Call</th><th>Hit rate</th><th>Modeled odds</th><th>Tier</th></tr>';
+    thead.innerHTML = '<tr><th>Player</th><th>Team</th><th>Game</th><th>Market</th><th>Call</th><th>Hit rate</th><th>Modeled odds</th><th>Tier</th></tr>';
 
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No player signals match the selected filters.</td></tr>';
@@ -1281,7 +1301,7 @@
       <tr>
         <td>${r.player}</td>
         <td>${r.team}</td>
-        <td>${r.opponent}</td>
+        <td>${r.fixture}</td>
         <td>${r.market}</td>
         <td class="mono-cell">${r.call}</td>
         <td class="mono-cell">${r.hitRate.toFixed(0)}%</td>
@@ -1290,6 +1310,8 @@
       </tr>`).join('');
   }
 
+  populateGameFilter();
+  document.getElementById('player-game-filter').addEventListener('change', renderPlayerList);
   document.querySelectorAll('#panel-players input[data-ptier], #panel-players input[data-pmarket]').forEach(cb => {
     cb.addEventListener('change', renderPlayerList);
   });

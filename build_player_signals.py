@@ -15,7 +15,7 @@ from trend_engine import WORKDIR, current_season_code
 from player_data import fetch_roster, cached_player_matches, key_players_for_team
 from player_engine import player_trend, build_player_signal
 
-PLAYER_MARKETS = ['goals', 'shots', 'assists']
+PLAYER_MARKETS = ['goals', 'shots', 'shots_on_target', 'assists']
 
 
 def build_all_player_signals(fixtures, team_trends):

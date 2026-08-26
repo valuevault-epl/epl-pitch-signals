@@ -1,7 +1,7 @@
 """
-Player-level trends and matchup signals - goals, shots, assists (no cards: Understat only has
-season-total cards, not per-match, so a real rolling-window cards market isn't buildable from
-this source - see player_data.py).
+Player-level trends and matchup signals - goals, shots, shots on target, assists (no cards:
+Understat only has season-total cards, not per-match, so a real rolling-window cards market isn't
+buildable from this source - see player_data.py).
 
 Window is 30 games, not the 10 team trends use. A team's recent form window has to stay short
 because the TEAM changes - transfers, tactical shifts, a new manager. A player's own skill is
@@ -32,17 +32,21 @@ PLAYER_WINDOW = 30      # trailing games with actual minutes played, not adaptiv
 MIN_PLAYER_GAMES = 8    # below this, too little data to trust - skip the player for that market
 
 # Anchor line and how far the alt-line ladder is allowed to stretch, per player market.
-PLAYER_ANCHOR = {'goals': 0.5, 'shots': 1.5, 'assists': 0.5}
-PLAYER_ALT_RANGE = {'goals': 1.5, 'shots': 2.0, 'assists': 1.0}
-PLAYER_MARKET_LABEL = {'goals': 'to score', 'shots': 'shots', 'assists': 'to assist'}
+PLAYER_ANCHOR = {'goals': 0.5, 'shots': 1.5, 'shots_on_target': 0.5, 'assists': 0.5}
+PLAYER_ALT_RANGE = {'goals': 1.5, 'shots': 2.0, 'shots_on_target': 1.5, 'assists': 1.0}
+PLAYER_MARKET_LABEL = {'goals': 'to score', 'shots': 'shots', 'shots_on_target': 'shots on target',
+                        'assists': 'to assist'}
 
 # Which of the OPPONENT's existing team-level defensive numbers to use as this player market's
-# matchup adjustment - shots/assists don't have an exact team-level equivalent, so these are the
-# closest real proxies (shots_on_target_against correlates with shot volume conceded; goals_against
-# correlates with the kind of chance quality that produces assists), not a perfect match.
+# matchup adjustment. shots_on_target is an exact match to the team-level stat (both count the
+# same thing); shots (total attempts) and assists don't have an exact team-level equivalent, so
+# those two lean on the closest real proxies (shots_on_target_against correlates with shot volume
+# conceded generally; goals_against correlates with the kind of chance quality that produces
+# assists) rather than a precise match.
 OPPONENT_DEFENSE_MARKET = {
     'goals': 'goals_against',
     'shots': 'shots_on_target_against',
+    'shots_on_target': 'shots_on_target_against',
     'assists': 'goals_against',
 }
 
@@ -56,7 +60,8 @@ def player_trend(matches, window=PLAYER_WINDOW):
     if len(recent) < MIN_PLAYER_GAMES:
         return None
     stats = {}
-    for market, field in (('goals', 'goals'), ('shots', 'shots'), ('assists', 'assists')):
+    for market, field in (('goals', 'goals'), ('shots', 'shots'), ('shots_on_target', 'shots_on_target'),
+                           ('assists', 'assists')):
         values = [float(m[field]) for m in recent]
         stats[market] = {'avg': round(sum(values) / len(values), 2), 'values': values, 'n': len(values)}
     return stats

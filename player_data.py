@@ -12,7 +12,7 @@ don't crash the pipeline), responses are cached locally so a bad day doesn't los
 already fetched, and requests are politely rate-limited (SLEEP_BETWEEN_REQUESTS).
 
 No per-match cards data exists in this source (only season totals), so player cards markets are
-not built - goals, shots, and assists are.
+not built - goals, shots, shots on target, and assists are.
 
 Which players to track for an upcoming fixture is itself an approximation: Understat has no
 "predicted lineup" data, so this uses whichever players have the most recent appearances for that
@@ -60,14 +60,31 @@ def fetch_roster(season):
             for p in data.get('players', [])}
 
 
-def fetch_player_matches(player_id):
-    """Every match in Understat's history for this player, most recent first (their own site
-    already orders it that way - preserved here rather than re-sorted, since a rolling window
-    just needs to take the front of the list)."""
+# On-target = would have gone in without a defensive save/deflection stopping it - Goal or
+# SavedShot. ShotOnPost is deliberately excluded (it missed the frame, same convention
+# football-data.co.uk's own HST/AST already use for team shots on target, so this stays
+# consistent with the rest of the dashboard rather than introducing a different definition).
+ON_TARGET_RESULTS = {'Goal', 'SavedShot'}
+
+
+def fetch_player_data(player_id):
+    """Understat's getPlayerData response in one request has both `matches` (per-match goals/
+    shots/assists/minutes, most recent first - already how their site orders it) and `shots`
+    (every individual shot, with an outcome per shot - Goal/SavedShot/ShotOnPost/MissedShots/
+    BlockedShot - which `matches` doesn't break down). Grouping `shots` by match_id and counting
+    ON_TARGET_RESULTS gives a genuine per-match shots-on-target count, the one stat `matches`
+    doesn't already provide directly."""
     data = _fetch_json(f"https://understat.com/getPlayerData/{player_id}")
     if not data:
         return None
-    return data.get('matches', [])
+    matches = data.get('matches', [])
+    sot_by_match = {}
+    for s in data.get('shots', []):
+        if s.get('result') in ON_TARGET_RESULTS:
+            sot_by_match[s['match_id']] = sot_by_match.get(s['match_id'], 0) + 1
+    for m in matches:
+        m['shots_on_target'] = sot_by_match.get(m['id'], 0)
+    return matches
 
 
 def cached_player_matches(player_id, player_name):
@@ -77,7 +94,7 @@ def cached_player_matches(player_id, player_name):
     twice within one run (build_key_players can reference the same player across markets)."""
     os.makedirs(CACHE_DIR, exist_ok=True)
     path = os.path.join(CACHE_DIR, f"{player_id}.json")
-    matches = fetch_player_matches(player_id)
+    matches = fetch_player_data(player_id)
     time.sleep(SLEEP_BETWEEN_REQUESTS)
     if matches is None:
         # fetch failed - fall back to whatever was cached from a previous successful run, if any,
