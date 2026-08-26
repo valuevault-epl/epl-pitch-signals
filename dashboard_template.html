@@ -619,6 +619,13 @@
     background: var(--surface-2);
   }
 
+  table.signal-list thead th.sortable-th {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  table.signal-list thead th.sortable-th:hover { color: var(--ink); }
+
   table.signal-list td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 13px; }
   table.signal-list tbody tr:hover td { background: var(--surface-2); }
 
@@ -1272,6 +1279,13 @@
     }
   }
 
+  // Click a sortable column header to sort by it; click again to flip direction. Defaults to
+  // modeled odds descending, same reasoning as before: raw hit rate alone buries genuinely
+  // interesting signals under trivially-true ones, so odds - distance from a certain outcome -
+  // is the more useful default, but hit rate is one click away for whoever wants it instead.
+  const PLAYER_SORT_COLS = [{ key: 'hitRate', label: 'Hit rate' }, { key: 'modeledOdds', label: 'Modeled odds' }];
+  let playerSort = { key: 'modeledOdds', dir: 'desc' };
+
   function renderPlayerList() {
     const activeTiers = new Set(
       [...document.querySelectorAll('#panel-players input[data-ptier]:checked')].map(cb => cb.dataset.ptier)
@@ -1280,18 +1294,20 @@
       [...document.querySelectorAll('#panel-players input[data-pmarket]:checked')].map(cb => cb.dataset.pmarket)
     );
     const gameFilter = document.getElementById('player-game-filter').value;
-    // Sorted by modeled odds, not raw hit rate - a defender's "under 0.5 goals" is trivially
-    // true (100% hit rate) but worth essentially nothing (odds ~1.01, since a real book would
-    // price it just as close to certain). Odds distance from 1.0 is what actually separates a
-    // genuinely interesting signal from an obviously-true one with the same hit rate.
     const rows = allPlayerSignalsFlat()
       .filter(r => activeTiers.has(r.tier.cls) && activeMarkets.has(r.marketKey)
         && (!gameFilter || r.fixture === gameFilter))
-      .sort((a, b) => b.modeledOdds - a.modeledOdds);
+      .sort((a, b) => playerSort.dir === 'desc'
+        ? b[playerSort.key] - a[playerSort.key]
+        : a[playerSort.key] - b[playerSort.key]);
 
     const thead = document.querySelector('#player-list thead');
     const tbody = document.querySelector('#player-list tbody');
-    thead.innerHTML = '<tr><th>Player</th><th>Team</th><th>Game</th><th>Market</th><th>Call</th><th>Hit rate</th><th>Modeled odds</th><th>Tier</th></tr>';
+    const sortHeaderHtml = PLAYER_SORT_COLS.map(col => {
+      const arrow = playerSort.key === col.key ? (playerSort.dir === 'desc' ? ' ▼' : ' ▲') : '';
+      return `<th class="sortable-th" data-sort-key="${col.key}">${col.label}${arrow}</th>`;
+    }).join('');
+    thead.innerHTML = `<tr><th>Player</th><th>Team</th><th>Game</th><th>Market</th><th>Call</th>${sortHeaderHtml}<th>Tier</th></tr>`;
 
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No player signals match the selected filters.</td></tr>';
@@ -1309,6 +1325,17 @@
         <td><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
       </tr>`).join('');
   }
+
+  document.querySelector('#player-list thead').addEventListener('click', (e) => {
+    const th = e.target.closest('th[data-sort-key]');
+    if (!th) return;
+    if (playerSort.key === th.dataset.sortKey) {
+      playerSort.dir = playerSort.dir === 'desc' ? 'asc' : 'desc';
+    } else {
+      playerSort = { key: th.dataset.sortKey, dir: 'desc' };
+    }
+    renderPlayerList();
+  });
 
   populateGameFilter();
   document.getElementById('player-game-filter').addEventListener('change', renderPlayerList);
