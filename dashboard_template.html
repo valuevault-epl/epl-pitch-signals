@@ -19,6 +19,10 @@
     --positive-soft: rgba(46, 125, 79, 0.12);
     --negative: #B3402A;
     --negative-soft: rgba(179, 64, 42, 0.12);
+    --strong-pos: #12A150;
+    --strong-pos-soft: rgba(18, 161, 80, 0.16);
+    --strong-neg: #D93A26;
+    --strong-neg-soft: rgba(217, 58, 38, 0.16);
     --shadow: 0 1px 2px rgba(20, 20, 15, 0.04), 0 8px 24px -12px rgba(20, 20, 15, 0.18);
   }
 
@@ -39,6 +43,10 @@
       --positive-soft: rgba(79, 179, 121, 0.16);
       --negative: #E2735A;
       --negative-soft: rgba(226, 115, 90, 0.16);
+      --strong-pos: #3DDC84;
+      --strong-pos-soft: rgba(61, 220, 132, 0.2);
+      --strong-neg: #FF6B52;
+      --strong-neg-soft: rgba(255, 107, 82, 0.2);
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
     }
   }
@@ -59,6 +67,10 @@
     --positive-soft: rgba(79, 179, 121, 0.16);
     --negative: #E2735A;
     --negative-soft: rgba(226, 115, 90, 0.16);
+    --strong-pos: #3DDC84;
+    --strong-pos-soft: rgba(61, 220, 132, 0.2);
+    --strong-neg: #FF6B52;
+    --strong-neg-soft: rgba(255, 107, 82, 0.2);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
   }
 
@@ -67,7 +79,12 @@
 
   body {
     margin: 0;
-    background: var(--bg);
+    background:
+      radial-gradient(1100px 560px at 88% -8%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 520px at -8% 28%, var(--strong-pos-soft), transparent 55%),
+      repeating-linear-gradient(180deg, transparent 0 42px, color-mix(in srgb, var(--ink) 3%, transparent) 42px 44px),
+      var(--bg);
+    background-attachment: fixed;
     color: var(--ink);
     font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: 15px;
@@ -146,6 +163,26 @@
     border-radius: 3px;
     white-space: nowrap;
   }
+
+  .help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 2px;
+  }
+
+  .help-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .help-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .masthead-meta {
     text-align: right;
@@ -315,7 +352,7 @@
 
   .signal-row:hover { background: var(--surface-2); }
 
-  .signal-row.rel-strong { border-left-color: var(--rel-color); background: color-mix(in srgb, var(--rel-color) 6%, transparent); }
+  .signal-row.rel-strong { border-left-width: 4px; border-left-color: var(--rel-color); background: color-mix(in srgb, var(--rel-color) 9%, transparent); }
   .signal-row.rel-moderate { border-left-color: var(--rel-color); }
   .signal-row.rel-weak { border-left-color: var(--border); }
 
@@ -572,6 +609,102 @@
   table.game-history td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
   table.game-history tr.champ-game td { color: var(--ink-faint); font-style: italic; }
 
+  .game-record {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  .game-record-n { color: var(--ink-faint); }
+
+  .game-history-scroll {
+    max-height: 380px;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+
+  table.game-history thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  .result-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  .result-chip.result-w { background: var(--strong-pos-soft); color: var(--strong-pos); }
+  .result-chip.result-l { background: var(--strong-neg-soft); color: var(--strong-neg); }
+  .result-chip.result-d { background: var(--border); color: var(--ink-faint); }
+
+  /* ---------- Help modal ---------- */
+  .help-panel { max-width: 640px; padding-bottom: 20px; }
+
+  .help-body h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 18px 0 6px;
+  }
+
+  .help-body h3:first-child { margin-top: 0; }
+
+  .help-body p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    margin: 0 0 4px;
+  }
+
+  .help-body ul {
+    margin: 6px 0 4px;
+    padding-left: 18px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .help-body li { margin-bottom: 3px; }
+  .help-body b { color: var(--ink); }
+
+  .tier-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 8px 0 4px;
+  }
+
+  .tier-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+
+  .tier-legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .tier-legend .dot-strong { background: var(--strong-pos); }
+  .tier-legend .dot-moderate { background: var(--accent); }
+  .tier-legend .dot-weak { background: var(--ink-faint); }
+
   /* ---------- Tabs ---------- */
   .view-tabs {
     display: flex;
@@ -671,7 +804,7 @@
     display: inline-block;
   }
 
-  .tier-pill.rel-strong { background: var(--positive-soft); color: var(--positive); }
+  .tier-pill.rel-strong { background: var(--strong-pos-soft); color: var(--strong-pos); font-weight: 700; }
   .tier-pill.rel-moderate { background: var(--accent-soft); color: var(--accent); }
   .tier-pill.rel-weak { background: var(--border); color: var(--ink-faint); }
 
@@ -792,6 +925,7 @@
     <div class="masthead-title">
       <h1>Pitch Signals</h1>
       <span class="tag">EPL</span>
+      <button class="help-btn" id="help-btn" type="button" aria-haspopup="dialog" aria-label="How this dashboard works">?</button>
     </div>
     <div class="masthead-meta">
       <div class="updated">Updated __GENERATED_AT__</div>
@@ -863,6 +997,47 @@
         <button class="modal-close" id="modal-close">Close</button>
       </div>
       <div class="modal-teams" id="modal-teams"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="help-modal" hidden>
+    <div class="modal-panel help-panel">
+      <div class="modal-head">
+        <h2>How this works</h2>
+        <button class="modal-close" id="help-close">Close</button>
+      </div>
+      <div class="help-body">
+        <p>This page surfaces statistical trends from EPL match history and per-player data - where a team or player's recent form sits relative to a standard bookmaker line. It's not betting advice, and the odds shown are a modeled approximation, not a live quote.</p>
+
+        <h3>Reliability tiers</h3>
+        <p>Every signal is tagged by how often the call has actually come in, blended across both sides of the matchup:</p>
+        <div class="tier-legend">
+          <span><i class="dot-strong"></i><b>Strong</b> - 75%+</span>
+          <span><i class="dot-moderate"></i><b>Moderate</b> - 60-74%</span>
+          <span><i class="dot-weak"></i><b>Weak</b> - under 60%</span>
+        </div>
+
+        <h3>Fixtures tab</h3>
+        <ul>
+          <li>Each card is one upcoming match, with a signal row per market (goals, corners, shots on target, cards) for each team.</li>
+          <li>The bar shows the edge: how far a team's own rate sits from the league average for that market.</li>
+          <li>On Strong and Moderate rows, the dropdown lets you try a different line - hit rate and modeled odds update immediately, using the same alt-line ladder the server already computed, so the numbers never drift from the real calculation.</li>
+          <li>Strong rows that clear a 5% edge over their historical odds floor show a "Take at X+ odds" chip, grounded in how bets predicted at roughly that hit rate have actually performed across thousands of historical bets since 2019-20 - not just this one sample.</li>
+          <li>Click a team's name to open its full match-by-match history.</li>
+        </ul>
+
+        <h3>All Signals tab</h3>
+        <p>Every team signal across every fixture, flattened into one sortable, filterable list - useful for scanning the whole round for Strong calls at once instead of card by card.</p>
+
+        <h3>Players tab</h3>
+        <ul>
+          <li>Covers goals, shots, shots on target, and assists - the markets with real per-match history available (Understat). Cards aren't included; the source only has season totals for those.</li>
+          <li>Over-only: under calls on these markets are almost always trivially true for low-usage players (a defender "under 0.5 goals" hits ~100% but prices near 1.01) and were cluttering the list with zero-value calls, so they're filtered out entirely.</li>
+          <li>Filter by game, tier, or market along the top; click the Hit rate or Modeled odds column header to sort by it, click again to flip direction.</li>
+          <li>Strong and Moderate rows get the same line-picker dropdown as the team markets - pick a different line and the row's hit rate, odds, and tier update in place.</li>
+          <li>Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not a confirmed lineup.</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -971,7 +1146,8 @@
 
     const tier = reliabilityTier((teamHit + oppHit) / 2);
     const relColorVar = sign === 'neg' ? 'var(--negative)' : 'var(--positive)';
-    const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
+    const strongColorVar = sign === 'neg' ? 'var(--strong-neg)' : 'var(--strong-pos)';
+    const relColor = tier.cls === 'rel-strong' ? strongColorVar : tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
 
     const barHtml = `
       <div class="signal-bar-track">
@@ -1161,22 +1337,31 @@
   function gameHistoryTable(team) {
     const games = (DATA.trends[team] || {})._games || [];
     if (!games.length) return '<p style="color:var(--ink-faint);font-size:12px;">No game history available.</p>';
+    let w = 0, d = 0, l = 0;
     const rows = games.map(g => {
       const cls = g.division === 'Championship' ? ' class="champ-game"' : '';
       const oppTag = g.is_home ? 'v' : '@';
+      let resultCls = 'result-d', resultLabel = '—';
+      if (g.goals_for != null && g.goals_against != null) {
+        if (g.goals_for > g.goals_against) { resultCls = 'result-w'; resultLabel = 'W'; w++; }
+        else if (g.goals_for < g.goals_against) { resultCls = 'result-l'; resultLabel = 'L'; l++; }
+        else { resultCls = 'result-d'; resultLabel = 'D'; d++; }
+      }
       return `<tr${cls}>
         <td class="mono-cell">${g.date}</td>
         <td>${oppTag} ${g.opponent}</td>
+        <td><span class="result-chip ${resultCls}">${resultLabel}</span></td>
         <td class="mono-cell">${g.goals_for ?? '—'}-${g.goals_against ?? '—'}</td>
         <td class="mono-cell">${g.corners_for ?? '—'}-${g.corners_against ?? '—'}</td>
         <td class="mono-cell">${g.shots_on_target_for ?? '—'}-${g.shots_on_target_against ?? '—'}</td>
         <td class="mono-cell">${g.cards_for ?? '—'}</td>
       </tr>`;
     }).join('');
-    return `<table class="game-history">
-      <thead><tr><th>Date</th><th>Opponent</th><th>Goals</th><th>Corners</th><th>SoT</th><th>Cards</th></tr></thead>
+    return `<div class="game-record">${w}W &middot; ${d}D &middot; ${l}L <span class="game-record-n">(last ${games.length})</span></div>
+    <div class="game-history-scroll"><table class="game-history">
+      <thead><tr><th>Date</th><th>Opponent</th><th>Res</th><th>Goals</th><th>Corners</th><th>SoT</th><th>Cards</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
   }
 
   function openGameModal(home, away) {
@@ -1217,8 +1402,17 @@
   document.getElementById('game-modal').addEventListener('click', (e) => {
     if (e.target.id === 'game-modal') closeGameModal();
   });
+
+  function openHelp() { document.getElementById('help-modal').hidden = false; }
+  function closeHelp() { document.getElementById('help-modal').hidden = true; }
+  document.getElementById('help-btn').addEventListener('click', openHelp);
+  document.getElementById('help-close').addEventListener('click', closeHelp);
+  document.getElementById('help-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'help-modal') closeHelp();
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeGameModal();
+    if (e.key === 'Escape') { closeGameModal(); closeHelp(); }
   });
 
   // ---------- View tabs ----------
