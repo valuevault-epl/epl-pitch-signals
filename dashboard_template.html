@@ -359,6 +359,31 @@
   .signal-direction.pos { color: var(--positive); }
   .signal-direction.neg { color: var(--negative); }
 
+  .line-select {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border-strong);
+    padding: 0 14px 1px 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: right 4px top 55%, right 0px top 55%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  .line-select.pos { color: var(--positive); }
+  .line-select.neg { color: var(--negative); }
+  .line-select:hover { border-bottom-color: var(--ink-muted); }
+  .line-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .line-select option { background: var(--surface); color: var(--ink); font-family: "IBM Plex Sans", sans-serif; }
+
   .signal-delta {
     font-family: "IBM Plex Mono", monospace;
     font-variant-numeric: tabular-nums;
@@ -815,6 +840,49 @@
     return `20${code.slice(0, 2)}-${code.slice(2)}`;
   }
 
+  // ---------- Picking a different line (mirrors matchup_engine.py's line search in JS) ----------
+  function lineAtShift(projection, shift, direction) {
+    const target = direction === 'OVER' ? projection - shift : projection + shift;
+    let line = direction === 'OVER' ? Math.floor(target * 2) / 2 : Math.ceil(target * 2) / 2;
+    if (Number.isInteger(line)) line += direction === 'OVER' ? -0.5 : 0.5;
+    return Math.max(line, 0.5);
+  }
+
+  // Tightest (closest to the projection) first, loosest last - lineAtShift already walks
+  // outward in that order as `i` increases, so no extra sorting is needed.
+  function candidateLines(sig) {
+    const steps = Math.round(sig.max_shift / 0.5);
+    const seen = new Set();
+    const lines = [];
+    for (let i = 0; i <= steps; i++) {
+      const line = lineAtShift(sig.projection, i * 0.5, sig.direction);
+      if (!seen.has(line)) { seen.add(line); lines.push(line); }
+    }
+    return lines;
+  }
+
+  function hitRateAtJS(values, line, direction) {
+    if (!values || !values.length) return null;
+    const hits = values.filter(v => direction === 'OVER' ? v > line : v < line).length;
+    return Math.round((hits / values.length) * 1000) / 10;
+  }
+
+  function withNewLine(sig, teamName, oppName, newLine) {
+    const teamStat = (DATA.trends[teamName] || {})[sig.team_market];
+    const oppStat = (DATA.trends[oppName] || {})[sig.opponent_market];
+    const teamHit = hitRateAtJS(teamStat && teamStat.values, newLine, sig.direction);
+    const oppHit = hitRateAtJS(oppStat && oppStat.values, newLine, sig.direction);
+    const updated = { ...sig, line: newLine };
+    if ('team_hit_rate' in sig) {
+      updated.team_hit_rate = teamHit;
+      updated.opponent_hit_rate = oppHit;
+    } else {
+      updated.home_team_hit_rate = teamHit;
+      updated.away_team_hit_rate = oppHit;
+    }
+    return updated;
+  }
+
   function renderSignalRow(sig, key, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb) {
     if (!sig) return '';
     teamVerb = teamVerb || 'own rate';
@@ -871,8 +939,15 @@
         ${floorChipHtml}
       </div>`;
 
+    // Line is pickable: dropdown lists every bookmaker-style line the search in
+    // matchup_engine.py's recommend_line would have considered, defaulting to whichever one it
+    // landed on (the tightest line that reached a Strong hit rate). Picking a different line
+    // recomputes the hit rates/tier live from the same raw per-game values (see the
+    // 'change' listener below) - direction never changes, only how far out the line sits.
+    const lineOptions = candidateLines(sig).map(l =>
+      `<option value="${l}"${l === sig.line ? ' selected' : ''}>${direction} ${l}</option>`).join('');
     const valueHtml = `
-      <div class="signal-direction ${sign}">${direction} ${sig.line}</div>
+      <select class="line-select ${sign}" data-team="${teamLabel}" data-opp="${opponentLabel}" data-key="${key}" data-direction="${direction}">${lineOptions}</select>
       <div class="signal-delta">${fmtSigned(value)} vs league avg</div>`;
 
     return `
@@ -905,6 +980,14 @@
     return max;
   }
 
+  const SCALE_BY_MARKET = { goals: 2.5, corners: 4, sot: 4, cards: 3 };
+  function scaleFor(key) {
+    if (key.includes('goals')) return SCALE_BY_MARKET.goals;
+    if (key.includes('corners')) return SCALE_BY_MARKET.corners;
+    if (key.includes('sot')) return SCALE_BY_MARKET.sot;
+    return SCALE_BY_MARKET.cards;
+  }
+
   // which side is "team" vs "opponent" in the breakdown text, per signal key; which side
   // ("H"/"A") the market's own subject team is playing on in THIS fixture; and the verb each
   // side takes so it's explicit who's SCORING/WINNING vs CONCEDING/ALLOWING, not just two team
@@ -934,14 +1017,6 @@
         </div>
         <div class="empty-state">Not enough recent data for one or both teams yet.</div>
       </div>`;
-    }
-
-    const scaleByMarket = { goals: 2.5, corners: 4, sot: 4, cards: 3 };
-    function scaleFor(key) {
-      if (key.includes('goals')) return scaleByMarket.goals;
-      if (key.includes('corners')) return scaleByMarket.corners;
-      if (key.includes('sot')) return scaleByMarket.sot;
-      return scaleByMarket.cards;
     }
 
     const sortedKeys = MARKET_ORDER
@@ -1038,6 +1113,26 @@
     const h2 = e.target.closest('h2[data-home]');
     if (h2) openGameModal(h2.dataset.home, h2.dataset.away);
   });
+
+  // Picking a different line from a signal's dropdown recomputes hit rates/tier live from the
+  // same raw per-game values the search already ran on - no server round-trip, just re-runs
+  // renderSignalRow with an updated sig and swaps the row in place.
+  document.getElementById('fixtures').addEventListener('change', (e) => {
+    const sel = e.target.closest('select.line-select');
+    if (!sel) return;
+    const fx = DATA.fixtures.find(f => f.HomeTeam === sel.dataset.team || f.AwayTeam === sel.dataset.team);
+    if (!fx || !fx.signals) return;
+    const key = sel.dataset.key;
+    const sig = fx.signals[key];
+    if (!sig) return;
+    const newLine = parseFloat(sel.value);
+    const updatedSig = withNewLine(sig, sel.dataset.team, sel.dataset.opp, newLine);
+    const sideLabels = sideLabelsFor(fx);
+    const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+    const row = sel.closest('.signal-row');
+    if (row) row.outerHTML = renderSignalRow(updatedSig, key, scaleFor(key), teamLabel, oppLabel, side, teamVerb, oppVerb);
+  });
+
   document.getElementById('modal-close').addEventListener('click', closeGameModal);
   document.getElementById('game-modal').addEventListener('click', (e) => {
     if (e.target.id === 'game-modal') closeGameModal();

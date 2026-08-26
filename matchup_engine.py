@@ -11,16 +11,20 @@ raw recent counting stats.
 
 Lines are not fixed constants. Bookmakers offer alt lines for these markets - pretty much any
 reasonable line exists - so instead of testing one hardcoded line (5.5 corners, 1.5 goals, etc.)
-against every fixture, each signal recommends its OWN line: the projection, pushed a bit further
-away in the safe direction by LEEWAY, then rounded to a bookmaker-style X.5 value. The hit rate
-shown is each team's own history AT that recommended line, computed straight from their raw
-per-game values (not a fixed-line lookup).
+against every fixture, each signal recommends its OWN line. Rather than always shifting a fixed
+amount away from the projection (which can over-adjust: pushing a line further than necessary
+just because a market's constant said so, sacrificing how close it stays to a realistic line for
+a hit rate the signal didn't actually need), it SEARCHES outward from the projection in small
+bookmaker-style 0.5 steps and stops at the CLOSEST line that reaches a Strong-tier hit rate
+(75%) - a signal that's already strong right near the projection keeps a tight line; a weaker one
+only gets pushed out as far as it actually needs to be. The dashboard also lets a viewer pick a
+different line from a dropdown per signal and see the hit rate/tier recompute live, using the
+same per-game values this search already runs on.
 
 "edge" (projection vs league average, always defined and always genuinely comparable across
-fixtures) drives sorting/bar-width/sign - NOT vs_line - because a recommended line is
-constructed to sit a roughly constant buffer away from the projection, so vs_line stays close to
-±LEEWAY regardless of how strong the underlying signal actually is and would be useless for
-ranking fixtures by "how strong is this edge".
+fixtures) drives sorting/bar-width/sign - NOT a distance from the recommended line - because that
+distance varies non-uniformly with how quickly a signal reaches the hit-rate target and would be
+useless for ranking fixtures by "how strong is this edge".
 """
 import json
 import math
@@ -28,34 +32,17 @@ import os
 
 WORKDIR = os.path.dirname(os.path.abspath(__file__))
 
-# How far below (OVER) or above (UNDER) the raw projection to set the recommended line, in the
-# market's own units - a small buffer so the line isn't sitting right on top of the point
-# estimate. Tuned per market to its typical scale.
-LEEWAY = {
-    'goals_for': 0.5, 'goals_against': 0.5,
-    'corners_for': 1.5, 'corners_against': 1.5,
-    'shots_on_target_for': 1.0, 'shots_on_target_against': 1.0,
-    'match_cards': 1.0,
+LINE_STEP = 0.5           # bookmaker-style half-lines
+STRONG_HIT_RATE = 75      # matches the dashboard's own Strong tier - the search target
+# Ceiling on how far the search is allowed to push the line away from the projection, in the
+# market's own units, before giving up and using whatever got closest. Also bounds the range of
+# lines offered in the dashboard's per-signal dropdown.
+MAX_SHIFT = {
+    'goals_for': 2.0, 'goals_against': 2.0,
+    'corners_for': 4.0, 'corners_against': 4.0,
+    'shots_on_target_for': 3.0, 'shots_on_target_against': 3.0,
+    'match_cards': 3.0,
 }
-
-
-def recommend_line(projection, baseline, leeway):
-    """Direction comes from projection vs baseline (the market's league average - the same
-    comparison a fixed line near the league average used to encode implicitly). The line itself
-    is always an X.5 value (bookmakers use half-lines to avoid pushes) derived from the
-    projection with `leeway` built in as a safety buffer."""
-    direction = 'OVER' if projection >= baseline else 'UNDER'
-    if direction == 'OVER':
-        target = projection - leeway
-        line = math.floor(target * 2) / 2
-        if line == int(line):
-            line -= 0.5
-    else:
-        target = projection + leeway
-        line = math.ceil(target * 2) / 2
-        if line == int(line):
-            line += 0.5
-    return max(line, 0.5), direction
 
 
 def hit_rate_at(values, line, direction):
@@ -67,7 +54,39 @@ def hit_rate_at(values, line, direction):
     return round(hits / len(values) * 100, 1)
 
 
-def combine_matchup(team_trends, opponent_trends, team_market, opponent_market, leeway):
+def _line_at_shift(projection, shift, direction):
+    """Bookmaker-style X.5 line, `shift` away from the projection in the safe direction for
+    `direction` (never a whole number, to avoid pushes)."""
+    target = projection - shift if direction == 'OVER' else projection + shift
+    line = math.floor(target * 2) / 2 if direction == 'OVER' else math.ceil(target * 2) / 2
+    if line == int(line):
+        line += -0.5 if direction == 'OVER' else 0.5
+    return max(line, 0.5)
+
+
+def recommend_line(projection, baseline, team_values, opp_values, max_shift):
+    """Direction comes from projection vs baseline (the market's league average). Searches
+    shift = 0, 0.5, 1.0, ... up to max_shift, and returns the first (smallest-shift) line whose
+    blended hit rate clears STRONG_HIT_RATE - the tightest line that's still genuinely strong,
+    not an arbitrary fixed buffer. Falls back to whichever shift got closest if none clear it."""
+    direction = 'OVER' if projection >= baseline else 'UNDER'
+    steps = int(round(max_shift / LINE_STEP))
+    best_line, best_rate = None, -1
+    for i in range(0, steps + 1):
+        line = _line_at_shift(projection, i * LINE_STEP, direction)
+        team_rate = hit_rate_at(team_values, line, direction)
+        opp_rate = hit_rate_at(opp_values, line, direction)
+        if team_rate is None or opp_rate is None:
+            continue
+        blended = (team_rate + opp_rate) / 2
+        if blended > best_rate:
+            best_line, best_rate = line, blended
+        if blended >= STRONG_HIT_RATE:
+            return line, direction
+    return (best_line if best_line is not None else _line_at_shift(projection, 0, direction)), direction
+
+
+def combine_matchup(team_trends, opponent_trends, team_market, opponent_market, max_shift):
     """team_market is the market this signal is ABOUT (e.g. goals_for, for 'this team to
     score'); opponent_market is the opponent's corresponding market (e.g. goals_against).
     Keys are named team_/opponent_, never home_/away_, so the caller can't mislabel who's who
@@ -79,11 +98,13 @@ def combine_matchup(team_trends, opponent_trends, team_market, opponent_market, 
     attack_strength = t['avg'] / t['league_avg'] if t['league_avg'] else 1.0
     defense_strength = o['avg'] / o['league_avg'] if o['league_avg'] else 1.0
     projection = t['league_avg'] * attack_strength * defense_strength
-    line, direction = recommend_line(projection, t['league_avg'], leeway)
+    line, direction = recommend_line(projection, t['league_avg'], t['values'], o['values'], max_shift)
     return {
         'projection': round(projection, 2),
         'line': line,
         'direction': direction,
+        'max_shift': max_shift,
+        'team_market': team_market, 'opponent_market': opponent_market,
         'edge': round(projection - t['league_avg'], 2),
         'attack_strength': round(attack_strength, 2),
         'defense_strength': round(defense_strength, 2),
@@ -100,24 +121,24 @@ def build_fixture_signals(fixture, trends):
         return None
 
     signals = {}
-    hg = combine_matchup(home_trends, away_trends, 'goals_for', 'goals_against', LEEWAY['goals_for'])
+    hg = combine_matchup(home_trends, away_trends, 'goals_for', 'goals_against', MAX_SHIFT['goals_for'])
     if hg:
         signals['home_goals'] = {'label': f'{home} to score', **hg}
-    ag = combine_matchup(away_trends, home_trends, 'goals_for', 'goals_against', LEEWAY['goals_for'])
+    ag = combine_matchup(away_trends, home_trends, 'goals_for', 'goals_against', MAX_SHIFT['goals_for'])
     if ag:
         signals['away_goals'] = {'label': f'{away} to score', **ag}
-    hc = combine_matchup(home_trends, away_trends, 'corners_for', 'corners_against', LEEWAY['corners_for'])
+    hc = combine_matchup(home_trends, away_trends, 'corners_for', 'corners_against', MAX_SHIFT['corners_for'])
     if hc:
         signals['home_corners'] = {'label': f'{home} corners', **hc}
-    ac = combine_matchup(away_trends, home_trends, 'corners_for', 'corners_against', LEEWAY['corners_for'])
+    ac = combine_matchup(away_trends, home_trends, 'corners_for', 'corners_against', MAX_SHIFT['corners_for'])
     if ac:
         signals['away_corners'] = {'label': f'{away} corners', **ac}
     hs = combine_matchup(home_trends, away_trends, 'shots_on_target_for', 'shots_on_target_against',
-                          LEEWAY['shots_on_target_for'])
+                          MAX_SHIFT['shots_on_target_for'])
     if hs:
         signals['home_sot'] = {'label': f'{home} shots on target', **hs}
     as_ = combine_matchup(away_trends, home_trends, 'shots_on_target_for', 'shots_on_target_against',
-                           LEEWAY['shots_on_target_for'])
+                           MAX_SHIFT['shots_on_target_for'])
     if as_:
         signals['away_sot'] = {'label': f'{away} shots on target', **as_}
 
@@ -136,10 +157,13 @@ def build_fixture_signals(fixture, trends):
         away_card_strength = ac_cards['avg'] / ac_cards['league_avg'] if ac_cards['league_avg'] else 1.0
         projection = hc_cards['avg'] + ac_cards['avg']
         league_total_cards = hc_total['league_avg']
-        line, direction = recommend_line(projection, league_total_cards, LEEWAY['match_cards'])
+        line, direction = recommend_line(projection, league_total_cards, hc_total['values'], ac_total['values'],
+                                          MAX_SHIFT['match_cards'])
         signals['match_cards'] = {
             'label': 'Total match cards',
             'projection': round(projection, 2), 'line': line, 'direction': direction,
+            'max_shift': MAX_SHIFT['match_cards'],
+            'team_market': 'match_total_cards', 'opponent_market': 'match_total_cards',
             'edge': round(projection - league_total_cards, 2),
             'home_card_strength': round(home_card_strength, 2), 'away_card_strength': round(away_card_strength, 2),
             'home_team_avg': hc_cards['avg'],
