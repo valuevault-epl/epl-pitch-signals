@@ -801,7 +801,7 @@
   </div>
 
   <footer>
-    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are not fixed constants: bookmakers offer alt lines for these markets, so each signal recommends its own line (the projection, pushed a bit further out for safety, then rounded to a bookmaker-style X.5) instead of testing one hardcoded number against every fixture. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market - not a distance from the recommended line, which is deliberately built to sit a roughly constant buffer away from the projection and wouldn't be useful for comparing how strong different signals are. The two hit-rate chips under each signal are each team's OWN historical rate AT that recommended line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the recommended line. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are anchored at the standard main line real bookmakers actually use for each market (1.5 goals, 5.5 corners, 4.5 shots on target, 3.5 total cards) rather than derived from the projection - most books keep these standardized across teams and let the price reflect team strength instead of moving the line, so a heavy-corner side still gets offered 5.5, just at a much shorter price. Pick a different line from the dropdown on any signal to see an alt-line ladder around that anchor. Each line also shows a modeled fair odds estimate (Poisson model of the projection, no bookmaker margin) - an approximation to sanity-check against real quoted odds, not a substitute for them, since no live odds feed covers these specific team-level alt-line markets for free. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market. The two hit-rate chips under each signal are each team's OWN historical rate AT the current line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the line - note real books usually price cards as "booking points" (yellow=10, red=25) rather than a raw count, so this market's line is a rougher match to a real cards market than the others. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
   </footer>
 </div>
 
@@ -855,45 +855,21 @@
     return band;
   }
 
-  // ---------- Picking a different line (mirrors matchup_engine.py's line search in JS) ----------
-  function lineAtShift(projection, shift, direction) {
-    const target = direction === 'OVER' ? projection - shift : projection + shift;
-    let line = direction === 'OVER' ? Math.floor(target * 2) / 2 : Math.ceil(target * 2) / 2;
-    if (Number.isInteger(line)) line += direction === 'OVER' ? -0.5 : 0.5;
-    return Math.max(line, 0.5);
-  }
-
-  // Tightest (closest to the projection) first, loosest last - lineAtShift already walks
-  // outward in that order as `i` increases, so no extra sorting is needed.
-  function candidateLines(sig) {
-    const steps = Math.round(sig.max_shift / 0.5);
-    const seen = new Set();
-    const lines = [];
-    for (let i = 0; i <= steps; i++) {
-      const line = lineAtShift(sig.projection, i * 0.5, sig.direction);
-      if (!seen.has(line)) { seen.add(line); lines.push(line); }
-    }
-    return lines;
-  }
-
-  function hitRateAtJS(values, line, direction) {
-    if (!values || !values.length) return null;
-    const hits = values.filter(v => direction === 'OVER' ? v > line : v < line).length;
-    return Math.round((hits / values.length) * 1000) / 10;
-  }
-
-  function withNewLine(sig, teamName, oppName, newLine) {
-    const teamStat = (DATA.trends[teamName] || {})[sig.team_market];
-    const oppStat = (DATA.trends[oppName] || {})[sig.opponent_market];
-    const teamHit = hitRateAtJS(teamStat && teamStat.values, newLine, sig.direction);
-    const oppHit = hitRateAtJS(oppStat && oppStat.values, newLine, sig.direction);
-    const updated = { ...sig, line: newLine };
+  // ---------- Picking a different line ----------
+  // matchup_engine.py already computed hit rate + modeled odds for every line in the alt-line
+  // ladder around the anchor (see alt_lines_for) - picking one here is just a lookup, not a
+  // recompute, so there's no risk of the dropdown's numbers drifting from what the server
+  // actually calculated.
+  function withNewLine(sig, newLine) {
+    const entry = (sig.alt_lines || []).find(a => a.line === newLine);
+    if (!entry) return sig;
+    const updated = { ...sig, line: newLine, modeled_odds: entry.modeled_odds };
     if ('team_hit_rate' in sig) {
-      updated.team_hit_rate = teamHit;
-      updated.opponent_hit_rate = oppHit;
+      updated.team_hit_rate = entry.team_hit_rate;
+      updated.opponent_hit_rate = entry.opponent_hit_rate;
     } else {
-      updated.home_team_hit_rate = teamHit;
-      updated.away_team_hit_rate = oppHit;
+      updated.home_team_hit_rate = entry.team_hit_rate;
+      updated.away_team_hit_rate = entry.opponent_hit_rate;
     }
     return updated;
   }
@@ -929,14 +905,16 @@
       </div>`;
 
     // Strength = team's own rate vs league average for that market (1.0 = exactly average).
-    // Shown so the numbers feeding the formula are visible, not just the output. Line is a
-    // recommended alt line (projection + leeway, rounded to a bookmaker-style X.5), not a fixed
-    // constant - see matchup_engine.py's recommend_line.
+    // Shown so the numbers feeding the formula are visible, not just the output. Line is the
+    // market's standard anchor (see matchup_engine.py's ANCHOR_LINE), not derived from the
+    // projection - real books mostly keep it standardized across teams. modeled_odds is an
+    // approximate no-margin fair price at the current line (Poisson model of the projection) -
+    // an estimate to sanity-check against real quoted odds, not a substitute for them.
     let strengthLine = '';
     if (sig.attack_strength !== undefined) {
-      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)}, recommended line ${sig.line}`;
+      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)}, modeled fair odds &asymp;${sig.modeled_odds.toFixed(2)} at this line (approx, no bookmaker margin)`;
     } else if (sig.home_card_strength !== undefined) {
-      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)}, recommended line ${sig.line}`;
+      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)}, modeled fair odds &asymp;${sig.modeled_odds.toFixed(2)} at this line (approx, no bookmaker margin)`;
     }
 
     const lineSuffix = ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}`;
@@ -959,13 +937,12 @@
         ${floorChipHtml}
       </div>`;
 
-    // Line is pickable: dropdown lists every bookmaker-style line the search in
-    // matchup_engine.py's recommend_line would have considered, defaulting to whichever one it
-    // landed on (the tightest line that reached a Strong hit rate). Picking a different line
-    // recomputes the hit rates/tier live from the same raw per-game values (see the
-    // 'change' listener below) - direction never changes, only how far out the line sits.
-    const lineOptions = candidateLines(sig).map(l =>
-      `<option value="${l}"${l === sig.line ? ' selected' : ''}>${direction} ${l}</option>`).join('');
+    // Line is pickable: dropdown lists the alt-line ladder matchup_engine.py built around the
+    // market's standard anchor, defaulting to the anchor itself. Picking a different line swaps
+    // in that line's precomputed hit rate/modeled odds (see the 'change' listener below) - a
+    // lookup, not a recompute - direction never changes, only how far out the line sits.
+    const lineOptions = (sig.alt_lines || []).map(al =>
+      `<option value="${al.line}"${al.line === sig.line ? ' selected' : ''}>${direction} ${al.line}</option>`).join('');
     const valueHtml = `
       <select class="line-select ${sign}" data-team="${teamLabel}" data-opp="${opponentLabel}" data-key="${key}" data-direction="${direction}">${lineOptions}</select>
       <div class="signal-delta">${fmtSigned(value)} vs league avg</div>`;
@@ -1146,7 +1123,7 @@
     const sig = fx.signals[key];
     if (!sig) return;
     const newLine = parseFloat(sel.value);
-    const updatedSig = withNewLine(sig, sel.dataset.team, sel.dataset.opp, newLine);
+    const updatedSig = withNewLine(sig, newLine);
     const sideLabels = sideLabelsFor(fx);
     const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
     const row = sel.closest('.signal-row');
