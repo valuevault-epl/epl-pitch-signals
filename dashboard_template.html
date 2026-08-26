@@ -761,6 +761,7 @@
       <span class="controls-label">Sort by</span>
       <button class="chip-btn active" data-sort="strength">Strongest signal</button>
       <button class="chip-btn" data-sort="date">Kickoff date</button>
+      <button class="chip-btn" id="reset-lines" style="margin-left:auto;" title="Undo any lines you've picked from the dropdowns, back to each signal's default">Reset lines to default</button>
     </div>
 
     <div class="fixtures" id="fixtures"></div>
@@ -1068,6 +1069,14 @@
       btn.classList.add('active');
       renderFixtures(btn.dataset.sort);
     });
+  });
+
+  // Picking a line from a dropdown only ever touches the DOM (see the 'change' listener below) -
+  // DATA.fixtures itself is never mutated, so "reset" is just re-rendering from it fresh, same as
+  // a normal sort change.
+  document.getElementById('reset-lines').addEventListener('click', () => {
+    const activeSort = document.querySelector('.chip-btn[data-sort].active');
+    renderFixtures(activeSort ? activeSort.dataset.sort : 'strength');
   });
 
   // ---------- Game history modal ----------
