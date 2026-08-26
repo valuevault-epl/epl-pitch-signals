@@ -106,12 +106,7 @@ def update_ledger():
     return ledger
 
 
-BAND_WIDTH = 5  # percentage points per band
-
-
-def _floor_stats(sub, edge):
-    n = len(sub)
-    wins = int(sub['won'].sum())
+def _floor_stats(wins, n, edge):
     win_rate = wins / n if n else 0
     return {
         'win_rate': round(win_rate * 100, 1), 'n': n, 'wins': wins, 'losses': n - wins,
@@ -119,60 +114,91 @@ def _floor_stats(sub, edge):
     }
 
 
-def _isotonic_win_rates(bands):
-    """Pool-adjacent-violators: bands are already in ascending predicted-hit-rate order, so their
-    ACTUAL win rate should never decrease as the predicted band goes up - a genuinely stronger
-    predicted band can't really require worse real odds than a weaker one. With enough bets that
-    holds; with a few hundred it sometimes doesn't purely from noise (seen directly: a market's
-    85-90% band once actually won less often than its 75-80% band on a n=33 sample). Whenever a
-    later band's raw rate would dip below an earlier one, pool them into a single weighted-average
-    block and re-check, repeating until the whole sequence is non-decreasing. Mutates nothing -
-    returns a new win_rate/min_odds per band, same length and order as the input."""
-    stack = []  # each entry: [wins, n, [band indices in this pooled block]]
-    for i, b in enumerate(bands):
-        wins, n, idxs = b['wins'], b['n'], [i]
+def _pava_bands(sub, edge, min_band_n=20):
+    """Isotonic regression (pool-adjacent-violators) fit DIRECTLY on individual bets sorted by
+    predicted (blended) hit rate - not on coarse pre-defined 5-point buckets. Pre-binning first
+    and pooling second (the earlier version of this function) forced everything into ~3-4 giant
+    buckets whenever adjacent buckets were close, which they usually are - e.g. two different
+    signals in the SAME game, both genuinely Strong but at different predicted strengths, would
+    show the exact same "take at X odds" because both buckets got pooled together. Fitting PAVA on
+    the raw sequence instead gives the finest-grained monotonic step function the data actually
+    supports: each bet starts as its own block, and blocks are only merged when a real
+    monotonicity violation forces it, so a band is exactly as narrow as the data allows without
+    ever showing a stronger predicted line as needing worse odds than a weaker one.
+
+    Plateaus (points that ended up pooled to the same rate) with fewer than `min_band_n` bets are
+    merged into a neighboring plateau - individually pooling is still monotonic-safe, but a
+    length-1 plateau isn't a trustworthy band on its own. Boundaries between adjacent bands are
+    set at the midpoint between their nearest raw values, so every possible blended hit rate in
+    [75, 100] falls into exactly one band with no gaps.
+
+    Bets are first grouped by their EXACT predicted value (common - many bets land on the same
+    round percentage, e.g. from a 10-game sample) before PAVA runs, so ties are never split across
+    two different bands - that would otherwise produce a band with identical low/high (a zero-
+    width, mathematically unreachable range), seen directly when this ran on raw rows instead."""
+    grouped = sub.groupby('blended_hit_rate')['won'].agg(['sum', 'count']).reset_index()
+    grouped = grouped.sort_values('blended_hit_rate')
+    predicted = grouped['blended_hit_rate'].tolist()
+    group_wins = grouped['sum'].tolist()
+    group_n = grouped['count'].tolist()
+
+    stack = []  # each: [wins, n, lo_idx, hi_idx] - lo_idx/hi_idx index into `predicted`/groups
+    for i in range(len(predicted)):
+        wins, n, lo, hi = int(group_wins[i]), int(group_n[i]), i, i
         while stack and (stack[-1][0] / stack[-1][1]) > (wins / n):
-            pwins, pn, pidxs = stack.pop()
-            wins, n, idxs = wins + pwins, n + pn, pidxs + idxs
-        stack.append([wins, n, idxs])
+            pwins, pn, plo, phi = stack.pop()
+            wins, n, lo = wins + pwins, n + pn, plo
+        stack.append([wins, n, lo, hi])
 
-    pooled_rate = [None] * len(bands)
-    for wins, n, idxs in stack:
-        for i in idxs:
-            pooled_rate[i] = wins / n
-    return pooled_rate
+    # Merge any too-thin block into a neighbor - forward for all but the last block (which merges
+    # backward instead, having no next block to take). Repeats until every block clears the
+    # threshold or only one remains. Merging two ADJACENT already-monotonic blocks can't break
+    # monotonicity, so this is safe regardless of merge direction.
+    merged = [list(b) for b in stack]
+    changed = True
+    while changed and len(merged) > 1:
+        changed = False
+        for i, b in enumerate(merged):
+            if b[1] < min_band_n:
+                if i < len(merged) - 1:
+                    nxt = merged.pop(i + 1)
+                    b[0] += nxt[0]
+                    b[1] += nxt[1]
+                    b[3] = nxt[3]
+                else:
+                    prev = merged.pop(i - 1)
+                    b[0] += prev[0]
+                    b[1] += prev[1]
+                    b[2] = prev[2]
+                changed = True
+                break
+
+    bands = []
+    for wins, n, lo, hi in merged:
+        bands.append({'_raw_low': predicted[lo], '_raw_high': predicted[hi], **_floor_stats(wins, n, edge)})
+
+    for i, b in enumerate(bands):
+        b['low'] = 75.0 if i == 0 else round((bands[i - 1]['_raw_high'] + b['_raw_low']) / 2, 1)
+        b['high'] = 100.01 if i == len(bands) - 1 else round((b['_raw_high'] + bands[i + 1]['_raw_low']) / 2, 1)
+    for b in bands:
+        del b['_raw_low'], b['_raw_high']
+    return bands
 
 
-def compute_floors(ledger, edge=0.05, min_band_n=30):
+def compute_floors(ledger, edge=0.05):
     """Per-market floor, PLUS per-market bands keyed by the predicted (blended) hit rate at
-    grading time - e.g. "bets where the search found 80-85%" - so the dashboard can look up how
-    that band has actually performed across thousands of historical bets, instead of using a
-    single fixture's own small sample directly as the odds threshold. A signal's live hit rate at
-    whatever line is picked determines which band applies; the band's long-run win rate is what
-    actually drives the displayed odds. Bands with fewer than `min_band_n` bets are dropped (too
-    thin to trust) - the dashboard falls back to the nearest band with enough data. Win rates are
-    then made monotonic across bands (see _isotonic_win_rates) so picking a stronger line never
-    shows worse odds than a weaker one purely because one band's raw sample happened to run cold."""
+    grading time, so the dashboard can look up how bets predicted at roughly a given signal's
+    current strength have actually performed across thousands of historical bets, instead of
+    using a single fixture's own small sample directly as the odds threshold. See _pava_bands for
+    how the bands themselves are built (isotonic regression, not fixed-width bucketing) - this is
+    what guarantees a stronger predicted line never shows worse odds than a weaker one, while
+    staying as fine-grained as the data actually supports."""
     floors = {}
     for market in ledger['market'].unique():
         sub = ledger[ledger['market'] == market]
-        floor = _floor_stats(sub, edge)
+        floor = _floor_stats(int(sub['won'].sum()), len(sub), edge)
         floor['since_season'] = VAR_ERA_START
-
-        bands = []
-        low = 75
-        while low < 100:
-            high = min(low + BAND_WIDTH, 100.001)  # include exactly 100% in the last band
-            band_sub = sub[(sub['blended_hit_rate'] >= low) & (sub['blended_hit_rate'] < high)]
-            if len(band_sub) >= min_band_n:
-                bands.append({'low': low, 'high': min(low + BAND_WIDTH, 100), **_floor_stats(band_sub, edge)})
-            low += BAND_WIDTH
-
-        for b, rate in zip(bands, _isotonic_win_rates(bands)):
-            b['win_rate'] = round(rate * 100, 1)
-            b['min_odds'] = round((1 + edge) / rate, 2) if rate > 0 else None
-
-        floor['bands'] = bands
+        floor['bands'] = _pava_bands(sub, edge)
         floors[market] = floor
     return floors
 
