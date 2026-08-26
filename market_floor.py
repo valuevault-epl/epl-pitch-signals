@@ -106,21 +106,43 @@ def update_ledger():
     return ledger
 
 
-def compute_floors(ledger, edge=0.05):
+BAND_WIDTH = 5  # percentage points per band
+
+
+def _floor_stats(sub, edge):
+    n = len(sub)
+    wins = int(sub['won'].sum())
+    win_rate = wins / n if n else 0
+    return {
+        'win_rate': round(win_rate * 100, 1), 'n': n, 'wins': wins, 'losses': n - wins,
+        'min_odds': round((1 + edge) / win_rate, 2) if win_rate > 0 else None,
+    }
+
+
+def compute_floors(ledger, edge=0.05, min_band_n=30):
+    """Per-market floor, PLUS per-market bands keyed by the predicted (blended) hit rate at
+    grading time - e.g. "bets where the search found 80-85%" - so the dashboard can look up how
+    that band has actually performed across thousands of historical bets, instead of using a
+    single fixture's own small sample directly as the odds threshold. A signal's live hit rate at
+    whatever line is picked determines which band applies; the band's long-run win rate is what
+    actually drives the displayed odds. Bands with fewer than `min_band_n` bets are dropped (too
+    thin to trust) - the dashboard falls back to the nearest band with enough data."""
     floors = {}
     for market in ledger['market'].unique():
         sub = ledger[ledger['market'] == market]
-        n = len(sub)
-        wins = int(sub['won'].sum())
-        win_rate = wins / n if n else 0
-        floors[market] = {
-            'win_rate': round(win_rate * 100, 1),
-            'n': n,
-            'wins': wins,
-            'losses': n - wins,
-            'min_odds': round((1 + edge) / win_rate, 2) if win_rate > 0 else None,
-            'since_season': VAR_ERA_START,
-        }
+        floor = _floor_stats(sub, edge)
+        floor['since_season'] = VAR_ERA_START
+
+        bands = []
+        low = 75
+        while low < 100:
+            high = min(low + BAND_WIDTH, 100.001)  # include exactly 100% in the last band
+            band_sub = sub[(sub['blended_hit_rate'] >= low) & (sub['blended_hit_rate'] < high)]
+            if len(band_sub) >= min_band_n:
+                bands.append({'low': low, 'high': min(low + BAND_WIDTH, 100), **_floor_stats(band_sub, edge)})
+            low += BAND_WIDTH
+        floor['bands'] = bands
+        floors[market] = floor
     return floors
 
 
@@ -132,6 +154,9 @@ if __name__ == '__main__':
     for market, f in sorted(floors.items(), key=lambda kv: -kv[1]['win_rate']):
         print(f"  {market:16s} win_rate={f['win_rate']:5.1f}%  n={f['n']:5d}  "
               f"min_odds={f['min_odds']}")
+        for b in f['bands']:
+            print(f"      band {b['low']:>3}-{b['high']:<3}%: actual win_rate={b['win_rate']:5.1f}%  "
+                  f"n={b['n']:4d}  min_odds={b['min_odds']}")
 
     trends_path = os.path.join(WORKDIR, 'trends_data.json')
     with open(trends_path) as f:

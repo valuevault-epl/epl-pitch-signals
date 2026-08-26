@@ -840,6 +840,21 @@
     return `20${code.slice(0, 2)}-${code.slice(2)}`;
   }
 
+  // Which VAR-era band a live blended hit rate falls into for this market, so the odds-to-take
+  // number is grounded in how bets PREDICTED at roughly this same hit rate have actually
+  // performed across thousands of historical bets (see market_floor.py's compute_floors) -
+  // not this one fixture's own small sample used directly as a real-money threshold.
+  function bandFloorFor(market, blendedPct) {
+    const floor = DATA.market_floors && DATA.market_floors[market];
+    if (!floor || !floor.bands || !floor.bands.length) return null;
+    let band = floor.bands.find(b => blendedPct >= b.low && blendedPct < b.high);
+    if (!band) {
+      const last = floor.bands[floor.bands.length - 1];
+      band = blendedPct >= last.high ? last : floor.bands[0];
+    }
+    return band;
+  }
+
   // ---------- Picking a different line (mirrors matchup_engine.py's line search in JS) ----------
   function lineAtShift(projection, shift, direction) {
     const target = direction === 'OVER' ? projection - shift : projection + shift;
@@ -925,21 +940,18 @@
     }
 
     const lineSuffix = ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}`;
-    // Minimum live odds for a 5% edge, computed fresh from THIS signal's own blended hit rate at
-    // whatever line is currently selected (min_odds = 1.05 / hit_rate, i.e. the bookmaker's
-    // implied odds - 1/odds - would have to be at least 5% more generous than what the hit rate
-    // says is fair) - not a fixed market-wide lookup, so it updates correctly when a different
-    // line is picked from the dropdown. Only shown on Strong rows: the >=75% tier gate already
-    // guarantees a sane, bounded number here. The market's own long-run track record since the
-    // VAR era (a separate, never-trimmed ledger from the rolling team-trend window above) is kept
-    // alongside as context, not as the number itself.
+    // Minimum odds for a 5% edge, based on LONG-TERM data, not this one fixture's small sample:
+    // this line's blended hit rate picks which VAR-era band it falls into (e.g. "predicted
+    // 80-85%"), and the odds threshold comes from how bets in that same band have actually
+    // performed across thousands of historical bets since 2019-20 (min_odds = 1.05 / actual
+    // band win rate - the bookmaker's implied odds, 1/odds, would need to be at least 5% more
+    // generous than that). Still recomputes correctly when a different line is picked, because a
+    // different line generally lands in a different band. Only shown on Strong rows.
     const blended = (teamHit + oppHit) / 2;
-    const liveMinOdds = blended > 0 ? 1.05 / (blended / 100) : null;
     const floor = DATA.market_floors && DATA.market_floors[key];
-    const floorContextHtml = floor
-      ? ` <span class="hit-n">(market's long-run rate since ${seasonLabel(floor.since_season)}: ${floor.win_rate}%, n=${floor.n})</span>` : '';
-    const floorChipHtml = (tier.cls === 'rel-strong' && liveMinOdds) ? `
-        <span class="hit-chip floor-chip">Take at <b>${liveMinOdds.toFixed(2)}+</b> odds for a 5% edge over implied odds, at this line's ${blended.toFixed(0)}% hit rate${floorContextHtml}</span>` : '';
+    const band = floor ? bandFloorFor(key, blended) : null;
+    const floorChipHtml = (tier.cls === 'rel-strong' && band && band.min_odds) ? `
+        <span class="hit-chip floor-chip">Take at <b>${band.min_odds.toFixed(2)}+</b> odds for a 5% edge over implied odds <span class="hit-n">(bets predicted ${band.low}-${band.high}% have actually won ${band.win_rate}% in ${band.n} cases since ${seasonLabel(floor.since_season)})</span></span>` : '';
     const hitRow = `
       <div class="hit-compare">
         <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
