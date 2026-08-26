@@ -67,6 +67,13 @@ def player_trend(matches, window=PLAYER_WINDOW):
     return stats
 
 
+# UNDER calls on every player market are almost always the trivially-true, low-value kind (a
+# defender or keeper "under 0.5 goals/shots/assists" hits ~100% but prices near 1.01 - no real
+# signal, just noise crowding out the Strong list). Every current player market is a low counting
+# stat with this same lopsided shape, so all of them are OVER-only.
+OVER_ONLY_MARKETS = {'goals', 'shots', 'shots_on_target', 'assists'}
+
+
 def build_player_signal(player_name, team_title, trend, market, opponent_team_trends):
     """One player, one market (goals/shots/assists), against a specific opponent. Mirrors
     combine_matchup's shape (line/direction/edge/modeled_odds/hit_rate/alt_lines) so the dashboard
@@ -81,6 +88,8 @@ def build_player_signal(player_name, team_title, trend, market, opponent_team_tr
 
     anchor = PLAYER_ANCHOR[market]
     direction = 'OVER' if projection >= anchor else 'UNDER'
+    if market in OVER_ONLY_MARKETS and direction == 'UNDER':
+        return None
     line = anchor
 
     alt_range = PLAYER_ALT_RANGE[market]
