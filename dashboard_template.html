@@ -408,7 +408,209 @@
   .floor-chip {
     border-color: var(--rel-color);
     color: var(--ink);
+    white-space: normal;
+    flex-basis: 100%;
+    line-height: 1.4;
   }
+
+  .fixture-teams h2 {
+    cursor: pointer;
+  }
+
+  .fixture-teams h2:hover { color: var(--accent); }
+
+  /* ---------- Game history modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 8, 0.55);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    z-index: 50;
+    overflow-y: auto;
+  }
+
+  .modal-overlay[hidden] { display: none; }
+
+  .modal-panel {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-width: 900px;
+    width: 100%;
+    padding: 22px 22px 8px;
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .modal-head h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .modal-close {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+  }
+
+  .modal-close:hover { color: var(--ink); border-color: var(--border-strong); }
+
+  .modal-teams {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding-bottom: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .modal-teams { grid-template-columns: 1fr; }
+  }
+
+  .modal-team h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 8px;
+  }
+
+  table.game-history {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  table.game-history th, table.game-history td {
+    padding: 5px 6px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.game-history th:first-child, table.game-history td:first-child,
+  table.game-history th:nth-child(2), table.game-history td:nth-child(2) { text-align: left; }
+
+  table.game-history thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  table.game-history td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  table.game-history tr.champ-game td { color: var(--ink-faint); font-style: italic; }
+
+  /* ---------- Tabs ---------- */
+  .view-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .view-tab {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 4px 10px;
+    margin-right: 22px;
+    cursor: pointer;
+  }
+
+  .view-tab:hover { color: var(--ink); }
+  .view-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .view-panel[hidden] { display: none; }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .filter-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+
+  .filter-check input { accent-color: var(--accent); }
+
+  .signal-list-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  table.signal-list {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 780px;
+  }
+
+  table.signal-list th, table.signal-list td {
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.signal-list thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+  }
+
+  table.signal-list td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 13px; }
+  table.signal-list tbody tr:hover td { background: var(--surface-2); }
+
+  .tier-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .tier-pill.rel-strong { background: var(--positive-soft); color: var(--positive); }
+  .tier-pill.rel-moderate { background: var(--accent-soft); color: var(--accent); }
+  .tier-pill.rel-weak { background: var(--border); color: var(--ink-faint); }
 
   .data-note {
     margin: 8px 10px 4px;
@@ -524,13 +726,45 @@
     </div>
   </div>
 
-  <div class="controls" role="group" aria-label="Sort fixtures">
-    <span class="controls-label">Sort by</span>
-    <button class="chip-btn active" data-sort="strength">Strongest signal</button>
-    <button class="chip-btn" data-sort="date">Kickoff date</button>
+  <div class="view-tabs" role="tablist" aria-label="View">
+    <button class="view-tab active" data-view="fixtures">Fixtures</button>
+    <button class="view-tab" data-view="signals">All Signals</button>
   </div>
 
-  <div class="fixtures" id="fixtures"></div>
+  <div class="view-panel" id="panel-fixtures">
+    <div class="controls" role="group" aria-label="Sort fixtures">
+      <span class="controls-label">Sort by</span>
+      <button class="chip-btn active" data-sort="strength">Strongest signal</button>
+      <button class="chip-btn" data-sort="date">Kickoff date</button>
+    </div>
+
+    <div class="fixtures" id="fixtures"></div>
+  </div>
+
+  <div class="view-panel" id="panel-signals" hidden>
+    <div class="filter-row" role="group" aria-label="Filter by tier">
+      <span class="controls-label">Show</span>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-strong" checked> Strong</label>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-moderate" checked> Moderate</label>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-weak"> Weak</label>
+    </div>
+    <div class="signal-list-wrap">
+      <table class="signal-list" id="signal-list">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="game-modal" hidden>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" id="modal-close">Close</button>
+      </div>
+      <div class="modal-teams" id="modal-teams"></div>
+    </div>
+  </div>
 
   <h2 class="section-heading">Team Trends</h2>
   <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
@@ -542,14 +776,18 @@
   </div>
 
   <footer>
-    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. The headline number is that projection minus the market's standard betting line, so +2.1 means we project 2.1 above the typical line. The two hit-rate chips under each signal are each team's OWN historical rate at their OWN side of the market (e.g. how often the scorer's own games went over the line, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total exceeded 3.5. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are not fixed constants: bookmakers offer alt lines for these markets, so each signal recommends its own line (the projection, pushed a bit further out for safety, then rounded to a bookmaker-style X.5) instead of testing one hardcoded number against every fixture. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market - not a distance from the recommended line, which is deliberately built to sit a roughly constant buffer away from the projection and wouldn't be useful for comparing how strong different signals are. The two hit-rate chips under each signal are each team's OWN historical rate AT that recommended line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the recommended line. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
   </footer>
 </div>
 
 <script>
   const DATA = __DATA_JSON__;
 
-  const MARKET_ORDER = ['home_goals', 'away_goals', 'home_corners', 'away_corners', 'home_sot', 'away_sot', 'match_cards', 'btts'];
+  const MARKET_ORDER = ['home_goals', 'away_goals', 'home_corners', 'away_corners', 'home_sot', 'away_sot', 'match_cards'];
+  const MARKET_LABELS = {
+    home_goals: 'Home goals', away_goals: 'Away goals', home_corners: 'Home corners',
+    away_corners: 'Away corners', home_sot: 'Home SoT', away_sot: 'Away SoT', match_cards: 'Match cards',
+  };
 
   function fmtSigned(n) {
     if (n === undefined || n === null) return '—';
@@ -582,44 +820,43 @@
     teamVerb = teamVerb || 'own rate';
     oppVerb = oppVerb || 'own rate';
     const sideTagHtml = side ? `<span class="side-tag">${side}</span>` : '';
-    const hasProjection = sig.vs_line !== undefined;
-    const value = hasProjection ? sig.vs_line : null;
-    const sign = value === null ? '' : (value >= 0 ? 'pos' : 'neg');
-    const direction = sign === 'pos' ? 'OVER' : sign === 'neg' ? 'UNDER' : '';
+    const direction = sig.direction;
+    const value = sig.edge;
+    const sign = value >= 0 ? 'pos' : 'neg';
 
     // Two separate teams, two separate histories - team_hit_rate is the subject team's own
     // rate, opponent_hit_rate is the OTHER team's own rate at the complementary market (e.g.
     // Fulham's own rate of conceding over the line). Shown side by side, labeled by name, never
-    // blended into one ambiguous number. Both are stored as "% over the line" - flip each to
-    // "% under" when UNDER is the direction being called, so the percentage always answers
-    // "how often does history support THIS specific call", not a fixed always-over baseline.
-    const teamHitRaw = sig.team_hit_rate ?? sig.home_team_hit_rate;
-    const oppHitRaw = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
-    const teamHit = direction === 'UNDER' ? 100 - teamHitRaw : teamHitRaw;
-    const oppHit = direction === 'UNDER' ? 100 - oppHitRaw : oppHitRaw;
+    // blended into one ambiguous number. Already computed as "% support for THIS call" at the
+    // recommended line by matchup_engine.py (the line is matchup-specific now, so the flip has
+    // to happen there, not here).
+    const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
+    const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
     const teamN = sig.team_n || sig.home_team_n || 0;
     const oppN = sig.opponent_n || sig.away_team_n || 0;
 
     const tier = reliabilityTier((teamHit + oppHit) / 2);
-    const relColorVar = sign === 'neg' ? 'var(--negative)' : sign === 'pos' ? 'var(--positive)' : 'var(--accent)';
+    const relColorVar = sign === 'neg' ? 'var(--negative)' : 'var(--positive)';
     const relColor = tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
 
-    const barHtml = hasProjection ? `
+    const barHtml = `
       <div class="signal-bar-track">
         <div class="signal-bar-mid"></div>
         <div class="signal-bar-fill ${sign}" style="width:${barWidth(value, scale)}"></div>
-      </div>` : `<div class="signal-bar-track"></div>`;
+      </div>`;
 
     // Strength = team's own rate vs league average for that market (1.0 = exactly average).
-    // Shown so the numbers feeding the formula are visible, not just the output.
+    // Shown so the numbers feeding the formula are visible, not just the output. Line is a
+    // recommended alt line (projection + leeway, rounded to a bookmaker-style X.5), not a fixed
+    // constant - see matchup_engine.py's recommend_line.
     let strengthLine = '';
     if (sig.attack_strength !== undefined) {
-      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)}, recommended line ${sig.line}`;
     } else if (sig.home_card_strength !== undefined) {
-      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)} (line ${sig.line})`;
+      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)}, recommended line ${sig.line}`;
     }
 
-    const lineSuffix = sig.line !== undefined ? ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}` : '';
+    const lineSuffix = ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}`;
     // Minimum live odds for a 5% edge, from this market's own accumulating Strong-signal track
     // record since the VAR era (2019-20+) - a separate, never-trimmed ledger from the rolling
     // team-trend window above. Only shown on Strong rows, since that ledger only ever grades
@@ -634,10 +871,9 @@
         ${floorChipHtml}
       </div>`;
 
-    const valueHtml = hasProjection ? `
+    const valueHtml = `
       <div class="signal-direction ${sign}">${direction} ${sig.line}</div>
-      <div class="signal-delta">${fmtSigned(value)}</div>` : `
-      <div class="signal-direction">${((teamHit + oppHit) / 2).toFixed(0)}%</div>`;
+      <div class="signal-delta">${fmtSigned(value)} vs league avg</div>`;
 
     return `
       <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
@@ -659,25 +895,42 @@
     let max = 0;
     for (const key of MARKET_ORDER) {
       const s = fx.signals[key];
-      if (s && s.vs_line !== undefined) {
+      if (s && s.edge !== undefined) {
         const teamHit = s.team_hit_rate ?? s.home_team_hit_rate;
         const oppHit = s.opponent_hit_rate ?? s.away_team_hit_rate;
         const extremity = Math.abs((teamHit + oppHit) / 2 - 50) / 50;
-        max = Math.max(max, Math.abs(s.vs_line) * (0.4 + 0.6 * extremity));
+        max = Math.max(max, Math.abs(s.edge) * (0.4 + 0.6 * extremity));
       }
     }
     return max;
   }
 
+  // which side is "team" vs "opponent" in the breakdown text, per signal key; which side
+  // ("H"/"A") the market's own subject team is playing on in THIS fixture; and the verb each
+  // side takes so it's explicit who's SCORING/WINNING vs CONCEDING/ALLOWING, not just two team
+  // names next to two percentages.
+  function sideLabelsFor(fx) {
+    return {
+      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H', ' scored', ' conceded'],
+      away_goals: [fx.AwayTeam, fx.HomeTeam, 'A', ' scored', ' conceded'],
+      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H', ' won', ' conceded'],
+      away_corners: [fx.AwayTeam, fx.HomeTeam, 'A', ' won', ' conceded'],
+      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H', ' had', ' allowed'],
+      away_sot: [fx.AwayTeam, fx.HomeTeam, 'A', ' had', ' allowed'],
+      match_cards: [fx.HomeTeam, fx.AwayTeam, null, "'s games saw", "'s games saw"],
+    };
+  }
+
   function renderFixtureCard(fx) {
     const dateObj = new Date(fx.Date + 'T12:00:00');
     const dateStr = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const teamsHeadHtml = `<h2 data-home="${fx.HomeTeam}" data-away="${fx.AwayTeam}" title="Click for game-by-game history">${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2>`;
 
     if (!fx.signals) {
       return `<div class="fixture-card">
         <div class="fixture-head">
           <div class="fixture-date">${dateStr}</div>
-          <div class="fixture-teams"><h2>${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2></div>
+          <div class="fixture-teams">${teamsHeadHtml}</div>
         </div>
         <div class="empty-state">Not enough recent data for one or both teams yet.</div>
       </div>`;
@@ -691,37 +944,13 @@
       return scaleByMarket.cards;
     }
 
-    function bttsHitRate(s) {
-      const th = s.team_hit_rate ?? s.home_team_hit_rate;
-      const oh = s.opponent_hit_rate ?? s.away_team_hit_rate;
-      return (th + oh) / 2;
-    }
     const sortedKeys = MARKET_ORDER
       .filter(k => fx.signals[k])
-      .sort((a, b) => {
-        const sa = fx.signals[a], sb = fx.signals[b];
-        const va = sa.vs_line !== undefined ? Math.abs(sa.vs_line) : bttsHitRate(sa) / 20;
-        const vb = sb.vs_line !== undefined ? Math.abs(sb.vs_line) : bttsHitRate(sb) / 20;
-        return vb - va;
-      });
+      .sort((a, b) => Math.abs(fx.signals[b].edge) - Math.abs(fx.signals[a].edge));
 
-    // which side is "team" vs "opponent" in the breakdown text, per signal key; which side
-    // ("H"/"A") the market's own subject team is playing on in THIS fixture; and the verb each
-    // side takes so it's explicit who's SCORING/WINNING vs CONCEDING/ALLOWING, not just two team
-    // names next to two percentages.
-    const SIDE_LABELS = {
-      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H', ' scored', ' conceded'],
-      away_goals: [fx.AwayTeam, fx.HomeTeam, 'A', ' scored', ' conceded'],
-      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H', ' won', ' conceded'],
-      away_corners: [fx.AwayTeam, fx.HomeTeam, 'A', ' won', ' conceded'],
-      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H', ' had', ' allowed'],
-      away_sot: [fx.AwayTeam, fx.HomeTeam, 'A', ' had', ' allowed'],
-      match_cards: [fx.HomeTeam, fx.AwayTeam, null, "'s games saw", "'s games saw"],
-      btts: [fx.HomeTeam, fx.AwayTeam, null, ' had both teams score', ' had both teams score'],
-    };
-
+    const sideLabels = sideLabelsFor(fx);
     const rows = sortedKeys.map(k => {
-      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = SIDE_LABELS[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
       return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb);
     }).join('');
 
@@ -734,7 +963,7 @@
     return `<div class="fixture-card">
       <div class="fixture-head">
         <div class="fixture-date">${dateStr}</div>
-        <div class="fixture-teams"><h2>${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2></div>
+        <div class="fixture-teams">${teamsHeadHtml}</div>
         <div class="fixture-odds">
           <span class="odds-pill">1 <b>${fx.B365H ?? '—'}</b></span>
           <span class="odds-pill">X <b>${fx.B365D ?? '—'}</b></span>
@@ -769,7 +998,124 @@
     });
   });
 
+  // ---------- Game history modal ----------
+  // Raw per-game log lives on each team's trend record (_games) - exactly the games the current
+  // adaptive window is built from (10-game bridge from last season early on, growing uncapped
+  // with current-season games only once that reaches 10 - same window as everywhere else on this
+  // page, just shown match-by-match here instead of as an aggregate).
+  function gameHistoryTable(team) {
+    const games = (DATA.trends[team] || {})._games || [];
+    if (!games.length) return '<p style="color:var(--ink-faint);font-size:12px;">No game history available.</p>';
+    const rows = games.map(g => {
+      const cls = g.division === 'Championship' ? ' class="champ-game"' : '';
+      const oppTag = g.is_home ? 'v' : '@';
+      return `<tr${cls}>
+        <td class="mono-cell">${g.date}</td>
+        <td>${oppTag} ${g.opponent}</td>
+        <td class="mono-cell">${g.goals_for ?? '—'}-${g.goals_against ?? '—'}</td>
+        <td class="mono-cell">${g.corners_for ?? '—'}-${g.corners_against ?? '—'}</td>
+        <td class="mono-cell">${g.shots_on_target_for ?? '—'}-${g.shots_on_target_against ?? '—'}</td>
+        <td class="mono-cell">${g.cards_for ?? '—'}</td>
+      </tr>`;
+    }).join('');
+    return `<table class="game-history">
+      <thead><tr><th>Date</th><th>Opponent</th><th>Goals</th><th>Corners</th><th>SoT</th><th>Cards</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  function openGameModal(home, away) {
+    document.getElementById('modal-title').textContent = `${home} v ${away}`;
+    document.getElementById('modal-teams').innerHTML = `
+      <div class="modal-team"><h3>${home}</h3>${gameHistoryTable(home)}</div>
+      <div class="modal-team"><h3>${away}</h3>${gameHistoryTable(away)}</div>`;
+    document.getElementById('game-modal').hidden = false;
+  }
+
+  function closeGameModal() { document.getElementById('game-modal').hidden = true; }
+
+  document.getElementById('fixtures').addEventListener('click', (e) => {
+    const h2 = e.target.closest('h2[data-home]');
+    if (h2) openGameModal(h2.dataset.home, h2.dataset.away);
+  });
+  document.getElementById('modal-close').addEventListener('click', closeGameModal);
+  document.getElementById('game-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'game-modal') closeGameModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeGameModal();
+  });
+
+  // ---------- View tabs ----------
+  document.querySelectorAll('.view-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-fixtures').hidden = btn.dataset.view !== 'fixtures';
+      document.getElementById('panel-signals').hidden = btn.dataset.view !== 'signals';
+    });
+  });
+
+  // ---------- All Signals tab: flat, filterable list of every signal across every fixture ----------
+  function allSignalsFlat() {
+    const rows = [];
+    for (const fx of DATA.fixtures) {
+      if (!fx.signals) continue;
+      const sideLabels = sideLabelsFor(fx);
+      for (const key of MARKET_ORDER) {
+        const sig = fx.signals[key];
+        if (!sig) continue;
+        const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
+        const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+        const tier = reliabilityTier((teamHit + oppHit) / 2);
+        const [teamLabel] = sideLabels[key] || [fx.HomeTeam];
+        rows.push({
+          fixture: `${fx.HomeTeam} v ${fx.AwayTeam}`, home: fx.HomeTeam, away: fx.AwayTeam,
+          date: fx.Date, market: MARKET_LABELS[key] || key, subject: teamLabel,
+          call: `${sig.direction} ${sig.line}`, edge: sig.edge, tier,
+        });
+      }
+    }
+    return rows;
+  }
+
+  function renderSignalList() {
+    const activeTiers = new Set(
+      [...document.querySelectorAll('#panel-signals input[data-tier]:checked')].map(cb => cb.dataset.tier)
+    );
+    const rows = allSignalsFlat()
+      .filter(r => activeTiers.has(r.tier.cls))
+      .sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
+
+    const thead = document.querySelector('#signal-list thead');
+    const tbody = document.querySelector('#signal-list tbody');
+    thead.innerHTML = '<tr><th>Fixture</th><th>Market</th><th>Subject</th><th>Call</th><th>Edge</th><th>Tier</th></tr>';
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--ink-faint);">No signals match the selected tiers.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td data-home="${r.home}" data-away="${r.away}" style="cursor:pointer;">${r.fixture}</td>
+        <td>${r.market}</td>
+        <td>${r.subject}</td>
+        <td class="mono-cell">${r.call}</td>
+        <td class="mono-cell">${fmtSigned(r.edge)}</td>
+        <td><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
+      </tr>`).join('');
+  }
+
+  document.querySelectorAll('#panel-signals input[data-tier]').forEach(cb => {
+    cb.addEventListener('change', renderSignalList);
+  });
+  document.getElementById('signal-list').addEventListener('click', (e) => {
+    const cell = e.target.closest('td[data-home]');
+    if (cell) openGameModal(cell.dataset.home, cell.dataset.away);
+  });
+
   renderFixtures('strength');
+  renderSignalList();
 
   // ---------- Team trends table ----------
   const TEAM_COLS = [
@@ -780,7 +1126,6 @@
     { key: 'cards_for', label: 'Cards' },
     { key: 'shots_on_target_for', label: 'SoT' },
     { key: 'shots_on_target_against', label: 'SoT Con.' },
-    { key: 'btts', label: 'BTTS %', pctOnly: true },
     { key: 'clean_sheet', label: 'Clean Sheet %', pctOnly: true },
   ];
 

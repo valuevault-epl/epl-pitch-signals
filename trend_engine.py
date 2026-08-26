@@ -5,12 +5,16 @@ average, a hit-rate (% of games crossing a common line), and a sample size / con
 For each upcoming fixture, combine home+away trends into a matchup signal per market.
 
 Markets covered (derived from team-level box score stats, all available in football-data.co.uk):
-  - Goals scored / conceded (team total, and match total over/under 2.5)
-  - BTTS (both teams to score)
-  - Corners won / conceded (team total, and match total over/under 9.5 - common line)
-  - Cards (yellow+red) for / against (team total, and match total over/under 3.5 - common line)
+  - Goals scored / conceded
+  - Corners won / conceded
+  - Cards (yellow+red) for / against (team total, and match total)
   - Shots on target for / against
   - Clean sheets / failed to score
+
+Lines are not fixed constants (5.5 corners, 1.5 goals, etc.) - bookmakers offer alt lines for
+these markets, so instead of testing one hardcoded line, each signal recommends its own line
+derived from the projection with a bit of leeway built in (see LEEWAY / recommend_line in
+matchup_engine.py), and the hit-rate shown is each team's own history AT that recommended line.
 """
 import json
 import re
@@ -204,17 +208,6 @@ def load_fixtures(results=None, current_season=None):
     return e0
 
 
-MARKETS = {
-    'goals_for': {'label': 'Goals Scored', 'home_col': 'FTHG', 'away_col': 'FTAG', 'line': 1.5},
-    'goals_against': {'label': 'Goals Conceded', 'home_col': 'FTAG', 'away_col': 'FTHG', 'line': 1.5},
-    'corners_for': {'label': 'Corners Won', 'home_col': 'HC', 'away_col': 'AC', 'line': 5.5},
-    'corners_against': {'label': 'Corners Conceded', 'home_col': 'AC', 'away_col': 'HC', 'line': 5.5},
-    'cards_for': {'label': 'Cards Received', 'home_col': None, 'away_col': None, 'line': 1.5},  # computed below
-    'shots_on_target_for': {'label': 'Shots on Target', 'home_col': 'HST', 'away_col': 'AST', 'line': 4.5},
-    'shots_on_target_against': {'label': 'Shots on Target Conceded', 'home_col': 'AST', 'away_col': 'HST', 'line': 4.5},
-}
-
-
 def compute_team_card_count(row, is_home):
     y = row['HY'] if is_home else row['AY']
     r = row['HR'] if is_home else row['AR']
@@ -239,7 +232,6 @@ def _extract_team_games(recent, division_label):
                 'match_total_cards': compute_team_card_count(row, True) + compute_team_card_count(row, False),
                 'shots_on_target_for': row.get('HST') if is_home else row.get('AST'),
                 'shots_on_target_against': row.get('AST') if is_home else row.get('HST'),
-                'btts': (row['FTHG'] > 0) and (row['FTAG'] > 0),
                 'clean_sheet': (row['FTAG'] == 0) if is_home else (row['FTHG'] == 0),
             }
             team_games.setdefault(team, []).append(stats)
@@ -325,44 +317,53 @@ def league_averages_from_matches(results, use_last_n_seasons=2):
     return {k: v / n for k, v in sums.items()}
 
 
-def team_trend(team_games, team, stat, window, league_avg, line):
+def team_trend(team_games, team, stat, window, league_avg):
     # No [-window:] slice here - build_team_history already decided the right sample (exactly
     # `window` during the early-season bridge, or all of the current season once that's >= window).
+    # No fixed line either - `values` (the raw per-game numbers) is what lets matchup_engine.py
+    # compute a hit rate at whatever line it ends up recommending for a specific matchup.
     games = team_games.get(team, [])
     vals = [g[stat] for g in games if g.get(stat) is not None and not (isinstance(g[stat], float) and np.isnan(g[stat]))]
     if len(vals) < 4:
         return None
     avg = np.mean(vals)
-    hit_rate = np.mean([v > line for v in vals]) * 100
     plus_minus = avg - league_avg
     return {'n': len(vals), 'avg': round(float(avg), 2), 'plus_minus': round(float(plus_minus), 2),
-            'hit_rate': round(float(hit_rate), 1), 'league_avg': round(float(league_avg), 2), 'line': line}
+            'league_avg': round(float(league_avg), 2), 'values': [round(float(v), 2) for v in vals]}
 
 
 def build_all_trends(team_games, league_avgs, window=ROLLING_WINDOW):
     metrics = ['goals_for', 'goals_against', 'corners_for', 'corners_against',
                'cards_for', 'match_total_cards', 'shots_on_target_for', 'shots_on_target_against']
-    lines = {'goals_for': 1.5, 'goals_against': 1.5, 'corners_for': 5.5, 'corners_against': 5.5,
-             'cards_for': 1.5, 'match_total_cards': 3.5, 'shots_on_target_for': 4.5, 'shots_on_target_against': 4.5}
 
     trends = {}
     for team in team_games:
         trends[team] = {}
         for m in metrics:
-            t = team_trend(team_games, team, m, window, league_avgs[m], lines[m])
+            t = team_trend(team_games, team, m, window, league_avgs[m])
             if t:
                 trends[team][m] = t
 
         games = team_games[team]
         if len(games) >= 4:
-            btts_vals = [g['btts'] for g in games]
-            trends[team]['btts'] = {'n': len(btts_vals), 'hit_rate': round(float(np.mean(btts_vals)) * 100, 1)}
             cs_vals = [g['clean_sheet'] for g in games]
             trends[team]['clean_sheet'] = {'n': len(cs_vals), 'hit_rate': round(float(np.mean(cs_vals)) * 100, 1)}
 
         n_champ = sum(1 for g in games if g.get('division') == 'Championship')
         if n_champ > 0:
             trends[team]['_data_note'] = f"Includes {n_champ} Championship game(s) - newly promoted team, limited top-flight sample"
+
+        # raw per-game log for the dashboard's per-team detail view - the exact games the trend
+        # above is built from, newest first, so clicking into a fixture can show real match-by-
+        # match history rather than just the aggregate numbers.
+        trends[team]['_games'] = [{
+            'date': g['date'].strftime('%Y-%m-%d'), 'opponent': g['opponent'],
+            'is_home': bool(g['is_home']), 'division': g['division'],
+            'goals_for': g['goals_for'], 'goals_against': g['goals_against'],
+            'corners_for': g['corners_for'], 'corners_against': g['corners_against'],
+            'cards_for': g['cards_for'], 'shots_on_target_for': g['shots_on_target_for'],
+            'shots_on_target_against': g['shots_on_target_against'],
+        } for g in sorted(games, key=lambda g: g['date'], reverse=True)]
     return trends
 
 
