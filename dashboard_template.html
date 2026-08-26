@@ -88,15 +88,35 @@
 
   /* ---------- Header ---------- */
   .masthead {
+    position: relative;
+    overflow: hidden;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     gap: 16px 28px;
-    padding-bottom: 20px;
+    padding: 24px 26px 22px;
     margin-bottom: 28px;
-    border-bottom: 2px solid var(--border-strong);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 65%);
+    box-shadow: var(--shadow);
   }
+
+  .pitch-motif {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--accent);
+    opacity: 0.14;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .masthead-title, .masthead-meta { position: relative; }
 
   .masthead-title {
     display: flex;
@@ -193,11 +213,22 @@
   .fixture-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: var(--shadow);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .fixture-card:hover {
+    box-shadow: 0 2px 4px rgba(20, 20, 15, 0.06), 0 14px 32px -14px rgba(20, 20, 15, 0.24);
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fixture-card { transition: none; }
+    .fixture-card:hover { transform: none; }
   }
 
   .fixture-head {
@@ -748,6 +779,16 @@
 
 <div class="wrap">
   <div class="masthead">
+    <svg class="pitch-motif" viewBox="0 0 640 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect x="14" y="14" width="612" height="172" rx="6"></rect>
+      <line x1="320" y1="14" x2="320" y2="186"></line>
+      <circle cx="320" cy="100" r="42"></circle>
+      <circle cx="320" cy="100" r="2.2" fill="currentColor" stroke="none"></circle>
+      <rect x="14" y="58" width="46" height="84"></rect>
+      <rect x="580" y="58" width="46" height="84"></rect>
+      <path d="M 14 62 A 44 44 0 0 1 14 138"></path>
+      <path d="M 626 62 A 44 44 0 0 0 626 138"></path>
+    </svg>
     <div class="masthead-title">
       <h1>Pitch Signals</h1>
       <span class="tag">EPL</span>
@@ -1258,12 +1299,23 @@
         rows.push({
           player: sig.player, team: sig.team, fixture,
           market: PLAYER_MARKET_LABELS[sig.market] || sig.market, marketKey: sig.market,
-          call: `${sig.direction} ${sig.line}`, hitRate: sig.hit_rate,
-          modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
+          direction: sig.direction, line: sig.line, altLines: sig.alt_lines || [],
+          hitRate: sig.hit_rate, modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
         });
       }
     }
     return rows;
+  }
+
+  // Picking a different line updates that row's hit rate/odds/tier live - a lookup into the
+  // alt-line ladder matchup_engine.py-style code already computed server-side (see
+  // player_engine.py's build_player_signal), same pattern as the Fixtures tab's per-signal
+  // dropdown. Only offered on Strong/Moderate rows; a Weak row just shows static text.
+  function withPlayerLine(row, newLine) {
+    const entry = row.altLines.find(a => a.line === newLine);
+    if (!entry) return row;
+    return { ...row, line: newLine, hitRate: entry.hit_rate, modeledOdds: entry.modeled_odds,
+             tier: reliabilityTier(entry.hit_rate) };
   }
   const PLAYER_MARKET_LABELS = { goals: 'Goals', shots: 'Shots', shots_on_target: 'Shots on target', assists: 'Assists' };
 
@@ -1311,20 +1363,49 @@
 
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No player signals match the selected filters.</td></tr>';
+      currentPlayerRows = [];
       return;
     }
-    tbody.innerHTML = rows.map(r => `
+    currentPlayerRows = rows;
+    tbody.innerHTML = rows.map((r, i) => {
+      // Line is only pickable on Strong/Moderate rows - a Weak signal just shows its line as
+      // plain text. Whether a row GOT a dropdown is decided once here, from its default line's
+      // tier - picking a different line afterward can land anywhere (including Weak) without the
+      // dropdown itself disappearing, so exploring "does a different line make this Strong" stays
+      // possible in both directions.
+      const pickable = r.tier.cls === 'rel-strong' || r.tier.cls === 'rel-moderate';
+      const callHtml = pickable ? `
+        <select class="line-select ${r.direction === 'OVER' ? 'pos' : 'neg'}" data-row-index="${i}">
+          ${r.altLines.map(al => `<option value="${al.line}"${al.line === r.line ? ' selected' : ''}>${r.direction} ${al.line}</option>`).join('')}
+        </select>` : `${r.direction} ${r.line}`;
+      return `
       <tr>
         <td>${r.player}</td>
         <td>${r.team}</td>
         <td>${r.fixture}</td>
         <td>${r.market}</td>
-        <td class="mono-cell">${r.call}</td>
-        <td class="mono-cell">${r.hitRate.toFixed(0)}%</td>
-        <td class="mono-cell">${r.modeledOdds.toFixed(2)}</td>
-        <td><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
-      </tr>`).join('');
+        <td class="mono-cell">${callHtml}</td>
+        <td class="mono-cell" data-cell="hitrate">${r.hitRate.toFixed(0)}%</td>
+        <td class="mono-cell" data-cell="odds">${r.modeledOdds.toFixed(2)}</td>
+        <td data-cell="tier"><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
+      </tr>`;
+    }).join('');
   }
+
+  let currentPlayerRows = [];
+  document.querySelector('#player-list tbody').addEventListener('change', (e) => {
+    const sel = e.target.closest('select.line-select');
+    if (!sel) return;
+    const row = currentPlayerRows[parseInt(sel.dataset.rowIndex, 10)];
+    if (!row) return;
+    const updated = withPlayerLine(row, parseFloat(sel.value));
+    currentPlayerRows[parseInt(sel.dataset.rowIndex, 10)] = updated;
+    const tr = sel.closest('tr');
+    tr.querySelector('[data-cell="hitrate"]').textContent = updated.hitRate.toFixed(0) + '%';
+    tr.querySelector('[data-cell="odds"]').textContent = updated.modeledOdds.toFixed(2);
+    tr.querySelector('[data-cell="tier"]').innerHTML =
+      `<span class="tier-pill ${updated.tier.cls}">${updated.tier.label}</span>`;
+  });
 
   document.querySelector('#player-list thead').addEventListener('click', (e) => {
     const th = e.target.closest('th[data-sort-key]');
