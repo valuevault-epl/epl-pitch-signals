@@ -24,9 +24,18 @@ import pandas as pd
 
 from trend_engine import (
     load_results, build_team_history, league_averages_from_matches, build_all_trends, WORKDIR,
+    compute_team_card_count,
 )
-from matchup_engine import build_fixture_signals
+from matchup_engine import build_fixture_signals, ANCHOR_LINE
 from backtest_2025_26 import tier, blended_hit_rate, grade_signal
+
+MATCH_ARCHIVE_START = '1920'  # 2019-20 - same era boundary as the ledger; recent enough to cover
+                               # any realistically-aged tracked bet, small enough to keep the
+                               # embedded JSON payload light.
+
+# Bet-slip market keys map directly onto these archive field names (no translation table needed
+# on the JS side) - see dashboard_template.html's gradeLeg().
+SGM_MARKETS = ['home_goals', 'away_goals', 'home_corners', 'away_corners', 'home_sot', 'away_sot', 'match_cards']
 
 VAR_ERA_START = '1920'  # 2019-20 - season the ledger starts from
 LEDGER_PATH = os.path.join(WORKDIR, 'var_era_ledger.csv')
@@ -203,6 +212,87 @@ def compute_floors(ledger, edge=0.05):
     return floors
 
 
+def build_team_match_archive(results, since_season=MATCH_ARCHIVE_START):
+    """Every completed match's actual values for the 7 team markets, keyed by
+    "HomeTeam|AwayTeam|YYYY-MM-DD" - what the bet slip's tracker looks a leg's real result up in
+    once its fixture has been played. Deliberately separate from each team's own _games log (used
+    for the per-team history modal): _games is a ROLLING window that drops old games as new ones
+    arrive, so a bet graded weeks after being placed could otherwise fall out of the window it'd
+    need to be looked up in. This archive only grows."""
+    sub = results[results['season'] >= since_season]
+    archive = {}
+    for _, row in sub.iterrows():
+        home_cards = compute_team_card_count(row, True)
+        away_cards = compute_team_card_count(row, False)
+        key = f"{row['HomeTeam']}|{row['AwayTeam']}|{row['Date'].strftime('%Y-%m-%d')}"
+        archive[key] = {
+            'home_goals': None if pd.isna(row['FTHG']) else int(row['FTHG']),
+            'away_goals': None if pd.isna(row['FTAG']) else int(row['FTAG']),
+            'home_corners': None if pd.isna(row.get('HC')) else int(row['HC']),
+            'away_corners': None if pd.isna(row.get('AC')) else int(row['AC']),
+            'home_sot': None if pd.isna(row.get('HST')) else int(row['HST']),
+            'away_sot': None if pd.isna(row.get('AST')) else int(row['AST']),
+            'match_cards': int(home_cards + away_cards),
+        }
+    return archive
+
+
+def _actual_values_table(results):
+    out = pd.DataFrame(index=results.index)
+    out['home_goals'] = results['FTHG']
+    out['away_goals'] = results['FTAG']
+    out['home_corners'] = results['HC']
+    out['away_corners'] = results['AC']
+    out['home_sot'] = results['HST']
+    out['away_sot'] = results['AST']
+    out['match_cards'] = (results.apply(lambda r: compute_team_card_count(r, True), axis=1)
+                           + results.apply(lambda r: compute_team_card_count(r, False), axis=1))
+    return out
+
+
+def compute_sgm_lift(results, since_season=MATCH_ARCHIVE_START):
+    """Empirical correlation between every pair of team markets, measured directly against real
+    match history rather than assumed - this is what lets the slip give a genuine "true SGM odds"
+    figure instead of the naive (and known-wrong for same-game legs) independence assumption.
+
+    For each ordered pair of markets and each direction combo, lift = P(both hit) / (P(one hit) x
+    P(other hit)). 1.0 means no correlation (independence holds); above 1.0 means the two events
+    tend to happen together more than chance would predict (e.g. a high-tempo game producing both
+    more goals and more corners); below 1.0 means they pull against each other. Applied
+    multiplicatively to the naive joint probability of same-fixture legs in the slip - not a full
+    joint distribution (that would need every possible line combination enumerated, intractable),
+    but a real, data-grounded adjustment computed at the anchor line and assumed to carry over
+    approximately to nearby alt lines, which is disclosed to the user rather than presented as
+    exact."""
+    sub = results[results['season'] >= since_season]
+    actuals = _actual_values_table(sub)
+    anchor_map = {
+        'home_goals': ANCHOR_LINE['goals_for'], 'away_goals': ANCHOR_LINE['goals_for'],
+        'home_corners': ANCHOR_LINE['corners_for'], 'away_corners': ANCHOR_LINE['corners_for'],
+        'home_sot': ANCHOR_LINE['shots_on_target_for'], 'away_sot': ANCHOR_LINE['shots_on_target_for'],
+        'match_cards': ANCHOR_LINE['match_cards'],
+    }
+    hits = {}
+    for m in SGM_MARKETS:
+        anchor = anchor_map[m]
+        hits[(m, 'OVER')] = actuals[m] > anchor
+        hits[(m, 'UNDER')] = actuals[m] < anchor
+
+    lift = {}
+    for m1 in SGM_MARKETS:
+        for m2 in SGM_MARKETS:
+            if m1 == m2:
+                continue
+            for d1 in ('OVER', 'UNDER'):
+                for d2 in ('OVER', 'UNDER'):
+                    a, b = hits[(m1, d1)], hits[(m2, d2)]
+                    p_a, p_b = a.mean(), b.mean()
+                    p_joint = (a & b).mean()
+                    ratio = (p_joint / (p_a * p_b)) if p_a > 0 and p_b > 0 else 1.0
+                    lift[f"{m1}|{d1}|{m2}|{d2}"] = round(float(ratio), 3)
+    return lift
+
+
 if __name__ == '__main__':
     ledger = update_ledger()
     floors = compute_floors(ledger)
@@ -215,10 +305,18 @@ if __name__ == '__main__':
             print(f"      band {b['low']:>3}-{b['high']:<3}%: actual win_rate={b['win_rate']:5.1f}%  "
                   f"n={b['n']:4d}  min_odds={b['min_odds']}")
 
+    results = load_results('E0')
+    match_archive = build_team_match_archive(results)
+    sgm_lift = compute_sgm_lift(results)
+    print(f"\nBuilt match archive: {len(match_archive)} matches since {MATCH_ARCHIVE_START[:2]}{MATCH_ARCHIVE_START[2:]}")
+    print(f"Computed SGM lift for {len(sgm_lift)} market/direction pair combinations")
+
     trends_path = os.path.join(WORKDIR, 'trends_data.json')
     with open(trends_path) as f:
         data = json.load(f)
     data['market_floors'] = floors
+    data['match_archive'] = match_archive
+    data['sgm_lift'] = sgm_lift
     with open(trends_path, 'w') as f:
         json.dump(data, f, indent=2, default=str)
-    print(f"\nMerged market_floors into {trends_path}")
+    print(f"\nMerged market_floors, match_archive, sgm_lift into {trends_path}")

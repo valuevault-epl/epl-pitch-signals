@@ -29,7 +29,7 @@ def build_all_player_signals(fixtures, team_trends):
     if not current_roster:
         print("  Understat roster fetch failed or returned nothing - skipping player signals "
               "entirely this run (team/match signals are unaffected).")
-        return fixtures
+        return fixtures, {}
 
     teams_needed = {fx['HomeTeam'] for fx in fixtures} | {fx['AwayTeam'] for fx in fixtures}
     # football-data.co.uk and Understat don't always spell team names the same way - map by
@@ -68,12 +68,29 @@ def build_all_player_signals(fixtures, team_trends):
     print(f"Fetching player match logs for {len(team_name_map)} teams "
           f"(~{len(team_name_map) * 6} players, rate-limited)...")
     trend_cache = {}  # player_name -> player_trend() result
+    # Raw per-match records (goals/shots/shots_on_target/assists + date), kept separately from the
+    # windowed trend above - this is what lets a tracked bet on a player leg still be gradeable
+    # once its match has been played, the same reasoning as market_floor.py's team match archive.
+    # Understat's own `date`/`h_team`/`a_team` fields on each match are enough to build the key.
+    player_match_archive = {}
     for team, u_team in team_name_map.items():
         for name, info in key_players_for_team(current_roster, prior_roster, u_team):
             if name in trend_cache:
                 continue
             matches = cached_player_matches(info['id'], name)
             trend_cache[name] = player_trend(matches) if matches else None
+            # Capped to the current + prior season, same span the live trend window mostly draws
+            # from - a tracked bet is realistically graded within days of its match being played,
+            # so a player's ENTIRE career history (Understat goes back to 2014) is far more than
+            # this needs and was bloating the embedded JSON by well over a megabyte for no benefit.
+            for m in (matches or []):
+                if float(m.get('time') or 0) <= 0 or m.get('season') not in (current_start_year, prior_start_year):
+                    continue
+                key = f"{name}|{m['date']}"
+                player_match_archive[key] = {
+                    'goals': float(m['goals']), 'shots': float(m['shots']),
+                    'shots_on_target': float(m.get('shots_on_target', 0)), 'assists': float(m['assists']),
+                }
 
     for fx in fixtures:
         signals = []
@@ -95,7 +112,8 @@ def build_all_player_signals(fixtures, team_trends):
 
     total = sum(len(fx['player_signals']) for fx in fixtures)
     print(f"Built {total} player signals across {len(fixtures)} fixtures.")
-    return fixtures
+    print(f"Player match archive: {len(player_match_archive)} match records.")
+    return fixtures, player_match_archive
 
 
 if __name__ == '__main__':
@@ -103,8 +121,8 @@ if __name__ == '__main__':
     with open(trends_path) as f:
         data = json.load(f)
 
-    data['fixtures'] = build_all_player_signals(data['fixtures'], data['trends'])
+    data['fixtures'], data['player_match_archive'] = build_all_player_signals(data['fixtures'], data['trends'])
 
     with open(trends_path, 'w') as f:
         json.dump(data, f, indent=2, default=str)
-    print(f"Merged player_signals into {trends_path}")
+    print(f"Merged player_signals, player_match_archive into {trends_path}")

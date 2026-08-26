@@ -808,6 +808,22 @@
   .tier-pill.rel-moderate { background: var(--accent-soft); color: var(--accent); }
   .tier-pill.rel-weak { background: var(--border); color: var(--ink-faint); }
 
+  .status-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .status-pill.won { background: var(--strong-pos-soft); color: var(--strong-pos); font-weight: 700; }
+  .status-pill.lost { background: var(--strong-neg-soft); color: var(--strong-neg); }
+  .status-pill.pending { background: var(--accent-soft); color: var(--accent); }
+
   .data-note {
     margin: 8px 10px 4px;
     padding: 7px 10px;
@@ -1103,10 +1119,190 @@
     color: var(--ink-faint);
   }
 
+  .pos { color: var(--strong-pos); }
+  .neg { color: var(--strong-neg); }
+
+  .slip-summary-primary b { font-size: 19px; }
+  .slip-summary-primary span { font-weight: 600; color: var(--ink); }
+
+  .slip-sgm-note {
+    margin: 8px 0 0;
+    padding: 8px 9px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .slip-place-form {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .slip-place-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .slip-place-row label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+  }
+
+  .slip-place-row input,
+  .slip-place-row select,
+  #slip-platform-other {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  #slip-platform-other { width: 100%; margin-top: 6px; }
+
+  .slip-place-btn {
+    width: 100%;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 9px;
+    cursor: pointer;
+  }
+
+  .slip-place-btn:hover { opacity: 0.92; }
+
+  .slip-place-msg {
+    margin: 8px 0 0;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    min-height: 14px;
+  }
+
   @media (max-width: 480px) {
     .slip-panel { right: 10px; left: 10px; width: auto; bottom: 72px; }
     .slip-fab { right: 10px; }
   }
+
+  /* ---------- Bet tracker ---------- */
+  .tracker-subtabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tracker-pl-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .tracker-pl-box {
+    flex: 1;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tracker-pl-box span {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+
+  .tracker-pl-value {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tracker-leg-line {
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tracker-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .tracker-stat {
+    flex: 1 1 140px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tracker-stat span {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+
+  .tracker-stat b {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .profit-chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  .profit-chart-svg { width: 100%; height: auto; display: block; }
+  .profit-chart-area { opacity: 0.14; stroke: none; }
+  .profit-chart-line { fill: none; stroke-width: 2; }
+  .profit-chart-zero { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
 
   /* ---------- Footer ---------- */
   footer {
@@ -1155,6 +1351,7 @@
     <button class="view-tab active" data-view="fixtures">Fixtures</button>
     <button class="view-tab" data-view="signals">All Signals</button>
     <button class="view-tab" data-view="players">Players</button>
+    <button class="view-tab" data-view="tracker">Tracker</button>
   </div>
 
   <div class="view-panel" id="panel-fixtures">
@@ -1205,6 +1402,31 @@
         <thead></thead>
         <tbody></tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="view-panel" id="panel-tracker" hidden>
+    <div class="tracker-subtabs" role="tablist" aria-label="Tracker view">
+      <button class="view-tab active" data-subview="bets">Bets</button>
+      <button class="view-tab" data-subview="analytics">Analytics</button>
+    </div>
+
+    <div id="tracker-bets-panel">
+      <div class="tracker-pl-bar">
+        <div class="tracker-pl-box"><span>This week</span><b class="tracker-pl-value" id="tracker-week-pl">$0.00</b></div>
+        <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
+      </div>
+      <div class="signal-list-wrap">
+        <table class="signal-list" id="tracker-table">
+          <thead><tr><th>Date</th><th>Legs</th><th>Platform</th><th>Odds</th><th>Stake</th><th>Return</th><th>Status</th><th>P/L</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tracker-analytics-panel" hidden>
+      <div class="tracker-stats" id="tracker-stats"></div>
+      <div class="profit-chart-wrap" id="tracker-chart"></div>
     </div>
   </div>
 
@@ -1260,9 +1482,21 @@
         <ul>
           <li>Click the small "+" next to any line (Fixtures tab or Players tab) to add it as a leg - it adds exactly the line currently showing, so pick your line first, then add it.</li>
           <li>Open the slip via the "Slip" button in the bottom-right corner. Each leg's line can still be changed from inside the slip, without going back to find the row it came from.</li>
-          <li>"Minimum odds to take" multiplies every leg's own odds together - the historical floor price for a Strong-tier team leg, modeled fair odds otherwise (player legs always use modeled odds; there's no historical floor for those - see methodology). Compare this against what a bookmaker actually quotes for the same combo.</li>
-          <li>"Total implied edge" is the compounded 5% edge from however many legs are floor-backed - (1.05^n - 1). Legs using modeled odds only (no historical floor) don't add to this, since modeled odds carry no built-in edge cushion.</li>
-          <li>This multiplies leg odds assuming independence. For a same-game multi, legs are often correlated (a team scoring more usually means more shots on target too), which understates the true minimum odds - treat the number as a guide, not a precise calculation, especially for SGMs.</li>
+          <li>"Minimum odds to take" is the headline number: for legs sharing a fixture, it uses correlation-adjusted (true SGM) odds - see below; for legs on different fixtures, straightforward multiplication is already correct, since those are genuinely independent events. "...if every leg were independent" is shown alongside it so you can see how much the correlation adjustment actually moved the number.</li>
+          <li>"Total implied edge" is a separate figure: the compounded 5% edge from however many legs are backed by the historical odds floor - (1.05^n - 1). Legs using modeled odds only (no historical floor - every player leg, plus any team leg below Strong tier) don't add to this, since modeled odds carry no built-in edge cushion of their own.</li>
+          <li>Fill in the odds you were actually quoted, your stake, and which platform, then hit "Place bet" - it saves the whole slip as one tracked bet (multi or single) and clears the slip. See the Tracker tab below for what happens next.</li>
+        </ul>
+
+        <h3>True SGM odds</h3>
+        <p>Naive multiplication assumes every leg is independent - true across different fixtures, false for legs from the SAME match, where a shared factor (how open or cagey the game turned out, its overall pace) pushes markets to move together. This is measured directly, not assumed: every pair of team markets has a "lift" factor computed from real match history (how often they actually landed together vs what independence would predict), and the slip applies it whenever 2+ legs share a fixture. A lift above 1.0 means the two events tend to happen together more than chance; below 1.0 means they pull against each other. This is a genuine, data-grounded adjustment, not a full joint model - it's computed at each market's standard anchor line and applied approximately to whatever line you've actually picked, and it isn't modeled at all for player-leg correlations yet (a player leg still contributes its own probability, just not correlated against the rest of the group). Shown in the slip whenever it applies, alongside the naive figure for comparison.</p>
+
+        <h3>Tracker tab</h3>
+        <ul>
+          <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
+          <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
+          <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
+          <li>Remove a bet with the "&times;" on its row if it was tracked by mistake - this can't be undone.</li>
+          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, plus win rate, total staked, and ROI.</li>
         </ul>
       </div>
     </div>
@@ -1363,7 +1597,7 @@
     return updated;
   }
 
-  function renderSignalRow(sig, key, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb, fixtureLabel) {
+  function renderSignalRow(sig, key, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb, fixtureLabel, fixtureDate) {
     if (!sig) return '';
     teamVerb = teamVerb || 'own rate';
     oppVerb = oppVerb || 'own rate';
@@ -1441,10 +1675,16 @@
     // "+" button's payload always reflects whatever line is currently showing.
     const slipOdds = (tier.cls === 'rel-strong' && band && band.min_odds) ? band.min_odds : sig.modeled_odds;
     const slipSource = (tier.cls === 'rel-strong' && band && band.min_odds) ? 'Floor' : 'Modeled';
+    // fairProb is the best available estimate of the TRUE probability (no edge margin) - the
+    // band's own real historical win rate for a floor-backed leg (a genuine empirical estimate,
+    // arguably better-grounded than the Poisson model), or 1/modeled_odds otherwise. This is what
+    // the SGM correlation adjustment multiplies together, kept separate from `odds` (which
+    // includes the 5% edge cushion for floor-backed legs) so the two purposes don't get conflated.
+    const fairProb = (tier.cls === 'rel-strong' && band && band.win_rate) ? band.win_rate / 100 : 1 / sig.modeled_odds;
     const slipLeg = {
       id: `${fixtureLabel}::${key}`, signalType: 'team', label: sig.label, fixture: fixtureLabel,
-      market: key, direction, line: sig.line, altLines: sig.alt_lines || [],
-      odds: slipOdds, source: slipSource,
+      date: fixtureDate, market: key, direction, line: sig.line, altLines: sig.alt_lines || [],
+      odds: slipOdds, source: slipSource, fairProb,
     };
     const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
     const valueHtml = `
@@ -1531,7 +1771,7 @@
     const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
     const rows = sortedKeys.map(k => {
       const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
-      return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel);
+      return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
     }).join('');
 
     const notes = [];
@@ -1653,7 +1893,7 @@
     const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
     const row = sel.closest('.signal-row');
     const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
-    if (row) row.outerHTML = renderSignalRow(updatedSig, key, scaleFor(key), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel);
+    if (row) row.outerHTML = renderSignalRow(updatedSig, key, scaleFor(key), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
   });
 
   document.getElementById('modal-close').addEventListener('click', closeGameModal);
@@ -1674,13 +1914,18 @@
   });
 
   // ---------- View tabs ----------
-  document.querySelectorAll('.view-tab').forEach(btn => {
+  // Scoped to direct children of .view-tabs, not just '.view-tab' - the Tracker panel's own Bets/
+  // Analytics sub-tabs reuse the same button styling (and class) in a separate .tracker-subtabs
+  // container, and would otherwise get swept into this top-level tab group by a broader selector.
+  document.querySelectorAll('.view-tabs > .view-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view-tabs > .view-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('panel-fixtures').hidden = btn.dataset.view !== 'fixtures';
       document.getElementById('panel-signals').hidden = btn.dataset.view !== 'signals';
       document.getElementById('panel-players').hidden = btn.dataset.view !== 'players';
+      document.getElementById('panel-tracker').hidden = btn.dataset.view !== 'tracker';
+      if (btn.dataset.view === 'tracker') renderTracker();
     });
   });
 
@@ -1749,7 +1994,7 @@
       const fixture = `${fx.HomeTeam} v ${fx.AwayTeam}`;
       for (const sig of (fx.player_signals || [])) {
         rows.push({
-          player: sig.player, team: sig.team, fixture,
+          player: sig.player, team: sig.team, fixture, date: fx.Date,
           market: PLAYER_MARKET_LABELS[sig.market] || sig.market, marketKey: sig.market,
           direction: sig.direction, line: sig.line, altLines: sig.alt_lines || [],
           hitRate: sig.hit_rate, modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
@@ -1835,9 +2080,9 @@
       // for it. Rebuilt fresh per render, same reasoning as the team-market slip button.
       const slipLeg = {
         id: `${r.fixture}::${r.marketKey}::${r.player}`, signalType: 'player',
-        label: `${r.player} — ${r.market}`, fixture: r.fixture,
+        label: `${r.player} — ${r.market}`, fixture: r.fixture, date: r.date, player: r.player,
         market: r.marketKey, direction: r.direction, line: r.line, altLines: r.altLines || [],
-        odds: r.modeledOdds, source: 'Modeled',
+        odds: r.modeledOdds, source: 'Modeled', fairProb: 1 / r.modeledOdds,
       };
       const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
       return `
@@ -1951,8 +2196,8 @@
     const blended = (altEntry.team_hit_rate + altEntry.opponent_hit_rate) / 2;
     const tier = reliabilityTier(blended);
     const band = tier.cls === 'rel-strong' ? bandFloorFor(market, blended) : null;
-    if (band && band.min_odds) return { odds: band.min_odds, source: 'Floor' };
-    return { odds: altEntry.modeled_odds, source: 'Modeled' };
+    if (band && band.min_odds) return { odds: band.min_odds, source: 'Floor', fairProb: band.win_rate / 100 };
+    return { odds: altEntry.modeled_odds, source: 'Modeled', fairProb: 1 / altEntry.modeled_odds };
   }
 
   function addLegToSlip(leg) {
@@ -1977,12 +2222,77 @@
     if (!entry) return;
     const result = leg.signalType === 'team'
       ? teamOddsForLine(leg.market, entry)
-      : { odds: entry.modeled_odds, source: 'Modeled' };
+      : { odds: entry.modeled_odds, source: 'Modeled', fairProb: 1 / entry.modeled_odds };
     leg.line = newLine;
     leg.odds = result.odds;
     leg.source = result.source;
+    leg.fairProb = result.fairProb;
     saveSlip();
     renderSlip();
+  }
+
+  // ---------- True SGM odds ----------
+  // Naive multiplication (computeSlipTotals below) assumes every leg is independent - true for
+  // legs from different fixtures (different matches, nothing to correlate), false for legs from
+  // the SAME fixture, where a shared factor (game pace, how open/cagey it turned out) pushes
+  // markets to move together. Grouping by fixture is what separates the two cases: only groups
+  // of 2+ legs sharing a fixture get the correlation adjustment below.
+  function slipFixtureGroups() {
+    const groups = {};
+    for (const leg of slipLegs) (groups[leg.fixture] = groups[leg.fixture] || []).push(leg);
+    return groups;
+  }
+
+  // Applies market_floor.py's empirically-measured lift (real historical co-occurrence vs what
+  // independence would predict - see compute_sgm_lift) to the naive joint probability of a set of
+  // same-fixture legs. Only defined between team-vs-team market pairs (there's no equivalent
+  // historical join yet for a player leg's correlation with anything else), so a player leg in the
+  // group still contributes its own probability but isn't correlated against the others - the
+  // result is a genuine improvement over pure independence whenever a team-vs-team pair is
+  // present, just not a complete correction if a player leg also shares the fixture.
+  function sgmAdjustedProbability(legs) {
+    let prob = 1;
+    for (const leg of legs) prob *= leg.fairProb;
+    for (let i = 0; i < legs.length; i++) {
+      for (let j = i + 1; j < legs.length; j++) {
+        const a = legs[i], b = legs[j];
+        if (a.signalType !== 'team' || b.signalType !== 'team') continue;
+        const liftKey = `${a.market}|${a.direction}|${b.market}|${b.direction}`;
+        prob *= (DATA.sgm_lift && DATA.sgm_lift[liftKey]) || 1;
+      }
+    }
+    return Math.min(Math.max(prob, 0.0001), 0.999);
+  }
+
+  function computeSgmSummaries() {
+    const groups = slipFixtureGroups();
+    const summaries = [];
+    for (const [fixture, legs] of Object.entries(groups)) {
+      if (legs.length < 2) continue;
+      const naiveProb = legs.reduce((p, l) => p * l.fairProb, 1);
+      const adjustedProb = sgmAdjustedProbability(legs);
+      summaries.push({
+        fixture, legCount: legs.length,
+        naiveMinOdds: 1.05 / naiveProb, adjustedMinOdds: 1.05 / adjustedProb,
+        hasPlayerLeg: legs.some(l => l.signalType === 'player'),
+      });
+    }
+    return summaries;
+  }
+
+  // Single "true minimum odds" figure for the WHOLE slip: same-fixture groups use the
+  // correlation-adjusted joint probability, everything else (single legs, or legs from different
+  // fixtures) is independent by construction, so no adjustment applies to those. A single 5% edge
+  // target is applied once at the combined level here, rather than compounding per-leg edges the
+  // way "Total implied edge" below does - that number answers a different question (how much of
+  // the naive price is backed by the historical floor), this one is the actual bet recommendation.
+  function computeOverallAdjustedOdds() {
+    const groups = slipFixtureGroups();
+    let totalProb = 1;
+    for (const legs of Object.values(groups)) {
+      totalProb *= legs.length >= 2 ? sgmAdjustedProbability(legs) : legs[0].fairProb;
+    }
+    return 1.05 / Math.max(totalProb, 0.0001);
   }
 
   // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
@@ -2036,10 +2346,39 @@
     }).join('');
 
     const { combinedOdds, floorLegs, impliedEdgePct } = computeSlipTotals();
+    const overallAdjustedOdds = computeOverallAdjustedOdds();
+    const sgmSummaries = computeSgmSummaries();
+    const sgmNotesHtml = sgmSummaries.map(s => `
+      <p class="slip-sgm-note"><b>${s.fixture}</b> - ${s.legCount} same-game legs: correlation-adjusted minimum odds <b class="mono">${s.adjustedMinOdds.toFixed(2)}</b> vs <b class="mono">${s.naiveMinOdds.toFixed(2)}</b> if treated as independent${s.hasPlayerLeg ? ' (partial adjustment - includes a player leg, not yet correlated against the others)' : ''}.</p>`
+    ).join('');
+
     summaryEl.innerHTML = `
-      <div class="slip-summary-row"><span>Minimum odds to take</span><b class="mono">${combinedOdds.toFixed(2)}</b></div>
+      <div class="slip-summary-row slip-summary-primary"><span>Minimum odds to take</span><b class="mono">${overallAdjustedOdds.toFixed(2)}</b></div>
+      <div class="slip-summary-row"><span>...if every leg were independent</span><b class="mono">${combinedOdds.toFixed(2)}</b></div>
       <div class="slip-summary-row"><span>Total implied edge</span><b class="mono">${impliedEdgePct.toFixed(1)}%</b></div>
-      <p class="slip-note">${floorLegs}/${slipLegs.length} leg${slipLegs.length === 1 ? '' : 's'} backed by the historical odds floor (each requiring a 5% edge); the rest use modeled fair odds with no edge cushion built in. Multiplying leg odds together assumes independence - for a same-game multi, legs are often correlated (e.g. a team's points and shots on target move together), which understates the true minimum odds you should actually demand. Treat this as a guide, not a precise number, especially for SGMs.</p>`;
+      ${sgmNotesHtml}
+      <p class="slip-note">${floorLegs}/${slipLegs.length} leg${slipLegs.length === 1 ? '' : 's'} backed by the historical odds floor (each requiring a 5% edge); the rest use modeled fair odds with no edge cushion built in. Same-fixture legs above are corrected for real historical correlation (see methodology); cross-fixture legs are genuinely independent already. Treat all of this as a guide, not a precise number.</p>
+      <div class="slip-place-form">
+        <div class="slip-place-row">
+          <label>Odds taken<input type="number" step="0.01" min="1" id="slip-odds-input" placeholder="e.g. 2.10"></label>
+          <label>Stake<input type="number" step="0.01" min="0" id="slip-stake-input" placeholder="e.g. 20"></label>
+        </div>
+        <div class="slip-place-row">
+          <label>Platform
+            <select id="slip-platform-select">
+              <option value="Pointsbet">Pointsbet</option>
+              <option value="TAB">TAB</option>
+              <option value="Sportsbet">Sportsbet</option>
+              <option value="Ladbrokes">Ladbrokes</option>
+              <option value="Betfair">Betfair</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <input type="text" id="slip-platform-other" placeholder="Platform name" hidden>
+        </div>
+        <button class="slip-place-btn" id="slip-place-btn" type="button">Place bet</button>
+        <p class="slip-place-msg" id="slip-place-msg"></p>
+      </div>`;
   }
 
   function openSlipPanel() { document.getElementById('slip-panel').classList.add('open'); }
@@ -2067,6 +2406,268 @@
     } catch (err) {}
   });
 
+  // The odds/stake/platform form and its Place button live inside #slip-summary, which is fully
+  // replaced by renderSlip() every time a leg changes - direct listeners on those inputs would be
+  // destroyed on the next render, so this is delegated onto the panel itself instead.
+  document.getElementById('slip-panel').addEventListener('change', (e) => {
+    if (e.target.id === 'slip-platform-select') {
+      document.getElementById('slip-platform-other').hidden = e.target.value !== 'Other';
+    }
+  });
+  document.getElementById('slip-panel').addEventListener('click', (e) => {
+    if (e.target.id !== 'slip-place-btn') return;
+    placeBetFromSlip();
+  });
+
+  function placeBetFromSlip() {
+    const msgEl = document.getElementById('slip-place-msg');
+    const oddsEl = document.getElementById('slip-odds-input');
+    const stakeEl = document.getElementById('slip-stake-input');
+    const platformSel = document.getElementById('slip-platform-select').value;
+    const platformOtherEl = document.getElementById('slip-platform-other');
+    const odds = parseFloat(oddsEl.value);
+    const stake = parseFloat(stakeEl.value);
+
+    if (!slipLegs.length) { msgEl.textContent = 'Add at least one leg first.'; return; }
+    if (!(odds > 1)) { msgEl.textContent = 'Enter the odds you actually took (greater than 1).'; return; }
+    if (!(stake > 0)) { msgEl.textContent = 'Enter your stake.'; return; }
+    const platformOther = platformOtherEl.value.trim();
+    if (platformSel === 'Other' && !platformOther) { msgEl.textContent = 'Name the platform.'; return; }
+
+    const bet = {
+      id: `bet_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      placedAt: new Date().toISOString(),
+      legs: slipLegs.map(l => ({ ...l, status: 'Pending' })),
+      platform: platformSel === 'Other' ? platformOther : platformSel,
+      oddsTaken: odds, stake,
+      status: 'Pending', settledAt: null, profit: null,
+    };
+    loadTrackedBets();
+    trackedBets.unshift(bet);
+    saveTrackedBets();
+    renderTracker();
+
+    slipLegs = [];
+    saveSlip();
+    renderSlip();
+    const freshMsg = document.getElementById('slip-place-msg');
+    if (freshMsg) {
+      freshMsg.textContent = 'Bet placed - see it in the Tracker tab.';
+      setTimeout(() => { const m = document.getElementById('slip-place-msg'); if (m) m.textContent = ''; }, 4000);
+    }
+  }
+
   loadSlip();
   renderSlip();
+
+  // ---------- Bet tracker ----------
+  // Placing a bet snapshots the slip's legs (with a per-leg 'status') into a separate,
+  // independently-persisted list - the slip is for BUILDING a bet, the tracker is for bets
+  // already placed, and the two shouldn't share state (editing lines in the slip after placing a
+  // bet must never retroactively change what was actually tracked).
+  const TRACKER_STORAGE_KEY = 'pitchSignalsTrackedBets';
+  let trackedBets = [];
+
+  function loadTrackedBets() {
+    try {
+      const raw = localStorage.getItem(TRACKER_STORAGE_KEY);
+      trackedBets = raw ? JSON.parse(raw) : [];
+    } catch (e) { trackedBets = []; }
+  }
+
+  function saveTrackedBets() {
+    try { localStorage.setItem(TRACKER_STORAGE_KEY, JSON.stringify(trackedBets)); } catch (e) {}
+  }
+
+  function removeTrackedBet(id) {
+    trackedBets = trackedBets.filter(b => b.id !== id);
+    saveTrackedBets();
+    renderTracker();
+  }
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+  function fmtPL(n) { return `${n > 0 ? '+' : ''}$${n.toFixed(2)}`; }
+
+  // A team leg's result is looked up in DATA.match_archive (built by market_floor.py from EVERY
+  // completed match, not the rolling per-team window the Fixtures tab uses - a bet graded weeks
+  // after placing could otherwise fall out of that window). A player leg's result comes from
+  // DATA.player_match_archive the same way (see build_player_signals.py). Both return undefined
+  // for a fixture that hasn't been played yet (or falls outside the archive's coverage), which
+  // gradeLeg treats as still Pending rather than a loss.
+  function actualForTeamLeg(leg) {
+    const sepIdx = leg.fixture.indexOf(' v ');
+    if (sepIdx < 0) return undefined;
+    const home = leg.fixture.slice(0, sepIdx), away = leg.fixture.slice(sepIdx + 3);
+    const match = DATA.match_archive && DATA.match_archive[`${home}|${away}|${leg.date}`];
+    return match ? match[leg.market] : undefined;
+  }
+
+  function actualForPlayerLeg(leg) {
+    const match = DATA.player_match_archive && DATA.player_match_archive[`${leg.player}|${leg.date}`];
+    return match ? match[leg.market] : undefined;
+  }
+
+  function gradeLeg(leg) {
+    const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+    if (actual === undefined || actual === null) return 'Pending';
+    return (leg.direction === 'OVER' ? actual > leg.line : actual < leg.line) ? 'Won' : 'Lost';
+  }
+
+  // A multi/SGM needs every leg to win. One confirmed loss settles the whole bet as Lost
+  // immediately, even if other legs haven't been played yet (their result no longer matters). It
+  // only settles Won once EVERY leg has individually graded Won - if some legs are still Pending
+  // and none has lost, the bet as a whole stays Pending.
+  function gradeTrackedBet(bet) {
+    if (bet.status !== 'Pending') return false;
+    let anyLost = false, allWon = true;
+    for (const leg of bet.legs) {
+      leg.status = gradeLeg(leg);
+      if (leg.status === 'Lost') anyLost = true;
+      if (leg.status !== 'Won') allWon = false;
+    }
+    if (anyLost) {
+      bet.status = 'Lost'; bet.settledAt = new Date().toISOString(); bet.profit = -bet.stake;
+      return true;
+    }
+    if (allWon) {
+      bet.status = 'Won'; bet.settledAt = new Date().toISOString();
+      bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
+      return true;
+    }
+    return false;
+  }
+
+  function gradeAllTrackedBets() {
+    let changed = false;
+    for (const bet of trackedBets) { if (gradeTrackedBet(bet)) changed = true; }
+    if (changed) saveTrackedBets();
+  }
+
+  // "This week" = placed in the last 7 days, a rolling window rather than a calendar week - simpler
+  // and doesn't jump on a Monday boundary mid-session.
+  function computePL() {
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    let weekPL = 0, overallPL = 0;
+    for (const bet of trackedBets) {
+      if (bet.status === 'Pending') continue;
+      overallPL += bet.profit;
+      if (now - new Date(bet.placedAt).getTime() <= weekMs) weekPL += bet.profit;
+    }
+    return { weekPL: round2(weekPL), overallPL: round2(overallPL) };
+  }
+
+  function renderTrackerBets() {
+    gradeAllTrackedBets();
+    const { weekPL, overallPL } = computePL();
+    const weekEl = document.getElementById('tracker-week-pl');
+    const overallEl = document.getElementById('tracker-overall-pl');
+    weekEl.textContent = fmtPL(weekPL);
+    weekEl.className = 'tracker-pl-value' + (weekPL > 0 ? ' pos' : weekPL < 0 ? ' neg' : '');
+    overallEl.textContent = fmtPL(overallPL);
+    overallEl.className = 'tracker-pl-value' + (overallPL > 0 ? ' pos' : overallPL < 0 ? ' neg' : '');
+
+    const tbody = document.querySelector('#tracker-table tbody');
+    if (!trackedBets.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = trackedBets.map(bet => {
+      const legsHtml = bet.legs.map(l => {
+        const legTag = l.status && l.status !== 'Pending'
+          ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
+        return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span> ${legTag}</div>`;
+      }).join('');
+      const potentialReturn = round2(bet.stake * bet.oddsTaken);
+      const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
+      return `
+      <tr>
+        <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
+        <td>${legsHtml}</td>
+        <td>${bet.platform}</td>
+        <td class="mono-cell">${bet.oddsTaken.toFixed(2)}</td>
+        <td class="mono-cell">$${bet.stake.toFixed(2)}</td>
+        <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
+        <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
+        <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
+        <td><button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderProfitChart(points) {
+    const W = 640, H = 220, PAD = 30;
+    const series = [0, ...points];
+    const minY = Math.min(0, ...series), maxY = Math.max(0, ...series);
+    const yRange = (maxY - minY) || 1;
+    const xStep = series.length > 1 ? (W - PAD * 2) / (series.length - 1) : 0;
+    const coords = series.map((v, i) => [
+      PAD + i * xStep, H - PAD - ((v - minY) / yRange) * (H - PAD * 2),
+    ]);
+    const zeroY = H - PAD - ((0 - minY) / yRange) * (H - PAD * 2);
+    const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c[0].toFixed(1)} ${c[1].toFixed(1)}`).join(' ');
+    const last = coords[coords.length - 1], first = coords[0];
+    const areaPath = `${linePath} L ${last[0].toFixed(1)} ${zeroY.toFixed(1)} L ${first[0].toFixed(1)} ${zeroY.toFixed(1)} Z`;
+    const positive = series[series.length - 1] >= 0;
+    const colorVar = positive ? 'var(--strong-pos)' : 'var(--strong-neg)';
+    const dots = coords.slice(1).map(c => `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.6" style="fill:${colorVar}"></circle>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="profit-chart-svg" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="${PAD}" y1="${zeroY.toFixed(1)}" x2="${W - PAD}" y2="${zeroY.toFixed(1)}" class="profit-chart-zero"></line>
+      <path d="${areaPath}" class="profit-chart-area" style="fill:${colorVar}"></path>
+      <path d="${linePath}" class="profit-chart-line" style="stroke:${colorVar}"></path>
+      ${dots}
+    </svg>`;
+  }
+
+  function renderTrackerAnalytics() {
+    gradeAllTrackedBets();
+    const settled = trackedBets.filter(b => b.status !== 'Pending')
+      .slice().sort((a, b) => new Date(a.settledAt) - new Date(b.settledAt));
+    const statsEl = document.getElementById('tracker-stats');
+    const chartEl = document.getElementById('tracker-chart');
+
+    if (!settled.length) {
+      statsEl.innerHTML = '<p class="slip-empty">No settled bets yet - analytics will appear once bets resolve.</p>';
+      chartEl.innerHTML = '';
+      return;
+    }
+
+    let cumulative = 0;
+    const points = settled.map(b => { cumulative = round2(cumulative + b.profit); return cumulative; });
+    const totalStaked = settled.reduce((s, b) => s + b.stake, 0);
+    const wins = settled.filter(b => b.status === 'Won').length;
+    const finalPL = points[points.length - 1];
+    const roi = totalStaked > 0 ? (finalPL / totalStaked * 100) : 0;
+
+    statsEl.innerHTML = `
+      <div class="tracker-stat"><span>Settled bets</span><b>${settled.length}</b></div>
+      <div class="tracker-stat"><span>Win rate</span><b>${(wins / settled.length * 100).toFixed(0)}%</b></div>
+      <div class="tracker-stat"><span>Total staked</span><b>$${totalStaked.toFixed(2)}</b></div>
+      <div class="tracker-stat"><span>Net P/L</span><b class="${finalPL >= 0 ? 'pos' : 'neg'}">${fmtPL(finalPL)}</b></div>
+      <div class="tracker-stat"><span>ROI</span><b class="${roi >= 0 ? 'pos' : 'neg'}">${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%</b></div>`;
+    chartEl.innerHTML = renderProfitChart(points);
+  }
+
+  function renderTracker() {
+    renderTrackerBets();
+    if (!document.getElementById('tracker-analytics-panel').hidden) renderTrackerAnalytics();
+  }
+
+  document.querySelector('#tracker-table tbody').addEventListener('click', (e) => {
+    const btn = e.target.closest('.slip-remove');
+    if (btn) removeTrackedBet(decodeURIComponent(btn.dataset.betId));
+  });
+
+  document.querySelectorAll('.tracker-subtabs .view-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tracker-subtabs .view-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tracker-bets-panel').hidden = btn.dataset.subview !== 'bets';
+      document.getElementById('tracker-analytics-panel').hidden = btn.dataset.subview !== 'analytics';
+      if (btn.dataset.subview === 'analytics') renderTrackerAnalytics();
+    });
+  });
+
+  loadTrackedBets();
+  renderTracker();
 </script>
