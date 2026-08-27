@@ -128,13 +128,12 @@ def combine_matchup(team_trends, opponent_trends, team_market, opponent_market, 
     }
 
 
-def build_fixture_signals(fixture, trends):
+def _signals_from_trends(fixture, home_trends, away_trends):
+    """Build every signal for a fixture from a given pair of team-trend dicts. Factored out so the
+    same logic can run twice per fixture: once on the blended (venue-agnostic) trends, and once on
+    a venue-merged pair (home team's home-only numbers, away team's away-only numbers) for the
+    dashboard's Overall / Home-Away toggle - see build_fixture_signals below."""
     home, away = fixture['HomeTeam'], fixture['AwayTeam']
-    home_trends = trends.get(home, {})
-    away_trends = trends.get(away, {})
-    if not home_trends or not away_trends:
-        return None
-
     signals = {}
     hg = combine_matchup(home_trends, away_trends, 'goals_for', 'goals_against', ANCHOR_LINE['goals_for'])
     if hg:
@@ -192,20 +191,68 @@ def build_fixture_signals(fixture, trends):
     return signals
 
 
+def _venue_merged_trends(blended_team_trends, venue_team_trends):
+    """A team's blended trend dict, with any market overridden by its venue-specific (home-only or
+    away-only) equivalent wherever one exists. A market missing from `venue_team_trends` (fewer
+    than 4 valid games at that venue - see trend_engine.team_trend) just keeps its blended value,
+    so the toggle degrades gracefully instead of losing signals for teams with a thin home/away
+    sample so far this season."""
+    merged = dict(blended_team_trends)
+    for market, v in (venue_team_trends or {}).items():
+        if not market.startswith('_') and v:
+            merged[market] = v
+    return merged
+
+
+def build_fixture_signals(fixture, trends, trends_home=None, trends_away=None):
+    """Returns (signals, signals_venue). `signals` is the existing blended-sample view. When
+    trends_home/trends_away are supplied and both teams have at least some venue-specific data,
+    `signals_venue` is a second, parallel signal set built with the home team's home-only numbers
+    and the away team's away-only numbers wherever each team's data is used - as the subject of
+    its own market AND as the opponent/defense context feeding the other team's market - instead
+    of the blended last-N-regardless-of-venue sample. Otherwise `signals_venue` is None and the
+    dashboard's toggle has nothing to switch to for that fixture."""
+    home, away = fixture['HomeTeam'], fixture['AwayTeam']
+    home_trends = trends.get(home, {})
+    away_trends = trends.get(away, {})
+    if not home_trends or not away_trends:
+        return None, None
+
+    signals = _signals_from_trends(fixture, home_trends, away_trends)
+
+    signals_venue = None
+    if trends_home is not None and trends_away is not None:
+        home_venue = trends_home.get(home)
+        away_venue = trends_away.get(away)
+        if home_venue and away_venue:
+            merged_home = _venue_merged_trends(home_trends, home_venue)
+            merged_away = _venue_merged_trends(away_trends, away_venue)
+            signals_venue = _signals_from_trends(fixture, merged_home, merged_away)
+
+    return signals, signals_venue
+
+
 if __name__ == '__main__':
     with open(os.path.join(WORKDIR, 'trends_data.json')) as f:
         data = json.load(f)
 
+    trends_home = data.get('trends_home')
+    trends_away = data.get('trends_away')
+
     fixtures_with_signals = []
+    n_venue = 0
     for fx in data['fixtures']:
-        signals = build_fixture_signals(fx, data['trends'])
-        fixtures_with_signals.append({**fx, 'signals': signals})
+        signals, signals_venue = build_fixture_signals(fx, data['trends'], trends_home, trends_away)
+        if signals_venue:
+            n_venue += 1
+        fixtures_with_signals.append({**fx, 'signals': signals, 'signals_venue': signals_venue})
 
     data['fixtures'] = fixtures_with_signals
     with open(os.path.join(WORKDIR, 'trends_data.json'), 'w') as f:
         json.dump(data, f, indent=2, default=str)
 
-    print(f"Built matchup signals for {len(fixtures_with_signals)} fixtures")
+    print(f"Built matchup signals for {len(fixtures_with_signals)} fixtures "
+          f"({n_venue} with a home/away-split alternative)")
     if fixtures_with_signals:
         fx0 = fixtures_with_signals[0]
         print(f"\nExample - {fx0['HomeTeam']} vs {fx0['AwayTeam']}:")

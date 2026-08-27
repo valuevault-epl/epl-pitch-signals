@@ -334,6 +334,32 @@
 
   .odds-pill b { color: var(--ink); font-weight: 600; }
 
+  .venue-toggle {
+    display: flex;
+    gap: 6px;
+    margin: 10px 0 2px;
+  }
+
+  .venue-btn {
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+
+  .venue-btn:hover { border-color: var(--accent); }
+
+  .venue-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
   .signals {
     padding: 6px 8px 10px;
     display: flex;
@@ -1777,13 +1803,21 @@
     };
   }
 
+  // Fixture cards default to each team's blended last-10 (any venue). The Home/Away toggle swaps
+  // in fx.signals_venue instead - the home team's last 10 AT HOME and the away team's last 10
+  // AWAY, wherever each team's own data is used (as the subject of its own market AND as the
+  // opponent/defense context feeding the other team's market). Tracked per-fixture (by home team
+  // name, same identity convention the line-picker's change handler below already uses) so
+  // toggling one card doesn't affect any other.
+  const venueModeFixtures = new Set();
+
   function renderFixtureCard(fx) {
     const dateObj = new Date(fx.Date + 'T12:00:00');
     const dateStr = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
     const teamsHeadHtml = `<h2 data-home="${fx.HomeTeam}" data-away="${fx.AwayTeam}" title="Click for game-by-game history">${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2>`;
 
     if (!fx.signals) {
-      return `<div class="fixture-card">
+      return `<div class="fixture-card" data-home="${fx.HomeTeam}">
         <div class="fixture-head">
           <div class="fixture-date">${dateStr}</div>
           <div class="fixture-teams">${teamsHeadHtml}</div>
@@ -1792,15 +1826,18 @@
       </div>`;
     }
 
+    const inVenueMode = !!(fx.signals_venue && venueModeFixtures.has(fx.HomeTeam));
+    const activeSignals = inVenueMode ? fx.signals_venue : fx.signals;
+
     const sortedKeys = MARKET_ORDER
-      .filter(k => fx.signals[k])
-      .sort((a, b) => Math.abs(fx.signals[b].edge) - Math.abs(fx.signals[a].edge));
+      .filter(k => activeSignals[k])
+      .sort((a, b) => Math.abs(activeSignals[b].edge) - Math.abs(activeSignals[a].edge));
 
     const sideLabels = sideLabelsFor(fx);
     const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
     const rows = sortedKeys.map(k => {
       const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
-      return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
+      return renderSignalRow(activeSignals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
     }).join('');
 
     const notes = [];
@@ -1809,7 +1846,14 @@
     if (at && at._data_note) notes.push(`${fx.AwayTeam}: ${at._data_note}`);
     const noteHtml = notes.length ? `<div class="data-note">${notes.join('<br>')}</div>` : '';
 
-    return `<div class="fixture-card">
+    const venueToggleHtml = fx.signals_venue ? `
+      <div class="venue-toggle" role="group" aria-label="Sample window">
+        <button type="button" class="venue-btn${inVenueMode ? '' : ' active'}" data-mode="overall">Last 10</button>
+        <button type="button" class="venue-btn${inVenueMode ? ' active' : ''}" data-mode="venue"
+          title="${fx.HomeTeam}'s last 10 AT HOME vs ${fx.AwayTeam}'s last 10 AWAY, instead of each team's blended last 10 regardless of venue">Last 10 (Home/Away)</button>
+      </div>` : '';
+
+    return `<div class="fixture-card" data-home="${fx.HomeTeam}">
       <div class="fixture-head">
         <div class="fixture-date">${dateStr}</div>
         <div class="fixture-teams">${teamsHeadHtml}</div>
@@ -1819,6 +1863,7 @@
           <span class="odds-pill">2 <b>${fx.B365A ?? '—'}</b></span>
         </div>
       </div>
+      ${venueToggleHtml}
       <div class="signals">${rows}</div>
       ${noteHtml}
     </div>`;
@@ -1901,6 +1946,16 @@
   function closeGameModal() { document.getElementById('game-modal').hidden = true; }
 
   document.getElementById('fixtures').addEventListener('click', (e) => {
+    const venueBtn = e.target.closest('.venue-btn');
+    if (venueBtn) {
+      const card = venueBtn.closest('.fixture-card');
+      const fx = card && DATA.fixtures.find(f => f.HomeTeam === card.dataset.home);
+      if (!fx) return;
+      if (venueBtn.dataset.mode === 'venue') venueModeFixtures.add(fx.HomeTeam);
+      else venueModeFixtures.delete(fx.HomeTeam);
+      card.outerHTML = renderFixtureCard(fx);
+      return;
+    }
     const h2 = e.target.closest('h2[data-home]');
     if (h2) openGameModal(h2.dataset.home, h2.dataset.away);
   });
@@ -1914,7 +1969,9 @@
     const fx = DATA.fixtures.find(f => f.HomeTeam === sel.dataset.team || f.AwayTeam === sel.dataset.team);
     if (!fx || !fx.signals) return;
     const key = sel.dataset.key;
-    const sig = fx.signals[key];
+    const inVenueMode = !!(fx.signals_venue && venueModeFixtures.has(fx.HomeTeam));
+    const activeSignals = inVenueMode ? fx.signals_venue : fx.signals;
+    const sig = activeSignals[key];
     if (!sig) return;
     const newLine = parseFloat(sel.value);
     const updatedSig = withNewLine(sig, newLine);

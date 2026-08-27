@@ -239,7 +239,7 @@ def _extract_team_games(recent, division_label):
 
 
 def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
-                        results_fallback=None, min_games=6, current_season=None):
+                        results_fallback=None, min_games=6, current_season=None, venue=None):
     """For each team, build a list of recent per-game stat dicts. Early in a season, this bridges
     from the PRIOR season's tail (dropping its oldest game one at a time as new current-season
     games arrive) to keep a constant `window`-sized rolling sample - exactly like the previous
@@ -250,7 +250,12 @@ def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
     current-season data, and old-season carryover is purely an early-season warm-up device.
     Teams with too little data even after that (newly promoted, fewer than `min_games`) get
     topped up from `results_fallback` (e.g. the Championship), tagged div='Championship' so the
-    caveat is visible downstream."""
+    caveat is visible downstream.
+
+    `venue`: None (default) uses every game regardless of home/away, exactly as before. 'home' or
+    'away' filters each team's own games down to that venue BEFORE the same bridging/windowing
+    logic runs, so e.g. venue='home' builds "last `window` home games" using the identical
+    warm-up/fallback rules as the blended version - just applied to a pre-filtered game list."""
     seasons_sorted = sorted(results['season'].unique())
     if current_season is None:
         current_season = seasons_sorted[-1]
@@ -259,8 +264,14 @@ def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
     cur_results = results[results['season'] == current_season].sort_values('Date')
     prior_results = results[results['season'].isin(prior_seasons)].sort_values('Date') if prior_seasons else results.iloc[0:0]
 
-    cur_games = _extract_team_games(cur_results, 'Premier League')
-    prior_games = _extract_team_games(prior_results, 'Premier League')
+    def _venue_filter(games_by_team):
+        if venue is None:
+            return games_by_team
+        want_home = (venue == 'home')
+        return {t: [g for g in gs if g['is_home'] == want_home] for t, gs in games_by_team.items()}
+
+    cur_games = _venue_filter(_extract_team_games(cur_results, 'Premier League'))
+    prior_games = _venue_filter(_extract_team_games(prior_results, 'Premier League'))
 
     all_teams = set(cur_games) | set(prior_games)
     team_games = {}
@@ -278,7 +289,7 @@ def build_team_history(results, window=ROLLING_WINDOW, use_last_n_seasons=2,
         fb_seasons_sorted = sorted(results_fallback['season'].unique())
         fb_recent_seasons = set(fb_seasons_sorted[-use_last_n_seasons:])
         fb_recent = results_fallback[results_fallback['season'].isin(fb_recent_seasons)].sort_values('Date')
-        fb_team_games = _extract_team_games(fb_recent, 'Championship')
+        fb_team_games = _venue_filter(_extract_team_games(fb_recent, 'Championship'))
 
         for team, fb_games in fb_team_games.items():
             existing = team_games.get(team, [])
@@ -397,13 +408,21 @@ if __name__ == '__main__':
 
     team_games = build_team_history(results, results_fallback=results_championship,
                                      current_season=current_season)
+    team_games_home = build_team_history(results, results_fallback=results_championship,
+                                          current_season=current_season, venue='home')
+    team_games_away = build_team_history(results, results_fallback=results_championship,
+                                          current_season=current_season, venue='away')
     league_avgs = league_averages_from_matches(results)
     trends = build_all_trends(team_games, league_avgs)
-    print(f"\nComputed trends for {len(trends)} teams")
+    trends_home = build_all_trends(team_games_home, league_avgs)
+    trends_away = build_all_trends(team_games_away, league_avgs)
+    print(f"\nComputed trends for {len(trends)} teams "
+          f"(+ home/away-split variants for the fixture card toggle)")
     print(f"League averages: {league_avgs}")
 
     out = {'generated_at': datetime.datetime.now().isoformat(), 'league_avgs': league_avgs,
-           'trends': trends, 'fixtures': fixtures_out}
+           'trends': trends, 'trends_home': trends_home, 'trends_away': trends_away,
+           'fixtures': fixtures_out}
     with open(os.path.join(WORKDIR, 'trends_data.json'), 'w') as f:
         json.dump(out, f, indent=2, default=str)
     print("Saved trends_data.json")

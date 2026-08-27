@@ -77,7 +77,7 @@ def run_full_backtest():
                 continue
 
             fixture = {'HomeTeam': home_team, 'AwayTeam': away_team}
-            signals = build_fixture_signals(fixture, trends)
+            signals, _ = build_fixture_signals(fixture, trends)
             if not signals:
                 continue
 

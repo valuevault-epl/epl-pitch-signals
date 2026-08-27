@@ -67,7 +67,7 @@ def _grade_matches(results, results_championship, season_matches):
             home_team, away_team = row['HomeTeam'], row['AwayTeam']
             if home_team not in trends or away_team not in trends:
                 continue
-            signals = build_fixture_signals({'HomeTeam': home_team, 'AwayTeam': away_team}, trends)
+            signals, _ = build_fixture_signals({'HomeTeam': home_team, 'AwayTeam': away_team}, trends)
             if not signals:
                 continue
             for key, sig in signals.items():
