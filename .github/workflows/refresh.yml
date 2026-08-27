@@ -1,0 +1,53 @@
+name: Refresh Pitch Signals data
+
+# Runs the full data pipeline on GitHub's own runners, which have unrestricted outbound network
+# access - unlike the Claude Code cloud environment used for the routines that publish the
+# Artifact, which has a fixed egress allowlist that doesn't include football-data.co.uk or
+# understat.com and (as far as we've found) has no user-facing way to add to it. Rather than keep
+# fighting that, the actual fetch+build work moved here; the Claude routines' job shrank to just
+# pulling the result this workflow already committed and publishing it as the Artifact, which
+# needs no access to either of those hosts at all.
+
+on:
+  schedule:
+    # Weekly full refresh - Wednesday 00:00 UTC (10am AEST) - once the whole round (incl. any
+    # Mon/Tue night fixtures) has finished, pulling in next week's games.
+    - cron: '0 0 * * 3'
+    # Matchday tracker refresh - every 2 hours, Fri evening through Tue morning AEST, so newly
+    # completed results show up promptly and pending tracked bets grade themselves.
+    - cron: '0 12,14,16,18,20,22 * * 5,6,0,1,2'
+    - cron: '0 0 * * 6,0,1,2'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas numpy
+
+      - name: Run the pipeline
+        run: |
+          python trend_engine.py
+          python matchup_engine.py
+          python market_floor.py
+          python build_player_signals.py
+          python generate_html.py
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add var_era_ledger.csv docs/index.html dashboard.html
+          git diff --cached --quiet && echo "Nothing new - skipping commit." && exit 0
+          git commit -m "Automated refresh: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
