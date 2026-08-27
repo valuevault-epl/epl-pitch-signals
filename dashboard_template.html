@@ -1191,6 +1191,34 @@
 
   .slip-place-btn:hover { opacity: 0.92; }
 
+  .bet-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    z-index: 60;
+    transform: translate(-50%, 12px);
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--positive);
+    color: #fff;
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 18px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .bet-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .bet-toast::before { content: '\2713'; font-weight: 700; }
+
+  @media (prefers-reduced-motion: reduce) { .bet-toast { transition: none; } }
+
   .slip-place-msg {
     margin: 8px 0 0;
     font-size: 11.5px;
@@ -1526,6 +1554,7 @@
     <div class="slip-body" id="slip-body"></div>
     <div class="slip-summary" id="slip-summary"></div>
   </div>
+  <div class="bet-toast" id="bet-toast" role="status" aria-live="polite"></div>
 </div>
 
 <script>
@@ -2419,6 +2448,16 @@
     placeBetFromSlip();
   });
 
+  let betToastTimer = null;
+  function showBetToast(message) {
+    const el = document.getElementById('bet-toast');
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(betToastTimer);
+    betToastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
   function placeBetFromSlip() {
     const msgEl = document.getElementById('slip-place-msg');
     const oddsEl = document.getElementById('slip-odds-input');
@@ -2450,6 +2489,7 @@
     slipLegs = [];
     saveSlip();
     renderSlip();
+    showBetToast('Bet tracked');
     const freshMsg = document.getElementById('slip-place-msg');
     if (freshMsg) {
       freshMsg.textContent = 'Bet placed - see it in the Tracker tab.';
