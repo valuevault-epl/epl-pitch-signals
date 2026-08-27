@@ -1,0 +1,2974 @@
+<title>Pitch Signals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --surface-2: #FBFAF7;
+    --ink: #1B1D22;
+    --ink-muted: #6B6A63;
+    --ink-faint: #A6A49A;
+    --border: rgba(27, 29, 34, 0.10);
+    --border-strong: rgba(27, 29, 34, 0.18);
+    --accent: #A9772F;
+    --accent-ink: #FFFFFF;
+    --accent-soft: rgba(169, 119, 47, 0.12);
+    --positive: #2E7D4F;
+    --positive-soft: rgba(46, 125, 79, 0.12);
+    --negative: #B3402A;
+    --negative-soft: rgba(179, 64, 42, 0.12);
+    --strong-pos: #12A150;
+    --strong-pos-soft: rgba(18, 161, 80, 0.16);
+    --strong-neg: #D93A26;
+    --strong-neg-soft: rgba(217, 58, 38, 0.16);
+    --shadow: 0 1px 2px rgba(20, 20, 15, 0.04), 0 8px 24px -12px rgba(20, 20, 15, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161C;
+      --surface: #1C1F27;
+      --surface-2: #21242D;
+      --ink: #EDEBE3;
+      --ink-muted: #9C9C9F;
+      --ink-faint: #6A6B72;
+      --border: rgba(237, 235, 227, 0.09);
+      --border-strong: rgba(237, 235, 227, 0.16);
+      --accent: #D9AE5C;
+      --accent-ink: #1B1503;
+      --accent-soft: rgba(217, 174, 92, 0.14);
+      --positive: #4FB379;
+      --positive-soft: rgba(79, 179, 121, 0.16);
+      --negative: #E2735A;
+      --negative-soft: rgba(226, 115, 90, 0.16);
+      --strong-pos: #3DDC84;
+      --strong-pos-soft: rgba(61, 220, 132, 0.2);
+      --strong-neg: #FF6B52;
+      --strong-neg-soft: rgba(255, 107, 82, 0.2);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14161C;
+    --surface: #1C1F27;
+    --surface-2: #21242D;
+    --ink: #EDEBE3;
+    --ink-muted: #9C9C9F;
+    --ink-faint: #6A6B72;
+    --border: rgba(237, 235, 227, 0.09);
+    --border-strong: rgba(237, 235, 227, 0.16);
+    --accent: #D9AE5C;
+    --accent-ink: #1B1503;
+    --accent-soft: rgba(217, 174, 92, 0.14);
+    --positive: #4FB379;
+    --positive-soft: rgba(79, 179, 121, 0.16);
+    --negative: #E2735A;
+    --negative-soft: rgba(226, 115, 90, 0.16);
+    --strong-pos: #3DDC84;
+    --strong-pos-soft: rgba(61, 220, 132, 0.2);
+    --strong-neg: #FF6B52;
+    --strong-neg-soft: rgba(255, 107, 82, 0.2);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 28px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 560px at 88% -8%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 520px at -8% 28%, var(--strong-pos-soft), transparent 55%),
+      repeating-linear-gradient(180deg, transparent 0 42px, color-mix(in srgb, var(--ink) 3%, transparent) 42px 44px),
+      var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", monospace; font-variant-numeric: tabular-nums; }
+  .display { font-family: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif; }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  .masthead {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 28px;
+    padding: 24px 26px 22px;
+    margin-bottom: 28px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 65%);
+    box-shadow: var(--shadow);
+  }
+
+  .pitch-motif {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--accent);
+    opacity: 0.14;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    fill: none;
+    pointer-events: none;
+  }
+
+  .masthead-title, .masthead-meta { position: relative; }
+
+  .masthead-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .masthead-title h1 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: clamp(34px, 5vw, 46px);
+    letter-spacing: 0.2px;
+    margin: 0;
+    text-wrap: balance;
+    line-height: 0.95;
+  }
+
+  .masthead-title .tag {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    padding: 3px 9px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 2px;
+  }
+
+  .help-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .help-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .masthead-meta {
+    text-align: right;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .masthead-meta .updated {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .masthead-meta .dot { color: var(--accent); }
+
+  /* ---------- Auth ---------- */
+  .auth-bar {
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+
+  .auth-link-btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .auth-link-btn:hover { color: var(--ink); }
+
+  .auth-email { color: var(--ink-muted); }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 4px;
+  }
+
+  .auth-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+  }
+
+  .auth-form input {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .auth-form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .auth-actions { margin-top: 2px; }
+
+  .auth-msg {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--negative);
+    min-height: 16px;
+  }
+
+  .auth-msg.ok { color: var(--strong-pos); }
+
+  .auth-switch {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    display: flex;
+    gap: 6px;
+  }
+
+  .auth-gate {
+    padding: 30px 16px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  .auth-gate button {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .controls-label {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-right: 2px;
+  }
+
+  .chip-btn {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+
+  .chip-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+
+  .chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .chip-btn.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  /* ---------- Fixture grid ---------- */
+  .fixtures {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 18px;
+  }
+
+  .fixture-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .fixture-card:hover {
+    box-shadow: 0 2px 4px rgba(20, 20, 15, 0.06), 0 14px 32px -14px rgba(20, 20, 15, 0.24);
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fixture-card { transition: none; }
+    .fixture-card:hover { transform: none; }
+  }
+
+  .fixture-head {
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+
+  .fixture-date {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .fixture-teams {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .fixture-teams h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .fixture-teams .vs { color: var(--ink-faint); font-weight: 400; font-size: 0.85em; margin: 0 6px; }
+
+  .side-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 0px 4px;
+    vertical-align: middle;
+  }
+
+  .signal-label .side-tag { margin-left: 5px; }
+
+  .fixture-odds {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .odds-pill {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 7px;
+  }
+
+  .odds-pill b { color: var(--ink); font-weight: 600; }
+
+  .signals {
+    padding: 6px 8px 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .signal-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 9px 10px 9px 12px;
+    border-radius: 7px;
+    border-left: 3px solid transparent;
+  }
+
+  .signal-row:hover { background: var(--surface-2); }
+
+  .signal-row.rel-strong { border-left-width: 4px; border-left-color: var(--rel-color); background: color-mix(in srgb, var(--rel-color) 9%, transparent); }
+  .signal-row.rel-moderate { border-left-color: var(--rel-color); }
+  .signal-row.rel-weak { border-left-color: var(--border); }
+
+  .rel-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--rel-color);
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  .rel-weak .rel-tag { color: var(--ink-faint); }
+
+  .signal-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .signal-sub {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .signal-bar-track {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal-bar-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 3px;
+  }
+
+  .signal-bar-fill.pos { background: var(--positive); left: 50%; }
+  .signal-bar-fill.neg { background: var(--negative); right: 50%; }
+  .signal-bar-mid {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 1px;
+    background: var(--border-strong);
+  }
+
+  .signal-value {
+    text-align: right;
+    min-width: 68px;
+    line-height: 1.2;
+  }
+
+  .signal-direction {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+
+  .signal-direction.pos { color: var(--positive); }
+  .signal-direction.neg { color: var(--negative); }
+
+  .line-select {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border-strong);
+    padding: 0 14px 1px 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: right 4px top 55%, right 0px top 55%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  .line-select.pos { color: var(--positive); }
+  .line-select.neg { color: var(--negative); }
+  .line-select:hover { border-bottom-color: var(--ink-muted); }
+  .line-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .line-select option { background: var(--surface); color: var(--ink); font-family: "IBM Plex Sans", sans-serif; }
+
+  .signal-delta {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  .signal-breakdown {
+    grid-column: 1 / -1;
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 1px;
+  }
+
+  .hit-compare {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .hit-chip {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .hit-chip b {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .hit-n {
+    color: var(--ink-faint);
+    font-size: 10.5px;
+  }
+
+  .floor-chip {
+    border-color: var(--rel-color);
+    color: var(--ink);
+    white-space: normal;
+    flex-basis: 100%;
+    line-height: 1.4;
+  }
+
+  .fixture-teams h2 {
+    cursor: pointer;
+  }
+
+  .fixture-teams h2:hover { color: var(--accent); }
+
+  /* ---------- Game history modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 8, 0.55);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    z-index: 50;
+    overflow-y: auto;
+  }
+
+  .modal-overlay[hidden] { display: none; }
+
+  .modal-panel {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    max-width: 900px;
+    width: 100%;
+    padding: 22px 22px 8px;
+  }
+
+  .modal-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .modal-head h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .modal-close {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    color: var(--ink-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px;
+    cursor: pointer;
+  }
+
+  .modal-close:hover { color: var(--ink); border-color: var(--border-strong); }
+
+  .modal-teams {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding-bottom: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .modal-teams { grid-template-columns: 1fr; }
+  }
+
+  .modal-team h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 8px;
+  }
+
+  table.game-history {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  table.game-history th, table.game-history td {
+    padding: 5px 6px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.game-history th:first-child, table.game-history td:first-child,
+  table.game-history th:nth-child(2), table.game-history td:nth-child(2) { text-align: left; }
+
+  table.game-history thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  table.game-history td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  table.game-history tr.champ-game td { color: var(--ink-faint); font-style: italic; }
+
+  .game-record {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  .game-record-n { color: var(--ink-faint); }
+
+  .game-history-scroll {
+    max-height: 380px;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+
+  table.game-history thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  .result-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  .result-chip.result-w { background: var(--strong-pos-soft); color: var(--strong-pos); }
+  .result-chip.result-l { background: var(--strong-neg-soft); color: var(--strong-neg); }
+  .result-chip.result-d { background: var(--border); color: var(--ink-faint); }
+
+  /* ---------- Help modal ---------- */
+  .help-panel { max-width: 640px; padding-bottom: 20px; }
+
+  .help-body h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 18px 0 6px;
+  }
+
+  .help-body h3:first-child { margin-top: 0; }
+
+  .help-body p {
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    margin: 0 0 4px;
+  }
+
+  .help-body ul {
+    margin: 6px 0 4px;
+    padding-left: 18px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .help-body li { margin-bottom: 3px; }
+  .help-body b { color: var(--ink); }
+
+  .tier-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 8px 0 4px;
+  }
+
+  .tier-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+
+  .tier-legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .tier-legend .dot-strong { background: var(--strong-pos); }
+  .tier-legend .dot-moderate { background: var(--accent); }
+  .tier-legend .dot-weak { background: var(--ink-faint); }
+
+  /* ---------- Tabs ---------- */
+  .view-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .view-tab {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 4px 10px;
+    margin-right: 22px;
+    cursor: pointer;
+  }
+
+  .view-tab:hover { color: var(--ink); }
+  .view-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .view-panel[hidden] { display: none; }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .filter-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+
+  .filter-check input { accent-color: var(--accent); }
+
+  .signal-list-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  table.signal-list {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 780px;
+  }
+
+  table.signal-list th, table.signal-list td {
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.signal-list thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+  }
+
+  table.signal-list thead th.sortable-th {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  table.signal-list thead th.sortable-th:hover { color: var(--ink); }
+
+  table.signal-list td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 13px; }
+  table.signal-list tbody tr:hover td { background: var(--surface-2); }
+
+  .tier-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .tier-pill.rel-strong { background: var(--strong-pos-soft); color: var(--strong-pos); font-weight: 700; }
+  .tier-pill.rel-moderate { background: var(--accent-soft); color: var(--accent); }
+  .tier-pill.rel-weak { background: var(--border); color: var(--ink-faint); }
+
+  .status-pill {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .status-pill.won { background: var(--strong-pos-soft); color: var(--strong-pos); font-weight: 700; }
+  .status-pill.lost { background: var(--strong-neg-soft); color: var(--strong-neg); }
+  .status-pill.pending { background: var(--accent-soft); color: var(--accent); }
+
+  .data-note {
+    margin: 8px 10px 4px;
+    padding: 7px 10px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    line-height: 1.4;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Team trends table ---------- */
+  .section-heading {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    margin: 48px 0 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .section-sub {
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    margin: 0 0 18px;
+    max-width: 62ch;
+  }
+
+  .team-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  table.team-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 920px;
+  }
+
+  table.team-table th, table.team-table td {
+    padding: 9px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.team-table th:first-child, table.team-table td:first-child {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+  }
+
+  table.team-table thead th {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  table.team-table thead th:first-child { z-index: 2; }
+
+  table.team-table tbody tr:hover td { background: var(--surface-2); }
+  table.team-table tbody tr:last-child td { border-bottom: none; }
+
+  table.team-table td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 13px; }
+  table.team-table td.team-name { font-weight: 600; font-size: 13.5px; }
+
+  /* ---------- Bet slip ---------- */
+  .signal-value-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .slip-add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .slip-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .slip-add-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .slip-fab {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+
+  .slip-fab:hover { border-color: var(--accent); }
+  .slip-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .slip-fab.has-legs { border-color: var(--accent); background: var(--accent-soft); }
+
+  .slip-fab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .slip-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 76px;
+    z-index: 40;
+    width: min(400px, calc(100vw - 40px));
+    max-height: min(560px, calc(100vh - 120px));
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .slip-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  @media (prefers-reduced-motion: reduce) { .slip-panel { transition: none; } }
+
+  .slip-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slip-panel-head h3 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0;
+  }
+
+  .slip-clear-btn {
+    font-size: 12px;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 0;
+  }
+
+  .slip-clear-btn:hover { color: var(--ink); }
+
+  .slip-body {
+    overflow-y: auto;
+    padding: 4px 12px;
+    flex: 1;
+  }
+
+  .slip-empty {
+    padding: 26px 10px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    margin: 0;
+  }
+
+  .slip-leg {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slip-leg:last-child { border-bottom: none; }
+
+  .slip-leg-info { flex: 1 1 130px; min-width: 0; }
+  .slip-leg-label { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+  .slip-leg-fixture { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+
+  .slip-leg-select {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 4px;
+    color: var(--ink);
+    max-width: 110px;
+  }
+
+  .slip-leg-odds { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+
+  .slip-source-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .slip-source-tag.floor { background: var(--strong-pos-soft); color: var(--strong-pos); }
+  .slip-source-tag.modeled { background: var(--border); color: var(--ink-faint); }
+
+  .slip-remove {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  .slip-remove:hover { color: var(--negative); }
+
+  .slip-summary {
+    padding: 12px 16px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+    flex-shrink: 0;
+  }
+
+  .slip-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+  }
+
+  .slip-summary-row b { font-size: 16px; color: var(--ink); }
+
+  .slip-note {
+    margin: 8px 0 0;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: var(--ink-faint);
+  }
+
+  .pos { color: var(--strong-pos); }
+  .neg { color: var(--strong-neg); }
+
+  .slip-summary-primary b { font-size: 19px; }
+  .slip-summary-primary span { font-weight: 600; color: var(--ink); }
+
+  .slip-sgm-note {
+    margin: 8px 0 0;
+    padding: 8px 9px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .slip-place-form {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .slip-place-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .slip-place-row label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+  }
+
+  .slip-place-row input,
+  .slip-place-row select,
+  #slip-platform-other {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+
+  #slip-platform-other { width: 100%; margin-top: 6px; }
+
+  .slip-place-btn {
+    width: 100%;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 9px;
+    cursor: pointer;
+  }
+
+  .slip-place-btn:hover { opacity: 0.92; }
+
+  .slip-place-msg {
+    margin: 8px 0 0;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    min-height: 14px;
+  }
+
+  @media (max-width: 480px) {
+    .slip-panel { right: 10px; left: 10px; width: auto; bottom: 72px; }
+    .slip-fab { right: 10px; }
+  }
+
+  /* ---------- Bet tracker ---------- */
+  .tracker-subtabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tracker-pl-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .tracker-pl-box {
+    flex: 1;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tracker-pl-box span {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+
+  .tracker-pl-value {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tracker-leg-line {
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tracker-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .tracker-stat {
+    flex: 1 1 140px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tracker-stat span {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-faint);
+  }
+
+  .tracker-stat b {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .profit-chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+
+  .profit-chart-svg { width: 100%; height: auto; display: block; }
+  .profit-chart-area { opacity: 0.14; stroke: none; }
+  .profit-chart-line { fill: none; stroke-width: 2; }
+  .profit-chart-zero { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-faint);
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 72ch;
+  }
+
+  footer strong { color: var(--ink-muted); }
+
+  @media (max-width: 560px) {
+    .fixtures { grid-template-columns: 1fr; }
+    .masthead { flex-direction: column; align-items: flex-start; }
+    .masthead-meta { text-align: left; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <svg class="pitch-motif" viewBox="0 0 640 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect x="14" y="14" width="612" height="172" rx="6"></rect>
+      <line x1="320" y1="14" x2="320" y2="186"></line>
+      <circle cx="320" cy="100" r="42"></circle>
+      <circle cx="320" cy="100" r="2.2" fill="currentColor" stroke="none"></circle>
+      <rect x="14" y="58" width="46" height="84"></rect>
+      <rect x="580" y="58" width="46" height="84"></rect>
+      <path d="M 14 62 A 44 44 0 0 1 14 138"></path>
+      <path d="M 626 62 A 44 44 0 0 0 626 138"></path>
+    </svg>
+    <div class="masthead-title">
+      <h1>Pitch Signals</h1>
+      <span class="tag">EPL</span>
+      <button class="help-btn" id="help-btn" type="button" aria-haspopup="dialog" aria-label="How this dashboard works">?</button>
+    </div>
+    <div class="masthead-meta">
+      <div class="auth-bar" id="auth-bar">
+        <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
+      </div>
+      <div class="updated">Updated __GENERATED_AT__</div>
+      <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
+    </div>
+  </div>
+
+  <div class="view-tabs" role="tablist" aria-label="View">
+    <button class="view-tab active" data-view="fixtures">Fixtures</button>
+    <button class="view-tab" data-view="signals">All Signals</button>
+    <button class="view-tab" data-view="players">Players</button>
+    <button class="view-tab" data-view="tracker">Tracker</button>
+  </div>
+
+  <div class="view-panel" id="panel-fixtures">
+    <div class="controls" role="group" aria-label="Sort fixtures">
+      <span class="controls-label">Sort by</span>
+      <button class="chip-btn active" data-sort="strength">Strongest signal</button>
+      <button class="chip-btn" data-sort="date">Kickoff date</button>
+      <button class="chip-btn" id="reset-lines" style="margin-left:auto;" title="Undo any lines you've picked from the dropdowns, back to each signal's default">Reset lines to default</button>
+    </div>
+
+    <div class="fixtures" id="fixtures"></div>
+  </div>
+
+  <div class="view-panel" id="panel-signals" hidden>
+    <div class="filter-row" role="group" aria-label="Filter by tier">
+      <span class="controls-label">Show</span>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-strong" checked> Strong</label>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-moderate" checked> Moderate</label>
+      <label class="filter-check"><input type="checkbox" data-tier="rel-weak"> Weak</label>
+    </div>
+    <div class="signal-list-wrap">
+      <table class="signal-list" id="signal-list">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="view-panel" id="panel-players" hidden>
+    <p class="section-sub">Goals, shots, shots on target, and assists - the player markets with genuine per-match history available (see methodology; cards aren't included, the free source only has season totals for those). Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not confirmed lineups.</p>
+    <div class="filter-row" role="group" aria-label="Filter players">
+      <span class="controls-label">Game</span>
+      <select id="player-game-filter" class="chip-btn">
+        <option value="">All games</option>
+      </select>
+      <span class="controls-label" style="margin-left:14px;">Show</span>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-strong" checked> Strong</label>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-moderate" checked> Moderate</label>
+      <label class="filter-check"><input type="checkbox" data-ptier="rel-weak"> Weak</label>
+      <span class="controls-label" style="margin-left:14px;">Market</span>
+      <label class="filter-check"><input type="checkbox" data-pmarket="goals" checked> Goals</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="shots" checked> Shots</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="shots_on_target" checked> Shots on target</label>
+      <label class="filter-check"><input type="checkbox" data-pmarket="assists" checked> Assists</label>
+    </div>
+    <div class="signal-list-wrap">
+      <table class="signal-list" id="player-list">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="view-panel" id="panel-tracker" hidden>
+    <div class="tracker-subtabs" role="tablist" aria-label="Tracker view">
+      <button class="view-tab active" data-subview="bets">Bets</button>
+      <button class="view-tab" data-subview="analytics">Analytics</button>
+    </div>
+
+    <div id="tracker-bets-panel">
+      <div class="tracker-pl-bar">
+        <div class="tracker-pl-box"><span>This week</span><b class="tracker-pl-value" id="tracker-week-pl">$0.00</b></div>
+        <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
+      </div>
+      <div class="signal-list-wrap">
+        <table class="signal-list" id="tracker-table">
+          <thead><tr><th>Date</th><th>Legs</th><th>Platform</th><th>Odds</th><th>Stake</th><th>Return</th><th>Status</th><th>P/L</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tracker-analytics-panel" hidden>
+      <div class="tracker-stats" id="tracker-stats"></div>
+      <div class="profit-chart-wrap" id="tracker-chart"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="game-modal" hidden>
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" id="modal-close">Close</button>
+      </div>
+      <div class="modal-teams" id="modal-teams"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="help-modal" hidden>
+    <div class="modal-panel help-panel">
+      <div class="modal-head">
+        <h2>How this works</h2>
+        <button class="modal-close" id="help-close">Close</button>
+      </div>
+      <div class="help-body">
+        <p>This page surfaces statistical trends from EPL match history and per-player data - where a team or player's recent form sits relative to a standard bookmaker line. It's not betting advice, and the odds shown are a modeled approximation, not a live quote.</p>
+
+        <h3>Reliability tiers</h3>
+        <p>Every signal is tagged by how often the call has actually come in, blended across both sides of the matchup:</p>
+        <div class="tier-legend">
+          <span><i class="dot-strong"></i><b>Strong</b> - 75%+</span>
+          <span><i class="dot-moderate"></i><b>Moderate</b> - 60-74%</span>
+          <span><i class="dot-weak"></i><b>Weak</b> - under 60%</span>
+        </div>
+
+        <h3>Fixtures tab</h3>
+        <ul>
+          <li>Each card is one upcoming match, with a signal row per market (goals, corners, shots on target, cards) for each team.</li>
+          <li>The bar shows the edge: how far a team's own rate sits from the league average for that market.</li>
+          <li>On Strong and Moderate rows, the dropdown lets you try a different line - hit rate and modeled odds update immediately, using the same alt-line ladder the server already computed, so the numbers never drift from the real calculation.</li>
+          <li>Strong rows that clear a 5% edge over their historical odds floor show a "Take at X+ odds" chip, grounded in how bets predicted at roughly that hit rate have actually performed across thousands of historical bets since 2019-20 - not just this one sample.</li>
+          <li>Click a team's name to open its full match-by-match history.</li>
+        </ul>
+
+        <h3>All Signals tab</h3>
+        <p>Every team signal across every fixture, flattened into one sortable, filterable list - useful for scanning the whole round for Strong calls at once instead of card by card.</p>
+
+        <h3>Players tab</h3>
+        <ul>
+          <li>Covers goals, shots, shots on target, and assists - the markets with real per-match history available (Understat). Cards aren't included; the source only has season totals for those.</li>
+          <li>Over-only: under calls on these markets are almost always trivially true for low-usage players (a defender "under 0.5 goals" hits ~100% but prices near 1.01) and were cluttering the list with zero-value calls, so they're filtered out entirely.</li>
+          <li>Filter by game, tier, or market along the top; click the Hit rate or Modeled odds column header to sort by it, click again to flip direction.</li>
+          <li>Strong and Moderate rows get the same line-picker dropdown as the team markets - pick a different line and the row's hit rate, odds, and tier update in place.</li>
+          <li>Which players are tracked per team is a best guess at who's likely to feature (most appearances last season), not a confirmed lineup.</li>
+        </ul>
+
+        <h3>Bet slip</h3>
+        <ul>
+          <li>Click the small "+" next to any line (Fixtures tab or Players tab) to add it as a leg - it adds exactly the line currently showing, so pick your line first, then add it.</li>
+          <li>Open the slip via the "Slip" button in the bottom-right corner. Each leg's line can still be changed from inside the slip, without going back to find the row it came from.</li>
+          <li>"Minimum odds to take" is the headline number: for legs sharing a fixture, it uses correlation-adjusted (true SGM) odds - see below; for legs on different fixtures, straightforward multiplication is already correct, since those are genuinely independent events. "...if every leg were independent" is shown alongside it so you can see how much the correlation adjustment actually moved the number.</li>
+          <li>"Total implied edge" is a separate figure: the compounded 5% edge from however many legs are backed by the historical odds floor - (1.05^n - 1). Legs using modeled odds only (no historical floor - every player leg, plus any team leg below Strong tier) don't add to this, since modeled odds carry no built-in edge cushion of their own.</li>
+          <li>Fill in the odds you were actually quoted, your stake, and which platform, then hit "Place bet" - it saves the whole slip as one tracked bet (multi or single) and clears the slip. See the Tracker tab below for what happens next.</li>
+        </ul>
+
+        <h3>True SGM odds</h3>
+        <p>Naive multiplication assumes every leg is independent - true across different fixtures, false for legs from the SAME match, where a shared factor (how open or cagey the game turned out, its overall pace) pushes markets to move together. This is measured directly, not assumed: every pair of team markets has a "lift" factor computed from real match history (how often they actually landed together vs what independence would predict), and the slip applies it whenever 2+ legs share a fixture. A lift above 1.0 means the two events tend to happen together more than chance; below 1.0 means they pull against each other. This is a genuine, data-grounded adjustment, not a full joint model - it's computed at each market's standard anchor line and applied approximately to whatever line you've actually picked, and it isn't modeled at all for player-leg correlations yet (a player leg still contributes its own probability, just not correlated against the rest of the group). Shown in the slip whenever it applies, alongside the naive figure for comparison.</p>
+
+        <h3>Tracker tab</h3>
+        <ul>
+          <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
+          <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
+          <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
+          <li>Remove a bet with the "&times;" on its row if it was tracked by mistake - this can't be undone.</li>
+          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, plus win rate, total staked, and ROI.</li>
+        </ul>
+
+        <h3>Account &amp; sync</h3>
+        <p>Sign in (top right) to save your slip and tracker to your account - they'll sync across every device you sign in on. Your data is private to your account: nobody else who uses this page can see it, and you can't see anyone else's. Browsing the Fixtures/All Signals/Players/Team Trends tabs doesn't require an account; only the Slip and Tracker do.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="auth-modal" hidden>
+    <div class="modal-panel help-panel">
+      <div class="modal-head">
+        <h2 id="auth-modal-title">Sign in</h2>
+        <button class="modal-close" id="auth-close">Close</button>
+      </div>
+      <div class="auth-form">
+        <label>Email<input type="email" id="auth-email" autocomplete="email" placeholder="you@example.com"></label>
+        <label>Password<input type="password" id="auth-password" autocomplete="current-password" placeholder="At least 6 characters"></label>
+        <div class="auth-actions">
+          <button class="slip-place-btn" id="auth-submit-btn" type="button">Sign in</button>
+        </div>
+        <p class="auth-msg" id="auth-msg"></p>
+        <p class="auth-switch">
+          <span id="auth-switch-text">Don't have an account?</span>
+          <button class="auth-link-btn" id="auth-switch-btn" type="button">Sign up</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">Team Trends</h2>
+  <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
+  <div class="team-table-wrap">
+    <table class="team-table" id="team-table">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are anchored at the standard main line real bookmakers actually use for each market (1.5 goals, 5.5 corners, 4.5 shots on target, 3.5 total cards) rather than derived from the projection - most books keep these standardized across teams and let the price reflect team strength instead of moving the line, so a heavy-corner side still gets offered 5.5, just at a much shorter price. Pick a different line from the dropdown on any signal to see an alt-line ladder around that anchor. Each line also shows a modeled fair odds estimate (Poisson model of the projection, no bookmaker margin) - an approximation to sanity-check against real quoted odds, not a substitute for them, since no live odds feed covers these specific team-level alt-line markets for free. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market. The two hit-rate chips under each signal are each team's OWN historical rate AT the current line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the line - note real books usually price cards as "booking points" (yellow=10, red=25) rather than a raw count, so this market's line is a rougher match to a real cards market than the others. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+  </footer>
+
+  <button class="slip-fab" id="slip-fab" type="button" aria-haspopup="dialog" aria-label="Open bet slip">
+    Slip <span class="slip-fab-count" id="slip-count">0</span>
+  </button>
+  <div class="slip-panel" id="slip-panel" role="dialog" aria-label="Bet slip">
+    <div class="slip-panel-head">
+      <h3>Slip</h3>
+      <button class="slip-clear-btn" id="slip-clear" type="button">Clear all</button>
+    </div>
+    <div class="slip-body" id="slip-body"></div>
+    <div class="slip-summary" id="slip-summary"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const DATA = __DATA_JSON__;
+
+  const MARKET_ORDER = ['home_goals', 'away_goals', 'home_corners', 'away_corners', 'home_sot', 'away_sot', 'match_cards'];
+  const MARKET_LABELS = {
+    home_goals: 'Home goals', away_goals: 'Away goals', home_corners: 'Home corners',
+    away_corners: 'Away corners', home_sot: 'Home SoT', away_sot: 'Away SoT', match_cards: 'Match cards',
+  };
+
+  function fmtSigned(n) {
+    if (n === undefined || n === null) return '—';
+    const s = n > 0 ? '+' : '';
+    return s + n.toFixed(2);
+  }
+
+  function barWidth(val, scale) {
+    const pct = Math.min(Math.abs(val) / scale, 1) * 50;
+    return pct.toFixed(1) + '%';
+  }
+
+  // Reliability tier is a direct read on the blended hit rate itself - the average of both
+  // teams' own rates, already flipped to "% support for the call actually being shown" (see
+  // where teamHit/oppHit are computed below). No sample-size discount: a 75%+ blended rate is
+  // Strong whether it's backed by 10 games or 38 - depth of sample is shown separately via the
+  // n= counts on each hit-rate chip, not folded into the tier.
+  function reliabilityTier(blended) {
+    if (blended >= 75) return { cls: 'rel-strong', label: 'Strong' };
+    if (blended >= 60) return { cls: 'rel-moderate', label: 'Moderate' };
+    return { cls: 'rel-weak', label: 'Weak' };
+  }
+
+  function seasonLabel(code) {
+    return `20${code.slice(0, 2)}-${code.slice(2)}`;
+  }
+
+  // Which VAR-era band a live blended hit rate falls into for this market, so the odds-to-take
+  // number is grounded in how bets PREDICTED at roughly this same hit rate have actually
+  // performed across thousands of historical bets (see market_floor.py's compute_floors) -
+  // not this one fixture's own small sample used directly as a real-money threshold.
+  function bandFloorFor(market, blendedPct) {
+    const floor = DATA.market_floors && DATA.market_floors[market];
+    if (!floor || !floor.bands || !floor.bands.length) return null;
+    let band = floor.bands.find(b => blendedPct >= b.low && blendedPct < b.high);
+    if (!band) {
+      const last = floor.bands[floor.bands.length - 1];
+      band = blendedPct >= last.high ? last : floor.bands[0];
+    }
+    return band;
+  }
+
+  // ---------- Picking a different line ----------
+  // matchup_engine.py already computed hit rate + modeled odds for every line in the alt-line
+  // ladder around the anchor (see alt_lines_for) - picking one here is just a lookup, not a
+  // recompute, so there's no risk of the dropdown's numbers drifting from what the server
+  // actually calculated.
+  function withNewLine(sig, newLine) {
+    const entry = (sig.alt_lines || []).find(a => a.line === newLine);
+    if (!entry) return sig;
+    const updated = { ...sig, line: newLine, modeled_odds: entry.modeled_odds };
+    if ('team_hit_rate' in sig) {
+      updated.team_hit_rate = entry.team_hit_rate;
+      updated.opponent_hit_rate = entry.opponent_hit_rate;
+    } else {
+      updated.home_team_hit_rate = entry.team_hit_rate;
+      updated.away_team_hit_rate = entry.opponent_hit_rate;
+    }
+    return updated;
+  }
+
+  function renderSignalRow(sig, key, scale, teamLabel, opponentLabel, side, teamVerb, oppVerb, fixtureLabel, fixtureDate) {
+    if (!sig) return '';
+    teamVerb = teamVerb || 'own rate';
+    oppVerb = oppVerb || 'own rate';
+    const sideTagHtml = side ? `<span class="side-tag">${side}</span>` : '';
+    const direction = sig.direction;
+    const value = sig.edge;
+    const sign = value >= 0 ? 'pos' : 'neg';
+
+    // Two separate teams, two separate histories - team_hit_rate is the subject team's own
+    // rate, opponent_hit_rate is the OTHER team's own rate at the complementary market (e.g.
+    // Fulham's own rate of conceding over the line). Shown side by side, labeled by name, never
+    // blended into one ambiguous number. Already computed as "% support for THIS call" at the
+    // recommended line by matchup_engine.py (the line is matchup-specific now, so the flip has
+    // to happen there, not here).
+    const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
+    const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+    const teamN = sig.team_n || sig.home_team_n || 0;
+    const oppN = sig.opponent_n || sig.away_team_n || 0;
+
+    const tier = reliabilityTier((teamHit + oppHit) / 2);
+    const relColorVar = sign === 'neg' ? 'var(--negative)' : 'var(--positive)';
+    const strongColorVar = sign === 'neg' ? 'var(--strong-neg)' : 'var(--strong-pos)';
+    const relColor = tier.cls === 'rel-strong' ? strongColorVar : tier.cls === 'rel-moderate' ? 'var(--accent)' : relColorVar;
+
+    const barHtml = `
+      <div class="signal-bar-track">
+        <div class="signal-bar-mid"></div>
+        <div class="signal-bar-fill ${sign}" style="width:${barWidth(value, scale)}"></div>
+      </div>`;
+
+    // Strength = team's own rate vs league average for that market (1.0 = exactly average).
+    // Shown so the numbers feeding the formula are visible, not just the output. Line is the
+    // market's standard anchor (see matchup_engine.py's ANCHOR_LINE), not derived from the
+    // projection - real books mostly keep it standardized across teams. modeled_odds is an
+    // approximate no-margin fair price at the current line (Poisson model of the projection) -
+    // an estimate to sanity-check against real quoted odds, not a substitute for them.
+    let strengthLine = '';
+    if (sig.attack_strength !== undefined) {
+      strengthLine = `${teamLabel} (${teamVerb.trim()}) ATK ${sig.attack_strength.toFixed(2)}x &middot; ${opponentLabel} (${oppVerb.trim()}) DEF ${sig.defense_strength.toFixed(2)}x &rarr; proj ${sig.projection.toFixed(1)}, modeled fair odds &asymp;${sig.modeled_odds.toFixed(2)} at this line (approx, no bookmaker margin)`;
+    } else if (sig.home_card_strength !== undefined) {
+      strengthLine = `${teamLabel} card rate ${sig.home_card_strength.toFixed(2)}x &middot; ${opponentLabel} card rate ${sig.away_card_strength.toFixed(2)}x league avg &rarr; proj ${sig.projection.toFixed(1)}, modeled fair odds &asymp;${sig.modeled_odds.toFixed(2)} at this line (approx, no bookmaker margin)`;
+    }
+
+    const lineSuffix = ` ${direction === 'UNDER' ? 'under' : 'over'} ${sig.line}`;
+    // Minimum odds for a 5% edge, based on LONG-TERM data, not this one fixture's small sample:
+    // this line's blended hit rate picks which VAR-era band it falls into (e.g. "predicted
+    // 80-85%"), and the odds threshold comes from how bets in that same band have actually
+    // performed across thousands of historical bets since 2019-20 (min_odds = 1.05 / actual
+    // band win rate - the bookmaker's implied odds, 1/odds, would need to be at least 5% more
+    // generous than that). Still recomputes correctly when a different line is picked, because a
+    // different line generally lands in a different band. Only shown on Strong rows.
+    const blended = (teamHit + oppHit) / 2;
+    const floor = DATA.market_floors && DATA.market_floors[key];
+    const band = floor ? bandFloorFor(key, blended) : null;
+    const floorChipHtml = (tier.cls === 'rel-strong' && band && band.min_odds) ? `
+        <span class="hit-chip floor-chip">Take at <b>${band.min_odds.toFixed(2)}+</b> odds for a 5% edge over implied odds <span class="hit-n">(bets predicted ${band.low}-${band.high}% have actually won ${band.win_rate}% in ${band.n} cases since ${seasonLabel(floor.since_season)})</span></span>` : '';
+    const hitRow = `
+      <div class="hit-compare">
+        <span class="hit-chip"><b>${teamLabel}</b>${teamVerb}${lineSuffix} in <b>${teamHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${teamN})</span></span>
+        <span class="hit-chip"><b>${opponentLabel}</b>${oppVerb}${lineSuffix} in <b>${oppHit.toFixed(0)}%</b> of their games <span class="hit-n">(n=${oppN})</span></span>
+        ${floorChipHtml}
+      </div>`;
+
+    // Line is pickable: dropdown lists the alt-line ladder matchup_engine.py built around the
+    // market's standard anchor, defaulting to the anchor itself. Picking a different line swaps
+    // in that line's precomputed hit rate/modeled odds (see the 'change' listener below) - a
+    // lookup, not a recompute - direction never changes, only how far out the line sits.
+    const lineOptions = (sig.alt_lines || []).map(al =>
+      `<option value="${al.line}"${al.line === sig.line ? ' selected' : ''}>${direction} ${al.line}</option>`).join('');
+
+    // Slip leg mirrors exactly what's on screen right now: same odds source (the historical floor
+    // when this row qualifies for one, modeled fair odds otherwise) the floor chip above already
+    // computed, so the slip never shows a different number than the row it came from. Rebuilt
+    // fresh every render (including on a line change, since this whole row gets replaced), so the
+    // "+" button's payload always reflects whatever line is currently showing.
+    const slipOdds = (tier.cls === 'rel-strong' && band && band.min_odds) ? band.min_odds : sig.modeled_odds;
+    const slipSource = (tier.cls === 'rel-strong' && band && band.min_odds) ? 'Floor' : 'Modeled';
+    // fairProb is the best available estimate of the TRUE probability (no edge margin) - the
+    // band's own real historical win rate for a floor-backed leg (a genuine empirical estimate,
+    // arguably better-grounded than the Poisson model), or 1/modeled_odds otherwise. This is what
+    // the SGM correlation adjustment multiplies together, kept separate from `odds` (which
+    // includes the 5% edge cushion for floor-backed legs) so the two purposes don't get conflated.
+    const fairProb = (tier.cls === 'rel-strong' && band && band.win_rate) ? band.win_rate / 100 : 1 / sig.modeled_odds;
+    const slipLeg = {
+      id: `${fixtureLabel}::${key}`, signalType: 'team', label: sig.label, fixture: fixtureLabel,
+      date: fixtureDate, market: key, direction, line: sig.line, altLines: sig.alt_lines || [],
+      odds: slipOdds, source: slipSource, fairProb,
+    };
+    const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
+    const valueHtml = `
+      <div class="signal-value-row">
+        <select class="line-select ${sign}" data-team="${teamLabel}" data-opp="${opponentLabel}" data-key="${key}" data-direction="${direction}">${lineOptions}</select>
+        ${slipBtnHtml}
+      </div>
+      <div class="signal-delta">${fmtSigned(value)} vs league avg</div>`;
+
+    return `
+      <div class="signal-row ${tier.cls}" style="--rel-color:${relColor}">
+        <div class="signal-label">${sig.label}${sideTagHtml}</div>
+        <div class="signal-value ${sign}">${valueHtml}</div>
+        <div class="signal-sub">
+          ${barHtml}
+          <span class="rel-tag">${tier.label}</span>
+        </div>
+        ${strengthLine ? `<div class="signal-breakdown">${strengthLine}</div>` : ''}
+        ${hitRow}
+      </div>`;
+  }
+
+  function fixtureStrength(fx) {
+    // Weights raw edge size by how reliable it is, so a big gap backed by a coin-flip hit rate
+    // doesn't outrank a smaller, more consistent one.
+    if (!fx.signals) return -1;
+    let max = 0;
+    for (const key of MARKET_ORDER) {
+      const s = fx.signals[key];
+      if (s && s.edge !== undefined) {
+        const teamHit = s.team_hit_rate ?? s.home_team_hit_rate;
+        const oppHit = s.opponent_hit_rate ?? s.away_team_hit_rate;
+        const extremity = Math.abs((teamHit + oppHit) / 2 - 50) / 50;
+        max = Math.max(max, Math.abs(s.edge) * (0.4 + 0.6 * extremity));
+      }
+    }
+    return max;
+  }
+
+  const SCALE_BY_MARKET = { goals: 2.5, corners: 4, sot: 4, cards: 3 };
+  function scaleFor(key) {
+    if (key.includes('goals')) return SCALE_BY_MARKET.goals;
+    if (key.includes('corners')) return SCALE_BY_MARKET.corners;
+    if (key.includes('sot')) return SCALE_BY_MARKET.sot;
+    return SCALE_BY_MARKET.cards;
+  }
+
+  // which side is "team" vs "opponent" in the breakdown text, per signal key; which side
+  // ("H"/"A") the market's own subject team is playing on in THIS fixture; and the verb each
+  // side takes so it's explicit who's SCORING/WINNING vs CONCEDING/ALLOWING, not just two team
+  // names next to two percentages.
+  function sideLabelsFor(fx) {
+    return {
+      home_goals: [fx.HomeTeam, fx.AwayTeam, 'H', ' scored', ' conceded'],
+      away_goals: [fx.AwayTeam, fx.HomeTeam, 'A', ' scored', ' conceded'],
+      home_corners: [fx.HomeTeam, fx.AwayTeam, 'H', ' won', ' conceded'],
+      away_corners: [fx.AwayTeam, fx.HomeTeam, 'A', ' won', ' conceded'],
+      home_sot: [fx.HomeTeam, fx.AwayTeam, 'H', ' had', ' allowed'],
+      away_sot: [fx.AwayTeam, fx.HomeTeam, 'A', ' had', ' allowed'],
+      match_cards: [fx.HomeTeam, fx.AwayTeam, null, "'s games saw", "'s games saw"],
+    };
+  }
+
+  function renderFixtureCard(fx) {
+    const dateObj = new Date(fx.Date + 'T12:00:00');
+    const dateStr = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const teamsHeadHtml = `<h2 data-home="${fx.HomeTeam}" data-away="${fx.AwayTeam}" title="Click for game-by-game history">${fx.HomeTeam} <span class="side-tag">H</span><span class="vs">v</span>${fx.AwayTeam} <span class="side-tag">A</span></h2>`;
+
+    if (!fx.signals) {
+      return `<div class="fixture-card">
+        <div class="fixture-head">
+          <div class="fixture-date">${dateStr}</div>
+          <div class="fixture-teams">${teamsHeadHtml}</div>
+        </div>
+        <div class="empty-state">Not enough recent data for one or both teams yet.</div>
+      </div>`;
+    }
+
+    const sortedKeys = MARKET_ORDER
+      .filter(k => fx.signals[k])
+      .sort((a, b) => Math.abs(fx.signals[b].edge) - Math.abs(fx.signals[a].edge));
+
+    const sideLabels = sideLabelsFor(fx);
+    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+    const rows = sortedKeys.map(k => {
+      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+      return renderSignalRow(fx.signals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
+    }).join('');
+
+    const notes = [];
+    const ht = DATA.trends[fx.HomeTeam], at = DATA.trends[fx.AwayTeam];
+    if (ht && ht._data_note) notes.push(`${fx.HomeTeam}: ${ht._data_note}`);
+    if (at && at._data_note) notes.push(`${fx.AwayTeam}: ${at._data_note}`);
+    const noteHtml = notes.length ? `<div class="data-note">${notes.join('<br>')}</div>` : '';
+
+    return `<div class="fixture-card">
+      <div class="fixture-head">
+        <div class="fixture-date">${dateStr}</div>
+        <div class="fixture-teams">${teamsHeadHtml}</div>
+        <div class="fixture-odds">
+          <span class="odds-pill">1 <b>${fx.B365H ?? '—'}</b></span>
+          <span class="odds-pill">X <b>${fx.B365D ?? '—'}</b></span>
+          <span class="odds-pill">2 <b>${fx.B365A ?? '—'}</b></span>
+        </div>
+      </div>
+      <div class="signals">${rows}</div>
+      ${noteHtml}
+    </div>`;
+  }
+
+  function renderFixtures(sortMode) {
+    const container = document.getElementById('fixtures');
+    let fixtures = [...DATA.fixtures];
+    if (sortMode === 'strength') {
+      fixtures.sort((a, b) => fixtureStrength(b) - fixtureStrength(a));
+    } else {
+      fixtures.sort((a, b) => a.Date.localeCompare(b.Date));
+    }
+    if (fixtures.length === 0) {
+      container.innerHTML = '<div class="empty-state">No upcoming fixtures loaded yet.</div>';
+      return;
+    }
+    container.innerHTML = fixtures.map(renderFixtureCard).join('');
+  }
+
+  document.querySelectorAll('.chip-btn[data-sort]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.chip-btn[data-sort]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFixtures(btn.dataset.sort);
+    });
+  });
+
+  // Picking a line from a dropdown only ever touches the DOM (see the 'change' listener below) -
+  // DATA.fixtures itself is never mutated, so "reset" is just re-rendering from it fresh, same as
+  // a normal sort change.
+  document.getElementById('reset-lines').addEventListener('click', () => {
+    const activeSort = document.querySelector('.chip-btn[data-sort].active');
+    renderFixtures(activeSort ? activeSort.dataset.sort : 'strength');
+  });
+
+  // ---------- Game history modal ----------
+  // Raw per-game log lives on each team's trend record (_games) - exactly the games the current
+  // adaptive window is built from (10-game bridge from last season early on, growing uncapped
+  // with current-season games only once that reaches 10 - same window as everywhere else on this
+  // page, just shown match-by-match here instead of as an aggregate).
+  function gameHistoryTable(team) {
+    const games = (DATA.trends[team] || {})._games || [];
+    if (!games.length) return '<p style="color:var(--ink-faint);font-size:12px;">No game history available.</p>';
+    let w = 0, d = 0, l = 0;
+    const rows = games.map(g => {
+      const cls = g.division === 'Championship' ? ' class="champ-game"' : '';
+      const oppTag = g.is_home ? 'v' : '@';
+      let resultCls = 'result-d', resultLabel = '—';
+      if (g.goals_for != null && g.goals_against != null) {
+        if (g.goals_for > g.goals_against) { resultCls = 'result-w'; resultLabel = 'W'; w++; }
+        else if (g.goals_for < g.goals_against) { resultCls = 'result-l'; resultLabel = 'L'; l++; }
+        else { resultCls = 'result-d'; resultLabel = 'D'; d++; }
+      }
+      return `<tr${cls}>
+        <td class="mono-cell">${g.date}</td>
+        <td>${oppTag} ${g.opponent}</td>
+        <td><span class="result-chip ${resultCls}">${resultLabel}</span></td>
+        <td class="mono-cell">${g.goals_for ?? '—'}-${g.goals_against ?? '—'}</td>
+        <td class="mono-cell">${g.corners_for ?? '—'}-${g.corners_against ?? '—'}</td>
+        <td class="mono-cell">${g.shots_on_target_for ?? '—'}-${g.shots_on_target_against ?? '—'}</td>
+        <td class="mono-cell">${g.cards_for ?? '—'}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="game-record">${w}W &middot; ${d}D &middot; ${l}L <span class="game-record-n">(last ${games.length})</span></div>
+    <div class="game-history-scroll"><table class="game-history">
+      <thead><tr><th>Date</th><th>Opponent</th><th>Res</th><th>Goals</th><th>Corners</th><th>SoT</th><th>Cards</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  }
+
+  function openGameModal(home, away) {
+    document.getElementById('modal-title').textContent = `${home} v ${away}`;
+    document.getElementById('modal-teams').innerHTML = `
+      <div class="modal-team"><h3>${home}</h3>${gameHistoryTable(home)}</div>
+      <div class="modal-team"><h3>${away}</h3>${gameHistoryTable(away)}</div>`;
+    document.getElementById('game-modal').hidden = false;
+  }
+
+  function closeGameModal() { document.getElementById('game-modal').hidden = true; }
+
+  document.getElementById('fixtures').addEventListener('click', (e) => {
+    const h2 = e.target.closest('h2[data-home]');
+    if (h2) openGameModal(h2.dataset.home, h2.dataset.away);
+  });
+
+  // Picking a different line from a signal's dropdown recomputes hit rates/tier live from the
+  // same raw per-game values the search already ran on - no server round-trip, just re-runs
+  // renderSignalRow with an updated sig and swaps the row in place.
+  document.getElementById('fixtures').addEventListener('change', (e) => {
+    const sel = e.target.closest('select.line-select');
+    if (!sel) return;
+    const fx = DATA.fixtures.find(f => f.HomeTeam === sel.dataset.team || f.AwayTeam === sel.dataset.team);
+    if (!fx || !fx.signals) return;
+    const key = sel.dataset.key;
+    const sig = fx.signals[key];
+    if (!sig) return;
+    const newLine = parseFloat(sel.value);
+    const updatedSig = withNewLine(sig, newLine);
+    const sideLabels = sideLabelsFor(fx);
+    const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+    const row = sel.closest('.signal-row');
+    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+    if (row) row.outerHTML = renderSignalRow(updatedSig, key, scaleFor(key), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
+  });
+
+  document.getElementById('modal-close').addEventListener('click', closeGameModal);
+  document.getElementById('game-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'game-modal') closeGameModal();
+  });
+
+  function openHelp() { document.getElementById('help-modal').hidden = false; }
+  function closeHelp() { document.getElementById('help-modal').hidden = true; }
+  document.getElementById('help-btn').addEventListener('click', openHelp);
+  document.getElementById('help-close').addEventListener('click', closeHelp);
+  document.getElementById('help-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'help-modal') closeHelp();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeGameModal(); closeHelp(); }
+  });
+
+  // ---------- View tabs ----------
+  // Scoped to direct children of .view-tabs, not just '.view-tab' - the Tracker panel's own Bets/
+  // Analytics sub-tabs reuse the same button styling (and class) in a separate .tracker-subtabs
+  // container, and would otherwise get swept into this top-level tab group by a broader selector.
+  document.querySelectorAll('.view-tabs > .view-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.view-tabs > .view-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-fixtures').hidden = btn.dataset.view !== 'fixtures';
+      document.getElementById('panel-signals').hidden = btn.dataset.view !== 'signals';
+      document.getElementById('panel-players').hidden = btn.dataset.view !== 'players';
+      document.getElementById('panel-tracker').hidden = btn.dataset.view !== 'tracker';
+      if (btn.dataset.view === 'tracker') renderTracker();
+    });
+  });
+
+  // ---------- All Signals tab: flat, filterable list of every signal across every fixture ----------
+  function allSignalsFlat() {
+    const rows = [];
+    for (const fx of DATA.fixtures) {
+      if (!fx.signals) continue;
+      const sideLabels = sideLabelsFor(fx);
+      for (const key of MARKET_ORDER) {
+        const sig = fx.signals[key];
+        if (!sig) continue;
+        const teamHit = sig.team_hit_rate ?? sig.home_team_hit_rate;
+        const oppHit = sig.opponent_hit_rate ?? sig.away_team_hit_rate;
+        const tier = reliabilityTier((teamHit + oppHit) / 2);
+        const [teamLabel] = sideLabels[key] || [fx.HomeTeam];
+        rows.push({
+          fixture: `${fx.HomeTeam} v ${fx.AwayTeam}`, home: fx.HomeTeam, away: fx.AwayTeam,
+          date: fx.Date, market: MARKET_LABELS[key] || key, subject: teamLabel,
+          call: `${sig.direction} ${sig.line}`, edge: sig.edge, tier,
+        });
+      }
+    }
+    return rows;
+  }
+
+  function renderSignalList() {
+    const activeTiers = new Set(
+      [...document.querySelectorAll('#panel-signals input[data-tier]:checked')].map(cb => cb.dataset.tier)
+    );
+    const rows = allSignalsFlat()
+      .filter(r => activeTiers.has(r.tier.cls))
+      .sort((a, b) => Math.abs(b.edge) - Math.abs(a.edge));
+
+    const thead = document.querySelector('#signal-list thead');
+    const tbody = document.querySelector('#signal-list tbody');
+    thead.innerHTML = '<tr><th>Fixture</th><th>Market</th><th>Subject</th><th>Call</th><th>Edge</th><th>Tier</th></tr>';
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--ink-faint);">No signals match the selected tiers.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td data-home="${r.home}" data-away="${r.away}" style="cursor:pointer;">${r.fixture}</td>
+        <td>${r.market}</td>
+        <td>${r.subject}</td>
+        <td class="mono-cell">${r.call}</td>
+        <td class="mono-cell">${fmtSigned(r.edge)}</td>
+        <td><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
+      </tr>`).join('');
+  }
+
+  document.querySelectorAll('#panel-signals input[data-tier]').forEach(cb => {
+    cb.addEventListener('change', renderSignalList);
+  });
+  document.getElementById('signal-list').addEventListener('click', (e) => {
+    const cell = e.target.closest('td[data-home]');
+    if (cell) openGameModal(cell.dataset.home, cell.dataset.away);
+  });
+
+  // ---------- Players tab: flat, filterable list of goals/shots/SoT/assists signals ----------
+  function allPlayerSignalsFlat() {
+    const rows = [];
+    for (const fx of DATA.fixtures) {
+      const fixture = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+      for (const sig of (fx.player_signals || [])) {
+        rows.push({
+          player: sig.player, team: sig.team, fixture, date: fx.Date,
+          market: PLAYER_MARKET_LABELS[sig.market] || sig.market, marketKey: sig.market,
+          direction: sig.direction, line: sig.line, altLines: sig.alt_lines || [],
+          hitRate: sig.hit_rate, modeledOdds: sig.modeled_odds, tier: reliabilityTier(sig.hit_rate),
+        });
+      }
+    }
+    return rows;
+  }
+
+  // Picking a different line updates that row's hit rate/odds/tier live - a lookup into the
+  // alt-line ladder matchup_engine.py-style code already computed server-side (see
+  // player_engine.py's build_player_signal), same pattern as the Fixtures tab's per-signal
+  // dropdown. Only offered on Strong/Moderate rows; a Weak row just shows static text.
+  function withPlayerLine(row, newLine) {
+    const entry = row.altLines.find(a => a.line === newLine);
+    if (!entry) return row;
+    return { ...row, line: newLine, hitRate: entry.hit_rate, modeledOdds: entry.modeled_odds,
+             tier: reliabilityTier(entry.hit_rate) };
+  }
+  const PLAYER_MARKET_LABELS = { goals: 'Goals', shots: 'Shots', shots_on_target: 'Shots on target', assists: 'Assists' };
+
+  function populateGameFilter() {
+    const sel = document.getElementById('player-game-filter');
+    const fixtures = [...DATA.fixtures].sort((a, b) => a.Date.localeCompare(b.Date));
+    for (const fx of fixtures) {
+      if (!(fx.player_signals || []).length) continue;
+      const opt = document.createElement('option');
+      opt.value = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+      opt.textContent = opt.value;
+      sel.appendChild(opt);
+    }
+  }
+
+  // Click a sortable column header to sort by it; click again to flip direction. Defaults to
+  // modeled odds descending, same reasoning as before: raw hit rate alone buries genuinely
+  // interesting signals under trivially-true ones, so odds - distance from a certain outcome -
+  // is the more useful default, but hit rate is one click away for whoever wants it instead.
+  const PLAYER_SORT_COLS = [{ key: 'hitRate', label: 'Hit rate' }, { key: 'modeledOdds', label: 'Modeled odds' }];
+  let playerSort = { key: 'modeledOdds', dir: 'desc' };
+
+  function renderPlayerList() {
+    const activeTiers = new Set(
+      [...document.querySelectorAll('#panel-players input[data-ptier]:checked')].map(cb => cb.dataset.ptier)
+    );
+    const activeMarkets = new Set(
+      [...document.querySelectorAll('#panel-players input[data-pmarket]:checked')].map(cb => cb.dataset.pmarket)
+    );
+    const gameFilter = document.getElementById('player-game-filter').value;
+    const rows = allPlayerSignalsFlat()
+      .filter(r => activeTiers.has(r.tier.cls) && activeMarkets.has(r.marketKey)
+        && (!gameFilter || r.fixture === gameFilter))
+      .sort((a, b) => playerSort.dir === 'desc'
+        ? b[playerSort.key] - a[playerSort.key]
+        : a[playerSort.key] - b[playerSort.key]);
+
+    const thead = document.querySelector('#player-list thead');
+    const tbody = document.querySelector('#player-list tbody');
+    const sortHeaderHtml = PLAYER_SORT_COLS.map(col => {
+      const arrow = playerSort.key === col.key ? (playerSort.dir === 'desc' ? ' ▼' : ' ▲') : '';
+      return `<th class="sortable-th" data-sort-key="${col.key}">${col.label}${arrow}</th>`;
+    }).join('');
+    thead.innerHTML = `<tr><th>Player</th><th>Team</th><th>Game</th><th>Market</th><th>Call</th>${sortHeaderHtml}<th>Tier</th><th></th></tr>`;
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="color:var(--ink-faint);">No player signals match the selected filters.</td></tr>';
+      currentPlayerRows = [];
+      return;
+    }
+    currentPlayerRows = rows;
+    tbody.innerHTML = rows.map((r, i) => {
+      // Line is only pickable on Strong/Moderate rows - a Weak signal just shows its line as
+      // plain text. Whether a row GOT a dropdown is decided once here, from its default line's
+      // tier - picking a different line afterward can land anywhere (including Weak) without the
+      // dropdown itself disappearing, so exploring "does a different line make this Strong" stays
+      // possible in both directions.
+      const pickable = r.tier.cls === 'rel-strong' || r.tier.cls === 'rel-moderate';
+      const callHtml = pickable ? `
+        <select class="line-select ${r.direction === 'OVER' ? 'pos' : 'neg'}" data-row-index="${i}">
+          ${r.altLines.map(al => `<option value="${al.line}"${al.line === r.line ? ' selected' : ''}>${r.direction} ${al.line}</option>`).join('')}
+        </select>` : `${r.direction} ${r.line}`;
+      // Player markets have no historical odds floor (the ledger only grades team signals - see
+      // market_floor.py), so a player leg always uses modeled fair odds, no "Floor" source exists
+      // for it. Rebuilt fresh per render, same reasoning as the team-market slip button.
+      const slipLeg = {
+        id: `${r.fixture}::${r.marketKey}::${r.player}`, signalType: 'player',
+        label: `${r.player} — ${r.market}`, fixture: r.fixture, date: r.date, player: r.player,
+        market: r.marketKey, direction: r.direction, line: r.line, altLines: r.altLines || [],
+        odds: r.modeledOdds, source: 'Modeled', fairProb: 1 / r.modeledOdds,
+      };
+      const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
+      return `
+      <tr>
+        <td>${r.player}</td>
+        <td>${r.team}</td>
+        <td>${r.fixture}</td>
+        <td>${r.market}</td>
+        <td class="mono-cell">${callHtml}</td>
+        <td class="mono-cell" data-cell="hitrate">${r.hitRate.toFixed(0)}%</td>
+        <td class="mono-cell" data-cell="odds">${r.modeledOdds.toFixed(2)}</td>
+        <td data-cell="tier"><span class="tier-pill ${r.tier.cls}">${r.tier.label}</span></td>
+        <td>${slipBtnHtml}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  let currentPlayerRows = [];
+  document.querySelector('#player-list tbody').addEventListener('change', (e) => {
+    const sel = e.target.closest('select.line-select');
+    if (!sel) return;
+    const row = currentPlayerRows[parseInt(sel.dataset.rowIndex, 10)];
+    if (!row) return;
+    const updated = withPlayerLine(row, parseFloat(sel.value));
+    currentPlayerRows[parseInt(sel.dataset.rowIndex, 10)] = updated;
+    const tr = sel.closest('tr');
+    tr.querySelector('[data-cell="hitrate"]').textContent = updated.hitRate.toFixed(0) + '%';
+    tr.querySelector('[data-cell="odds"]').textContent = updated.modeledOdds.toFixed(2);
+    tr.querySelector('[data-cell="tier"]').innerHTML =
+      `<span class="tier-pill ${updated.tier.cls}">${updated.tier.label}</span>`;
+  });
+
+  document.querySelector('#player-list thead').addEventListener('click', (e) => {
+    const th = e.target.closest('th[data-sort-key]');
+    if (!th) return;
+    if (playerSort.key === th.dataset.sortKey) {
+      playerSort.dir = playerSort.dir === 'desc' ? 'asc' : 'desc';
+    } else {
+      playerSort = { key: th.dataset.sortKey, dir: 'desc' };
+    }
+    renderPlayerList();
+  });
+
+  populateGameFilter();
+  document.getElementById('player-game-filter').addEventListener('change', renderPlayerList);
+  document.querySelectorAll('#panel-players input[data-ptier], #panel-players input[data-pmarket]').forEach(cb => {
+    cb.addEventListener('change', renderPlayerList);
+  });
+
+  renderFixtures('strength');
+  renderSignalList();
+  renderPlayerList();
+
+  // ---------- Team trends table ----------
+  const TEAM_COLS = [
+    { key: 'goals_for', label: 'Goals' },
+    { key: 'goals_against', label: 'Conceded' },
+    { key: 'corners_for', label: 'Corners' },
+    { key: 'corners_against', label: 'Corners Con.' },
+    { key: 'cards_for', label: 'Cards' },
+    { key: 'shots_on_target_for', label: 'SoT' },
+    { key: 'shots_on_target_against', label: 'SoT Con.' },
+    { key: 'clean_sheet', label: 'Clean Sheet %', pctOnly: true },
+  ];
+
+  function renderTeamTable() {
+    const thead = document.querySelector('#team-table thead');
+    const tbody = document.querySelector('#team-table tbody');
+    thead.innerHTML = '<tr><th>Team</th>' + TEAM_COLS.map(c => `<th>${c.label}</th>`).join('') + '</tr>';
+
+    const teams = Object.keys(DATA.trends).sort();
+    tbody.innerHTML = teams.map(team => {
+      const t = DATA.trends[team];
+      const cells = TEAM_COLS.map(c => {
+        const stat = t[c.key];
+        if (!stat) return '<td class="mono-cell">—</td>';
+        if (c.pctOnly) return `<td class="mono-cell">${stat.hit_rate.toFixed(0)}%</td>`;
+        return `<td class="mono-cell">${stat.avg.toFixed(1)}/gm</td>`;
+      }).join('');
+      return `<tr><td class="team-name">${team}</td>${cells}</tr>`;
+    }).join('');
+  }
+
+  renderTeamTable();
+
+  // ---------- Auth ----------
+  // Real per-user accounts, via Supabase (email/password auth + a Postgres database with
+  // row-level security). This is why this page is a hosted web app and not a Claude Artifact -
+  // an Artifact's CSP blocks exactly the external network calls Supabase needs, so this couldn't
+  // live there. The anon/publishable key below is meant to be embedded client-side (it's not a
+  // secret); real access control comes from the row-level security policies on each table, not
+  // from hiding this key - every query is still scoped to auth.uid() by Postgres itself.
+  const SUPABASE_URL = 'https://wqkywyjarwxvmarztuoj.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_6ERpTfQ0NfVMDXzd6XdPVw_pcRybEJ6';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+  let authMode = 'signin'; // 'signin' | 'signup'
+
+  function renderAuthBar() {
+    const bar = document.getElementById('auth-bar');
+    bar.innerHTML = currentUser
+      ? `<span class="auth-email">${currentUser.email}</span><button class="auth-link-btn" id="auth-signout-btn" type="button">Sign out</button>`
+      : `<button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>`;
+  }
+
+  function openAuthModal() {
+    const msgEl = document.getElementById('auth-msg');
+    msgEl.textContent = '';
+    msgEl.className = 'auth-msg';
+    document.getElementById('auth-modal').hidden = false;
+    document.getElementById('auth-email').focus();
+  }
+  function closeAuthModal() { document.getElementById('auth-modal').hidden = true; }
+
+  function setAuthMode(mode) {
+    authMode = mode;
+    document.getElementById('auth-modal-title').textContent = mode === 'signin' ? 'Sign in' : 'Sign up';
+    document.getElementById('auth-submit-btn').textContent = mode === 'signin' ? 'Sign in' : 'Sign up';
+    document.getElementById('auth-switch-text').textContent = mode === 'signin' ? "Don't have an account?" : 'Already have an account?';
+    document.getElementById('auth-switch-btn').textContent = mode === 'signin' ? 'Sign up' : 'Sign in';
+  }
+
+  async function submitAuthForm() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const msgEl = document.getElementById('auth-msg');
+    msgEl.className = 'auth-msg';
+    msgEl.textContent = '';
+    if (!email || !password) { msgEl.textContent = 'Enter both email and password.'; return; }
+
+    const submitBtn = document.getElementById('auth-submit-btn');
+    submitBtn.disabled = true;
+    try {
+      if (authMode === 'signin') {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { msgEl.textContent = error.message; return; }
+        closeAuthModal();
+      } else {
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) { msgEl.textContent = error.message; return; }
+        if (!data.session) {
+          // Email confirmation is required before a session is issued - signUp succeeded but
+          // there's nothing to sign in with yet.
+          msgEl.className = 'auth-msg ok';
+          msgEl.textContent = 'Check your email to confirm your account, then sign in.';
+          setAuthMode('signin');
+        } else {
+          closeAuthModal();
+        }
+      }
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  document.getElementById('auth-bar').addEventListener('click', (e) => {
+    if (e.target.id === 'auth-open-btn') { setAuthMode('signin'); openAuthModal(); }
+    if (e.target.id === 'auth-signout-btn') supabaseClient.auth.signOut();
+  });
+  document.getElementById('auth-close').addEventListener('click', closeAuthModal);
+  document.getElementById('auth-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'auth-modal') closeAuthModal();
+  });
+  document.getElementById('auth-switch-btn').addEventListener('click', () => {
+    setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+  });
+  document.getElementById('auth-submit-btn').addEventListener('click', submitAuthForm);
+  document.getElementById('auth-password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitAuthForm();
+  });
+
+  // ---------- Bet slip ----------
+  // A manually-curated multi/SGM builder: every "+ " button on the page (Fixtures tab signal
+  // rows, Players tab rows) carries a self-contained leg object in its data-leg attribute, built
+  // fresh on every render from whatever line is currently showing - so the slip never drifts from
+  // what was actually on screen when it was added. Persisted to Supabase, one row per user (the
+  // slips table, upserted whole) - synced across every device the user signs in on, and gated
+  // behind auth entirely: with nobody signed in there's nowhere to save it.
+  let slipLegs = [];
+
+  async function loadSlipFromCloud() {
+    if (!currentUser) { slipLegs = []; return; }
+    try {
+      const { data, error } = await supabaseClient.from('slips').select('legs').eq('user_id', currentUser.id).maybeSingle();
+      slipLegs = (!error && data && data.legs) ? data.legs : [];
+    } catch (e) { slipLegs = []; }
+  }
+
+  async function saveSlipToCloud() {
+    if (!currentUser) return;
+    try {
+      await supabaseClient.from('slips').upsert({ user_id: currentUser.id, legs: slipLegs, updated_at: new Date().toISOString() });
+    } catch (e) {}
+  }
+
+  // Same odds-source logic renderSignalRow's floor chip uses (historical floor when the line
+  // qualifies for one, modeled fair odds otherwise) - re-run here so editing a leg's line inside
+  // the slip picks the correct source for wherever it lands, not just wherever it started.
+  function teamOddsForLine(market, altEntry) {
+    const blended = (altEntry.team_hit_rate + altEntry.opponent_hit_rate) / 2;
+    const tier = reliabilityTier(blended);
+    const band = tier.cls === 'rel-strong' ? bandFloorFor(market, blended) : null;
+    if (band && band.min_odds) return { odds: band.min_odds, source: 'Floor', fairProb: band.win_rate / 100 };
+    return { odds: altEntry.modeled_odds, source: 'Modeled', fairProb: 1 / altEntry.modeled_odds };
+  }
+
+  async function addLegToSlip(leg) {
+    if (!currentUser) { openAuthModal(); return; }
+    const idx = slipLegs.findIndex(l => l.id === leg.id);
+    if (idx >= 0) slipLegs[idx] = leg; else slipLegs.push(leg);
+    renderSlip();
+    openSlipPanel();
+    await saveSlipToCloud();
+  }
+
+  async function removeLegFromSlip(id) {
+    slipLegs = slipLegs.filter(l => l.id !== id);
+    renderSlip();
+    await saveSlipToCloud();
+  }
+
+  async function updateSlipLegLine(id, newLine) {
+    const leg = slipLegs.find(l => l.id === id);
+    if (!leg) return;
+    const entry = (leg.altLines || []).find(a => a.line === newLine);
+    if (!entry) return;
+    const result = leg.signalType === 'team'
+      ? teamOddsForLine(leg.market, entry)
+      : { odds: entry.modeled_odds, source: 'Modeled', fairProb: 1 / entry.modeled_odds };
+    leg.line = newLine;
+    leg.odds = result.odds;
+    leg.source = result.source;
+    leg.fairProb = result.fairProb;
+    renderSlip();
+    await saveSlipToCloud();
+  }
+
+  // ---------- True SGM odds ----------
+  // Naive multiplication (computeSlipTotals below) assumes every leg is independent - true for
+  // legs from different fixtures (different matches, nothing to correlate), false for legs from
+  // the SAME fixture, where a shared factor (game pace, how open/cagey it turned out) pushes
+  // markets to move together. Grouping by fixture is what separates the two cases: only groups
+  // of 2+ legs sharing a fixture get the correlation adjustment below.
+  function slipFixtureGroups() {
+    const groups = {};
+    for (const leg of slipLegs) (groups[leg.fixture] = groups[leg.fixture] || []).push(leg);
+    return groups;
+  }
+
+  // Applies market_floor.py's empirically-measured lift (real historical co-occurrence vs what
+  // independence would predict - see compute_sgm_lift) to the naive joint probability of a set of
+  // same-fixture legs. Only defined between team-vs-team market pairs (there's no equivalent
+  // historical join yet for a player leg's correlation with anything else), so a player leg in the
+  // group still contributes its own probability but isn't correlated against the others - the
+  // result is a genuine improvement over pure independence whenever a team-vs-team pair is
+  // present, just not a complete correction if a player leg also shares the fixture.
+  function sgmAdjustedProbability(legs) {
+    let prob = 1;
+    for (const leg of legs) prob *= leg.fairProb;
+    for (let i = 0; i < legs.length; i++) {
+      for (let j = i + 1; j < legs.length; j++) {
+        const a = legs[i], b = legs[j];
+        if (a.signalType !== 'team' || b.signalType !== 'team') continue;
+        const liftKey = `${a.market}|${a.direction}|${b.market}|${b.direction}`;
+        prob *= (DATA.sgm_lift && DATA.sgm_lift[liftKey]) || 1;
+      }
+    }
+    return Math.min(Math.max(prob, 0.0001), 0.999);
+  }
+
+  function computeSgmSummaries() {
+    const groups = slipFixtureGroups();
+    const summaries = [];
+    for (const [fixture, legs] of Object.entries(groups)) {
+      if (legs.length < 2) continue;
+      const naiveProb = legs.reduce((p, l) => p * l.fairProb, 1);
+      const adjustedProb = sgmAdjustedProbability(legs);
+      summaries.push({
+        fixture, legCount: legs.length,
+        naiveMinOdds: 1.05 / naiveProb, adjustedMinOdds: 1.05 / adjustedProb,
+        hasPlayerLeg: legs.some(l => l.signalType === 'player'),
+      });
+    }
+    return summaries;
+  }
+
+  // Single "true minimum odds" figure for the WHOLE slip: same-fixture groups use the
+  // correlation-adjusted joint probability, everything else (single legs, or legs from different
+  // fixtures) is independent by construction, so no adjustment applies to those. A single 5% edge
+  // target is applied once at the combined level here, rather than compounding per-leg edges the
+  // way "Total implied edge" below does - that number answers a different question (how much of
+  // the naive price is backed by the historical floor), this one is the actual bet recommendation.
+  function computeOverallAdjustedOdds() {
+    const groups = slipFixtureGroups();
+    let totalProb = 1;
+    for (const legs of Object.values(groups)) {
+      totalProb *= legs.length >= 2 ? sgmAdjustedProbability(legs) : legs[0].fairProb;
+    }
+    return 1.05 / Math.max(totalProb, 0.0001);
+  }
+
+  // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
+  // 5% edge over that band's own actual win rate (see market_floor.py) - stacking N such legs
+  // compounds to (1.05^N - 1) total edge, which is what's shown here. A "Modeled" leg (no
+  // historical floor - every player leg, plus any team leg below Strong) carries no such built-in
+  // cushion: its odds ARE the theoretical breakeven price already, so it contributes 0% on its
+  // own. This is reported honestly rather than papered over with a single blended number, since
+  // the two odds sources aren't measuring the same thing (one's grounded in real historical
+  // outcomes, the other's a distributional assumption) and treating them as interchangeable would
+  // overstate how much of the combined price is actually backed by evidence.
+  function computeSlipTotals() {
+    let combinedOdds = 1;
+    let floorLegs = 0;
+    for (const leg of slipLegs) {
+      combinedOdds *= leg.odds;
+      if (leg.source === 'Floor') floorLegs++;
+    }
+    const impliedEdgePct = (Math.pow(1.05, floorLegs) - 1) * 100;
+    return { combinedOdds, floorLegs, impliedEdgePct };
+  }
+
+  function renderSlip() {
+    const countEl = document.getElementById('slip-count');
+    const fabEl = document.getElementById('slip-fab');
+    const bodyEl = document.getElementById('slip-body');
+    const summaryEl = document.getElementById('slip-summary');
+
+    if (!currentUser) {
+      countEl.textContent = '0';
+      fabEl.classList.remove('has-legs');
+      bodyEl.innerHTML = '<div class="auth-gate">Sign in to build a slip that syncs across your devices.<br><button class="auth-link-btn" id="slip-auth-btn" type="button">Sign in</button></div>';
+      summaryEl.innerHTML = '';
+      return;
+    }
+
+    countEl.textContent = slipLegs.length;
+    fabEl.classList.toggle('has-legs', slipLegs.length > 0);
+
+    if (!slipLegs.length) {
+      bodyEl.innerHTML = '<p class="slip-empty">Add lines from Fixtures or Players to build a slip.</p>';
+      summaryEl.innerHTML = '';
+      return;
+    }
+
+    bodyEl.innerHTML = slipLegs.map(leg => {
+      const lineOptions = (leg.altLines || []).map(al =>
+        `<option value="${al.line}"${al.line === leg.line ? ' selected' : ''}>${leg.direction} ${al.line}</option>`).join('');
+      return `
+      <div class="slip-leg">
+        <div class="slip-leg-info">
+          <div class="slip-leg-label">${leg.label}</div>
+          <div class="slip-leg-fixture">${leg.fixture}</div>
+        </div>
+        <select class="line-select slip-leg-select" data-leg-id="${encodeURIComponent(leg.id)}">${lineOptions}</select>
+        <span class="slip-leg-odds mono">${leg.odds.toFixed(2)}</span>
+        <span class="slip-source-tag ${leg.source === 'Floor' ? 'floor' : 'modeled'}">${leg.source}</span>
+        <button class="slip-remove" type="button" data-leg-id="${encodeURIComponent(leg.id)}" title="Remove">&times;</button>
+      </div>`;
+    }).join('');
+
+    const { combinedOdds, floorLegs, impliedEdgePct } = computeSlipTotals();
+    const overallAdjustedOdds = computeOverallAdjustedOdds();
+    const sgmSummaries = computeSgmSummaries();
+    const sgmNotesHtml = sgmSummaries.map(s => `
+      <p class="slip-sgm-note"><b>${s.fixture}</b> - ${s.legCount} same-game legs: correlation-adjusted minimum odds <b class="mono">${s.adjustedMinOdds.toFixed(2)}</b> vs <b class="mono">${s.naiveMinOdds.toFixed(2)}</b> if treated as independent${s.hasPlayerLeg ? ' (partial adjustment - includes a player leg, not yet correlated against the others)' : ''}.</p>`
+    ).join('');
+
+    summaryEl.innerHTML = `
+      <div class="slip-summary-row slip-summary-primary"><span>Minimum odds to take</span><b class="mono">${overallAdjustedOdds.toFixed(2)}</b></div>
+      <div class="slip-summary-row"><span>...if every leg were independent</span><b class="mono">${combinedOdds.toFixed(2)}</b></div>
+      <div class="slip-summary-row"><span>Total implied edge</span><b class="mono">${impliedEdgePct.toFixed(1)}%</b></div>
+      ${sgmNotesHtml}
+      <p class="slip-note">${floorLegs}/${slipLegs.length} leg${slipLegs.length === 1 ? '' : 's'} backed by the historical odds floor (each requiring a 5% edge); the rest use modeled fair odds with no edge cushion built in. Same-fixture legs above are corrected for real historical correlation (see methodology); cross-fixture legs are genuinely independent already. Treat all of this as a guide, not a precise number.</p>
+      <div class="slip-place-form">
+        <div class="slip-place-row">
+          <label>Odds taken<input type="number" step="0.01" min="1" id="slip-odds-input" placeholder="e.g. 2.10"></label>
+          <label>Stake<input type="number" step="0.01" min="0" id="slip-stake-input" placeholder="e.g. 20"></label>
+        </div>
+        <div class="slip-place-row">
+          <label>Platform
+            <select id="slip-platform-select">
+              <option value="Pointsbet">Pointsbet</option>
+              <option value="TAB">TAB</option>
+              <option value="Sportsbet">Sportsbet</option>
+              <option value="Ladbrokes">Ladbrokes</option>
+              <option value="Betfair">Betfair</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <input type="text" id="slip-platform-other" placeholder="Platform name" hidden>
+        </div>
+        <button class="slip-place-btn" id="slip-place-btn" type="button">Place bet</button>
+        <p class="slip-place-msg" id="slip-place-msg"></p>
+      </div>`;
+  }
+
+  function openSlipPanel() { document.getElementById('slip-panel').classList.add('open'); }
+  function toggleSlipPanel() { document.getElementById('slip-panel').classList.toggle('open'); }
+
+  document.getElementById('slip-fab').addEventListener('click', toggleSlipPanel);
+  document.getElementById('slip-clear').addEventListener('click', async () => {
+    slipLegs = [];
+    renderSlip();
+    await saveSlipToCloud();
+  });
+  document.getElementById('slip-body').addEventListener('click', (e) => {
+    if (e.target.id === 'slip-auth-btn') { openAuthModal(); return; }
+    const btn = e.target.closest('.slip-remove');
+    if (btn) removeLegFromSlip(decodeURIComponent(btn.dataset.legId));
+  });
+  document.getElementById('slip-body').addEventListener('change', (e) => {
+    const sel = e.target.closest('.slip-leg-select');
+    if (sel) updateSlipLegLine(decodeURIComponent(sel.dataset.legId), parseFloat(sel.value));
+  });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.slip-add-btn');
+    if (!btn) return;
+    try {
+      addLegToSlip(JSON.parse(decodeURIComponent(btn.dataset.leg)));
+    } catch (err) {}
+  });
+
+  // The odds/stake/platform form and its Place button live inside #slip-summary, which is fully
+  // replaced by renderSlip() every time a leg changes - direct listeners on those inputs would be
+  // destroyed on the next render, so this is delegated onto the panel itself instead.
+  document.getElementById('slip-panel').addEventListener('change', (e) => {
+    if (e.target.id === 'slip-platform-select') {
+      document.getElementById('slip-platform-other').hidden = e.target.value !== 'Other';
+    }
+  });
+  document.getElementById('slip-panel').addEventListener('click', (e) => {
+    if (e.target.id !== 'slip-place-btn') return;
+    placeBetFromSlip();
+  });
+
+  function betToDbRow(bet) {
+    return {
+      id: bet.id, user_id: currentUser.id, placed_at: bet.placedAt, legs: bet.legs,
+      platform: bet.platform, odds_taken: bet.oddsTaken, stake: bet.stake,
+      status: bet.status, settled_at: bet.settledAt, profit: bet.profit,
+    };
+  }
+
+  function dbRowToBet(row) {
+    return {
+      id: row.id, placedAt: row.placed_at, legs: row.legs, platform: row.platform,
+      oddsTaken: Number(row.odds_taken), stake: Number(row.stake), status: row.status,
+      settledAt: row.settled_at, profit: (row.profit === null || row.profit === undefined) ? null : Number(row.profit),
+    };
+  }
+
+  async function placeBetFromSlip() {
+    if (!currentUser) { openAuthModal(); return; }
+    const msgEl = document.getElementById('slip-place-msg');
+    const oddsEl = document.getElementById('slip-odds-input');
+    const stakeEl = document.getElementById('slip-stake-input');
+    const platformSel = document.getElementById('slip-platform-select').value;
+    const platformOtherEl = document.getElementById('slip-platform-other');
+    const odds = parseFloat(oddsEl.value);
+    const stake = parseFloat(stakeEl.value);
+
+    if (!slipLegs.length) { msgEl.textContent = 'Add at least one leg first.'; return; }
+    if (!(odds > 1)) { msgEl.textContent = 'Enter the odds you actually took (greater than 1).'; return; }
+    if (!(stake > 0)) { msgEl.textContent = 'Enter your stake.'; return; }
+    const platformOther = platformOtherEl.value.trim();
+    if (platformSel === 'Other' && !platformOther) { msgEl.textContent = 'Name the platform.'; return; }
+
+    const submitBtn = document.getElementById('slip-place-btn');
+    submitBtn.disabled = true;
+
+    const bet = {
+      id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+      placedAt: new Date().toISOString(),
+      legs: slipLegs.map(l => ({ ...l, status: 'Pending' })),
+      platform: platformSel === 'Other' ? platformOther : platformSel,
+      oddsTaken: odds, stake,
+      status: 'Pending', settledAt: null, profit: null,
+    };
+
+    const { error } = await supabaseClient.from('tracked_bets').insert(betToDbRow(bet));
+    if (error) {
+      msgEl.textContent = `Could not save the bet: ${error.message}`;
+      submitBtn.disabled = false;
+      return;
+    }
+
+    trackedBets.unshift(bet);
+    renderTracker();
+
+    slipLegs = [];
+    renderSlip();
+    await saveSlipToCloud();
+
+    const freshMsg = document.getElementById('slip-place-msg');
+    if (freshMsg) {
+      freshMsg.textContent = 'Bet placed - see it in the Tracker tab.';
+      setTimeout(() => { const m = document.getElementById('slip-place-msg'); if (m) m.textContent = ''; }, 4000);
+    }
+  }
+
+  // ---------- Bet tracker ----------
+  // Placing a bet snapshots the slip's legs (with a per-leg 'status') into a separate table -
+  // the slip is for BUILDING a bet, the tracker is for bets already placed, and the two shouldn't
+  // share state (editing lines in the slip after placing a bet must never retroactively change
+  // what was actually tracked). Persisted in Supabase's tracked_bets table, one row per bet,
+  // scoped to the signed-in user by row-level security.
+  let trackedBets = [];
+
+  async function loadTrackedBetsFromCloud() {
+    if (!currentUser) { trackedBets = []; return; }
+    try {
+      const { data, error } = await supabaseClient.from('tracked_bets').select('*')
+        .eq('user_id', currentUser.id).order('placed_at', { ascending: false });
+      trackedBets = (!error && data) ? data.map(dbRowToBet) : [];
+    } catch (e) { trackedBets = []; }
+  }
+
+  async function removeTrackedBet(id) {
+    trackedBets = trackedBets.filter(b => b.id !== id);
+    renderTracker();
+    if (currentUser) {
+      await supabaseClient.from('tracked_bets').delete().eq('id', id).eq('user_id', currentUser.id);
+    }
+  }
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+  function fmtPL(n) { return `${n > 0 ? '+' : ''}$${n.toFixed(2)}`; }
+
+  // A team leg's result is looked up in DATA.match_archive (built by market_floor.py from EVERY
+  // completed match, not the rolling per-team window the Fixtures tab uses - a bet graded weeks
+  // after placing could otherwise fall out of that window). A player leg's result comes from
+  // DATA.player_match_archive the same way (see build_player_signals.py). Both return undefined
+  // for a fixture that hasn't been played yet (or falls outside the archive's coverage), which
+  // gradeLeg treats as still Pending rather than a loss.
+  function actualForTeamLeg(leg) {
+    const sepIdx = leg.fixture.indexOf(' v ');
+    if (sepIdx < 0) return undefined;
+    const home = leg.fixture.slice(0, sepIdx), away = leg.fixture.slice(sepIdx + 3);
+    const match = DATA.match_archive && DATA.match_archive[`${home}|${away}|${leg.date}`];
+    return match ? match[leg.market] : undefined;
+  }
+
+  function actualForPlayerLeg(leg) {
+    const match = DATA.player_match_archive && DATA.player_match_archive[`${leg.player}|${leg.date}`];
+    return match ? match[leg.market] : undefined;
+  }
+
+  function gradeLeg(leg) {
+    const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+    if (actual === undefined || actual === null) return 'Pending';
+    return (leg.direction === 'OVER' ? actual > leg.line : actual < leg.line) ? 'Won' : 'Lost';
+  }
+
+  // A multi/SGM needs every leg to win. One confirmed loss settles the whole bet as Lost
+  // immediately, even if other legs haven't been played yet (their result no longer matters). It
+  // only settles Won once EVERY leg has individually graded Won - if some legs are still Pending
+  // and none has lost, the bet as a whole stays Pending.
+  function gradeTrackedBet(bet) {
+    if (bet.status !== 'Pending') return false;
+    let anyLost = false, allWon = true;
+    for (const leg of bet.legs) {
+      leg.status = gradeLeg(leg);
+      if (leg.status === 'Lost') anyLost = true;
+      if (leg.status !== 'Won') allWon = false;
+    }
+    if (anyLost) {
+      bet.status = 'Lost'; bet.settledAt = new Date().toISOString(); bet.profit = -bet.stake;
+      return true;
+    }
+    if (allWon) {
+      bet.status = 'Won'; bet.settledAt = new Date().toISOString();
+      bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
+      return true;
+    }
+    return false;
+  }
+
+  async function gradeAllTrackedBets() {
+    const settled = [];
+    for (const bet of trackedBets) { if (gradeTrackedBet(bet)) settled.push(bet); }
+    if (settled.length && currentUser) {
+      await Promise.all(settled.map(bet =>
+        supabaseClient.from('tracked_bets').update({
+          legs: bet.legs, status: bet.status, settled_at: bet.settledAt, profit: bet.profit,
+        }).eq('id', bet.id).eq('user_id', currentUser.id)
+      ));
+    }
+  }
+
+  // "This week" = placed in the last 7 days, a rolling window rather than a calendar week - simpler
+  // and doesn't jump on a Monday boundary mid-session.
+  function computePL() {
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    let weekPL = 0, overallPL = 0;
+    for (const bet of trackedBets) {
+      if (bet.status === 'Pending') continue;
+      overallPL += bet.profit;
+      if (now - new Date(bet.placedAt).getTime() <= weekMs) weekPL += bet.profit;
+    }
+    return { weekPL: round2(weekPL), overallPL: round2(overallPL) };
+  }
+
+  async function renderTrackerBets() {
+    if (!currentUser) {
+      const weekEl = document.getElementById('tracker-week-pl');
+      const overallEl = document.getElementById('tracker-overall-pl');
+      weekEl.textContent = '$0.00'; weekEl.className = 'tracker-pl-value';
+      overallEl.textContent = '$0.00'; overallEl.className = 'tracker-pl-value';
+      document.querySelector('#tracker-table tbody').innerHTML =
+        '<tr><td colspan="9"><div class="auth-gate">Sign in to track your bets across devices.<br><button class="auth-link-btn" id="tracker-auth-btn" type="button">Sign in</button></div></td></tr>';
+      return;
+    }
+    await gradeAllTrackedBets();
+    const { weekPL, overallPL } = computePL();
+    const weekEl = document.getElementById('tracker-week-pl');
+    const overallEl = document.getElementById('tracker-overall-pl');
+    weekEl.textContent = fmtPL(weekPL);
+    weekEl.className = 'tracker-pl-value' + (weekPL > 0 ? ' pos' : weekPL < 0 ? ' neg' : '');
+    overallEl.textContent = fmtPL(overallPL);
+    overallEl.className = 'tracker-pl-value' + (overallPL > 0 ? ' pos' : overallPL < 0 ? ' neg' : '');
+
+    const tbody = document.querySelector('#tracker-table tbody');
+    if (!trackedBets.length) {
+      tbody.innerHTML = '<tr><td colspan="9" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = trackedBets.map(bet => {
+      const legsHtml = bet.legs.map(l => {
+        const legTag = l.status && l.status !== 'Pending'
+          ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
+        return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span> ${legTag}</div>`;
+      }).join('');
+      const potentialReturn = round2(bet.stake * bet.oddsTaken);
+      const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
+      return `
+      <tr>
+        <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
+        <td>${legsHtml}</td>
+        <td>${bet.platform}</td>
+        <td class="mono-cell">${bet.oddsTaken.toFixed(2)}</td>
+        <td class="mono-cell">$${bet.stake.toFixed(2)}</td>
+        <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
+        <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
+        <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
+        <td><button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderProfitChart(points) {
+    const W = 640, H = 220, PAD = 30;
+    const series = [0, ...points];
+    const minY = Math.min(0, ...series), maxY = Math.max(0, ...series);
+    const yRange = (maxY - minY) || 1;
+    const xStep = series.length > 1 ? (W - PAD * 2) / (series.length - 1) : 0;
+    const coords = series.map((v, i) => [
+      PAD + i * xStep, H - PAD - ((v - minY) / yRange) * (H - PAD * 2),
+    ]);
+    const zeroY = H - PAD - ((0 - minY) / yRange) * (H - PAD * 2);
+    const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c[0].toFixed(1)} ${c[1].toFixed(1)}`).join(' ');
+    const last = coords[coords.length - 1], first = coords[0];
+    const areaPath = `${linePath} L ${last[0].toFixed(1)} ${zeroY.toFixed(1)} L ${first[0].toFixed(1)} ${zeroY.toFixed(1)} Z`;
+    const positive = series[series.length - 1] >= 0;
+    const colorVar = positive ? 'var(--strong-pos)' : 'var(--strong-neg)';
+    const dots = coords.slice(1).map(c => `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.6" style="fill:${colorVar}"></circle>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="profit-chart-svg" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="${PAD}" y1="${zeroY.toFixed(1)}" x2="${W - PAD}" y2="${zeroY.toFixed(1)}" class="profit-chart-zero"></line>
+      <path d="${areaPath}" class="profit-chart-area" style="fill:${colorVar}"></path>
+      <path d="${linePath}" class="profit-chart-line" style="stroke:${colorVar}"></path>
+      ${dots}
+    </svg>`;
+  }
+
+  async function renderTrackerAnalytics() {
+    if (!currentUser) {
+      document.getElementById('tracker-stats').innerHTML =
+        '<div class="auth-gate">Sign in to see your analytics.<br><button class="auth-link-btn" id="tracker-analytics-auth-btn" type="button">Sign in</button></div>';
+      document.getElementById('tracker-chart').innerHTML = '';
+      return;
+    }
+    await gradeAllTrackedBets();
+    const settled = trackedBets.filter(b => b.status !== 'Pending')
+      .slice().sort((a, b) => new Date(a.settledAt) - new Date(b.settledAt));
+    const statsEl = document.getElementById('tracker-stats');
+    const chartEl = document.getElementById('tracker-chart');
+
+    if (!settled.length) {
+      statsEl.innerHTML = '<p class="slip-empty">No settled bets yet - analytics will appear once bets resolve.</p>';
+      chartEl.innerHTML = '';
+      return;
+    }
+
+    let cumulative = 0;
+    const points = settled.map(b => { cumulative = round2(cumulative + b.profit); return cumulative; });
+    const totalStaked = settled.reduce((s, b) => s + b.stake, 0);
+    const wins = settled.filter(b => b.status === 'Won').length;
+    const finalPL = points[points.length - 1];
+    const roi = totalStaked > 0 ? (finalPL / totalStaked * 100) : 0;
+
+    statsEl.innerHTML = `
+      <div class="tracker-stat"><span>Settled bets</span><b>${settled.length}</b></div>
+      <div class="tracker-stat"><span>Win rate</span><b>${(wins / settled.length * 100).toFixed(0)}%</b></div>
+      <div class="tracker-stat"><span>Total staked</span><b>$${totalStaked.toFixed(2)}</b></div>
+      <div class="tracker-stat"><span>Net P/L</span><b class="${finalPL >= 0 ? 'pos' : 'neg'}">${fmtPL(finalPL)}</b></div>
+      <div class="tracker-stat"><span>ROI</span><b class="${roi >= 0 ? 'pos' : 'neg'}">${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%</b></div>`;
+    chartEl.innerHTML = renderProfitChart(points);
+  }
+
+  async function renderTracker() {
+    await renderTrackerBets();
+    if (!document.getElementById('tracker-analytics-panel').hidden) await renderTrackerAnalytics();
+  }
+
+  document.querySelector('#tracker-table tbody').addEventListener('click', (e) => {
+    if (e.target.id === 'tracker-auth-btn') { openAuthModal(); return; }
+    const btn = e.target.closest('.slip-remove');
+    if (btn) removeTrackedBet(decodeURIComponent(btn.dataset.betId));
+  });
+
+  document.getElementById('tracker-stats').addEventListener('click', (e) => {
+    if (e.target.id === 'tracker-analytics-auth-btn') openAuthModal();
+  });
+
+  document.querySelectorAll('.tracker-subtabs .view-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tracker-subtabs .view-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tracker-bets-panel').hidden = btn.dataset.subview !== 'bets';
+      document.getElementById('tracker-analytics-panel').hidden = btn.dataset.subview !== 'analytics';
+      if (btn.dataset.subview === 'analytics') renderTrackerAnalytics();
+    });
+  });
+
+  // ---------- Auth init ----------
+  // Single entry point for both the slip and the tracker: check for an existing session, load
+  // (or clear) both data sets accordingly, then render everything once. onAuthStateChange covers
+  // every later transition (signing in, signing up, signing out) so the page never needs a
+  // manual refresh after any of those.
+  async function initAuth() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    currentUser = session?.user ?? null;
+    renderAuthBar();
+    if (currentUser) {
+      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud()]);
+    } else {
+      slipLegs = [];
+      trackedBets = [];
+    }
+    renderSlip();
+    await renderTracker();
+  }
+
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    const newUser = session?.user ?? null;
+    const changed = (newUser?.id || null) !== (currentUser?.id || null);
+    currentUser = newUser;
+    renderAuthBar();
+    if (!changed) return;
+    if (currentUser) {
+      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud()]);
+    } else {
+      slipLegs = [];
+      trackedBets = [];
+    }
+    renderSlip();
+    await renderTracker();
+  });
+
+  initAuth();
+</script>
