@@ -1434,7 +1434,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Thursday 27 August 2026, 16:09</div>
+      <div class="updated">Updated Thursday 27 August 2026, 16:10</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -2939,7 +2939,14 @@
   // Single entry point for both the slip and the tracker: check for an existing session, load
   // (or clear) both data sets accordingly, then render everything once. onAuthStateChange covers
   // every later transition (signing in, signing up, signing out) so the page never needs a
-  // manual refresh after any of those.
+  // manual refresh after any of those - but Supabase also fires it once immediately on
+  // registration with whatever the current session is, which would otherwise race with initAuth's
+  // own first load (both fetching and rendering at once, redundant not wrong, but worth avoiding
+  // cleanly). authInitialized gates that: onAuthStateChange stays a no-op until initAuth's own
+  // first run has completed, so there's exactly one load path for the initial page state and
+  // onAuthStateChange only ever reacts to a REAL later transition.
+  let authInitialized = false;
+
   async function initAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentUser = session?.user ?? null;
@@ -2952,9 +2959,11 @@
     }
     renderSlip();
     await renderTracker();
+    authInitialized = true;
   }
 
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (!authInitialized) return;
     const newUser = session?.user ?? null;
     const changed = (newUser?.id || null) !== (currentUser?.id || null);
     currentUser = newUser;
