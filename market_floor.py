@@ -17,14 +17,16 @@ than reimplemented, so the floor is always measuring the exact same definition o
 live dashboard currently uses - if that definition changes, re-derive the ledger from scratch
 (delete var_era_ledger.csv and rerun) rather than let it silently grade two eras by two rules.
 """
+import datetime
 import json
 import os
 import time
+import urllib.request
 import pandas as pd
 
 from trend_engine import (
     load_results, build_team_history, league_averages_from_matches, build_all_trends, WORKDIR,
-    compute_team_card_count,
+    compute_team_card_count, HEADERS,
 )
 from matchup_engine import build_fixture_signals, ANCHOR_LINE
 from backtest_2025_26 import tier, blended_hit_rate, grade_signal
@@ -237,6 +239,96 @@ def build_team_match_archive(results, since_season=MATCH_ARCHIVE_START):
     return archive
 
 
+# football-data.co.uk's season results CSV is the sole source for var_era_ledger.csv and every
+# historical trend/floor computation - that stays as-is, on one consistent provider, since mixing
+# stat-counting conventions between providers (e.g. what counts as a "shot on target") into a
+# permanent statistical record would be a much worse problem than a slow bet grading. But it can
+# lag a day or more posting a round's final results, which is exactly the window a just-finished
+# bet needs to grade. ESPN's free (undocumented, no official ToS coverage - same risk profile as
+# understat.com, which this project already scrapes) scoreboard is typically same-day, so it's
+# used ONLY to fill match_archive gaps for grading - never merged into `results` itself, and never
+# allowed to override a football-data.co.uk entry that already exists for the same match.
+ESPN_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
+
+# ESPN spells out full club names; map to football-data.co.uk's short names (verified directly
+# against ESPN's own /teams endpoint for the current 20 PL clubs) so archive keys line up with
+# what fixtures/tracked bets already use. A team ESPN returns that isn't in this map (mid-season
+# promotion/relegation naming drift) is skipped rather than guessed at.
+ESPN_TEAM_MAP = {
+    'AFC Bournemouth': 'Bournemouth', 'Arsenal': 'Arsenal', 'Aston Villa': 'Aston Villa',
+    'Brentford': 'Brentford', 'Brighton & Hove Albion': 'Brighton', 'Chelsea': 'Chelsea',
+    'Coventry City': 'Coventry', 'Crystal Palace': 'Crystal Palace', 'Everton': 'Everton',
+    'Fulham': 'Fulham', 'Hull City': 'Hull', 'Ipswich Town': 'Ipswich', 'Leeds United': 'Leeds',
+    'Liverpool': 'Liverpool', 'Manchester City': 'Man City', 'Manchester United': 'Man United',
+    'Newcastle United': 'Newcastle', 'Nottingham Forest': "Nott'm Forest", 'Sunderland': 'Sunderland',
+    'Tottenham Hotspur': 'Tottenham',
+}
+
+
+def _espn_get(url):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return json.loads(r.read().decode('utf-8'))
+
+
+def fetch_espn_recent_matches(days_back=6):
+    """Recently-finished EPL matches from ESPN's scoreboard, in the same shape
+    build_team_match_archive produces - a same-day-ish stopgap for grading (see the note above).
+    Returns {} on any fetch/parse problem, same convention as
+    trend_engine.fetch_openfootball_next_round: a convenience supplement that should never crash
+    the pipeline it's supplementing."""
+    today = datetime.date.today()
+    start = today - datetime.timedelta(days=days_back)
+    date_range = f"{start.strftime('%Y%m%d')}-{today.strftime('%Y%m%d')}"
+    try:
+        board = _espn_get(f"{ESPN_SCOREBOARD_URL}?dates={date_range}")
+    except Exception:
+        return {}
+
+    archive = {}
+    for event in board.get('events', []):
+        try:
+            comp = event['competitions'][0]
+            if not comp['status']['type'].get('completed'):
+                continue
+            home_c = next(t for t in comp['competitors'] if t['homeAway'] == 'home')
+            away_c = next(t for t in comp['competitors'] if t['homeAway'] == 'away')
+            home = ESPN_TEAM_MAP.get(home_c['team']['displayName'])
+            away = ESPN_TEAM_MAP.get(away_c['team']['displayName'])
+            if not home or not away:
+                continue
+            match_date = event['date'][:10]  # ISO date prefix, e.g. "2026-08-30T13:00Z" -> date
+            key = f"{home}|{away}|{match_date}"
+
+            summary = _espn_get(f"{ESPN_SUMMARY_URL}?event={event['id']}")
+            time.sleep(0.3)  # polite pacing against an undocumented, unrate-limited-by-us endpoint
+            stat_teams = {t['team']['displayName']: t.get('statistics', [])
+                          for t in summary.get('boxscore', {}).get('teams', [])}
+
+            def stat(team_name, stat_name):
+                for s in stat_teams.get(team_name, []):
+                    if s.get('name') == stat_name:
+                        try:
+                            return int(float(s['displayValue']))
+                        except (TypeError, ValueError):
+                            return None
+                return None
+
+            home_name, away_name = home_c['team']['displayName'], away_c['team']['displayName']
+            home_cards = (stat(home_name, 'yellowCards') or 0) + (stat(home_name, 'redCards') or 0)
+            away_cards = (stat(away_name, 'yellowCards') or 0) + (stat(away_name, 'redCards') or 0)
+            archive[key] = {
+                'home_goals': int(home_c['score']), 'away_goals': int(away_c['score']),
+                'home_corners': stat(home_name, 'wonCorners'), 'away_corners': stat(away_name, 'wonCorners'),
+                'home_sot': stat(home_name, 'shotsOnTarget'), 'away_sot': stat(away_name, 'shotsOnTarget'),
+                'match_cards': home_cards + away_cards,
+            }
+        except Exception:
+            continue  # one malformed event shouldn't drop every other one
+    return archive
+
+
 def _actual_values_table(results):
     out = pd.DataFrame(index=results.index)
     out['home_goals'] = results['FTHG']
@@ -310,6 +402,12 @@ if __name__ == '__main__':
     sgm_lift = compute_sgm_lift(results)
     print(f"\nBuilt match archive: {len(match_archive)} matches since {MATCH_ARCHIVE_START[:2]}{MATCH_ARCHIVE_START[2:]}")
     print(f"Computed SGM lift for {len(sgm_lift)} market/direction pair combinations")
+
+    espn_matches = fetch_espn_recent_matches()
+    espn_new = {k: v for k, v in espn_matches.items() if k not in match_archive}
+    match_archive.update(espn_new)
+    print(f"ESPN fast-path: {len(espn_matches)} recently-finished match(es) seen, "
+          f"{len(espn_new)} not yet in football-data.co.uk's feed - added for grading")
 
     trends_path = os.path.join(WORKDIR, 'trends_data.json')
     with open(trends_path) as f:
