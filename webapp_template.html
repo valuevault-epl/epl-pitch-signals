@@ -1283,6 +1283,21 @@
     color: var(--ink-muted);
   }
 
+  .kelly-note {
+    margin: 8px 0 0;
+    padding: 8px 9px;
+    background: var(--positive-soft);
+    border-radius: 6px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .kelly-note b { color: var(--positive); }
+  .kelly-note.kelly-none { background: var(--surface-2); color: var(--ink-muted); }
+  .kelly-note.kelly-none b { color: var(--ink-muted); }
+  .kelly-note .kelly-sub { color: var(--ink-faint); font-size: 10.5px; }
+
   .slip-place-form {
     margin-top: 12px;
     padding-top: 12px;
@@ -2586,13 +2601,44 @@
   // target is applied once at the combined level here, rather than compounding per-leg edges the
   // way "Total implied edge" below does - that number answers a different question (how much of
   // the naive price is backed by the historical floor), this one is the actual bet recommendation.
-  function computeOverallAdjustedOdds() {
+  function computeSlipTrueProbability() {
     const groups = slipFixtureGroups();
     let totalProb = 1;
     for (const legs of Object.values(groups)) {
       totalProb *= legs.length >= 2 ? sgmAdjustedProbability(legs) : legs[0].fairProb;
     }
-    return 1.05 / Math.max(totalProb, 0.0001);
+    return Math.max(totalProb, 0.0001);
+  }
+
+  function computeOverallAdjustedOdds() {
+    return 1.05 / computeSlipTrueProbability();
+  }
+
+  // Fractional-Kelly stake sizing against whatever odds the user is actually being offered - a
+  // genuine edge check against the slip's own correlation-adjusted probability estimate, not just
+  // a probability display. Expressed in units (1 unit = 1% of bankroll, the standard convention)
+  // since this dashboard has no idea of the user's actual bankroll size, only what fraction of it
+  // Kelly says to risk. 35% of full Kelly is a common conservative fraction - it trades some
+  // long-run growth rate for a much shallower drawdown than full Kelly's, which is appropriate
+  // given these probability estimates carry real uncertainty of their own (see the methodology
+  // notes above on sample size and modeled-vs-floor odds).
+  const KELLY_FRACTION = 0.35;
+  function computeKellyStake(oddsTaken) {
+    const p = computeSlipTrueProbability();
+    const fullKelly = (p * oddsTaken - 1) / (oddsTaken - 1);
+    return { fairOdds: 1 / p, fullKelly, units: Math.max(fullKelly, 0) * KELLY_FRACTION * 100 };
+  }
+
+  function renderKellyCalc() {
+    const el = document.getElementById('kelly-calc');
+    if (!el) return;
+    const oddsEl = document.getElementById('slip-odds-input');
+    const odds = oddsEl ? parseFloat(oddsEl.value) : NaN;
+    if (!slipLegs.length || !(odds > 1)) { el.innerHTML = ''; return; }
+    const { fairOdds, fullKelly, units } = computeKellyStake(odds);
+    el.innerHTML = fullKelly <= 0
+      ? `<p class="kelly-note kelly-none">No edge at ${odds.toFixed(2)} - the model's fair odds here are ${fairOdds.toFixed(2)}. 35% Kelly stake: <b>0u</b>.</p>`
+      : `<p class="kelly-note">35% Kelly stake: <b>${units.toFixed(1)}u</b> <span class="kelly-sub">(1u = 1% of bankroll &middot; model's fair odds ${fairOdds.toFixed(2)} &middot; full Kelly would be ${(fullKelly * 100).toFixed(1)}u)</span></p>`;
   }
 
   // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
@@ -2672,6 +2718,7 @@
           <label>Odds taken<input type="number" step="0.01" min="1" id="slip-odds-input" placeholder="e.g. 2.10"></label>
           <label>Stake<input type="number" step="0.01" min="0" id="slip-stake-input" placeholder="e.g. 20"></label>
         </div>
+        <div id="kelly-calc"></div>
         <div class="slip-place-row">
           <label>Platform
             <select id="slip-platform-select">
@@ -2724,6 +2771,9 @@
     if (e.target.id === 'slip-platform-select') {
       document.getElementById('slip-platform-other').hidden = e.target.value !== 'Other';
     }
+  });
+  document.getElementById('slip-panel').addEventListener('input', (e) => {
+    if (e.target.id === 'slip-odds-input') renderKellyCalc();
   });
   document.getElementById('slip-panel').addEventListener('click', (e) => {
     if (e.target.id !== 'slip-place-btn') return;
