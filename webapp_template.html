@@ -1878,7 +1878,7 @@
     const slipLeg = {
       id: `${fixtureLabel}::${key}`, signalType: 'team', label: sig.label, fixture: fixtureLabel,
       date: fixtureDate, market: key, direction, line: sig.line, altLines: sig.alt_lines || [],
-      odds: slipOdds, source: slipSource, fairProb,
+      odds: slipOdds, source: slipSource, fairProb, teamHitRate: teamHit,
     };
     const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
     const valueHtml = `
@@ -2307,7 +2307,7 @@
         id: `${r.fixture}::${r.marketKey}::${r.player}`, signalType: 'player',
         label: `${r.player} — ${r.market}`, fixture: r.fixture, date: r.date, player: r.player,
         market: r.marketKey, direction: r.direction, line: r.line, altLines: r.altLines || [],
-        odds: r.modeledOdds, source: 'Modeled', fairProb: 1 / r.modeledOdds,
+        odds: r.modeledOdds, source: 'Modeled', fairProb: 1 / r.modeledOdds, teamHitRate: r.hitRate,
       };
       const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
       return `
@@ -2511,8 +2511,8 @@
     const blended = (altEntry.team_hit_rate + altEntry.opponent_hit_rate) / 2;
     const tier = reliabilityTier(blended);
     const band = tier.cls === 'rel-strong' ? bandFloorFor(market, blended) : null;
-    if (band && band.min_odds) return { odds: band.min_odds, source: 'Floor', fairProb: band.win_rate / 100 };
-    return { odds: altEntry.modeled_odds, source: 'Modeled', fairProb: 1 / altEntry.modeled_odds };
+    if (band && band.min_odds) return { odds: band.min_odds, source: 'Floor', fairProb: band.win_rate / 100, teamHitRate: altEntry.team_hit_rate };
+    return { odds: altEntry.modeled_odds, source: 'Modeled', fairProb: 1 / altEntry.modeled_odds, teamHitRate: altEntry.team_hit_rate };
   }
 
   async function addLegToSlip(leg) {
@@ -2537,11 +2537,12 @@
     if (!entry) return;
     const result = leg.signalType === 'team'
       ? teamOddsForLine(leg.market, entry)
-      : { odds: entry.modeled_odds, source: 'Modeled', fairProb: 1 / entry.modeled_odds };
+      : { odds: entry.modeled_odds, source: 'Modeled', fairProb: 1 / entry.modeled_odds, teamHitRate: entry.hit_rate };
     leg.line = newLine;
     leg.odds = result.odds;
     leg.source = result.source;
     leg.fairProb = result.fairProb;
+    leg.teamHitRate = result.teamHitRate;
     renderSlip();
     await saveSlipToCloud();
   }
@@ -2565,9 +2566,10 @@
   // group still contributes its own probability but isn't correlated against the others - the
   // result is a genuine improvement over pure independence whenever a team-vs-team pair is
   // present, just not a complete correction if a player leg also shares the fixture.
-  function sgmAdjustedProbability(legs) {
+  function sgmAdjustedProbability(legs, probFn) {
+    probFn = probFn || (leg => leg.fairProb);
     let prob = 1;
-    for (const leg of legs) prob *= leg.fairProb;
+    for (const leg of legs) prob *= probFn(leg);
     for (let i = 0; i < legs.length; i++) {
       for (let j = i + 1; j < legs.length; j++) {
         const a = legs[i], b = legs[j];
@@ -2614,17 +2616,36 @@
     return 1.05 / computeSlipTrueProbability();
   }
 
+  // Kelly's probability input is deliberately NOT the model's fairProb (opponent-adjusted,
+  // Poisson-derived) used everywhere else on the slip - it's each leg's own SUBJECT team's raw
+  // hit rate over their last-10-game sample (team_hit_rate / r.hitRate, the same number already
+  // shown as a hit-rate chip on every row), a plainer and more legible empirical stat with no
+  // model assumptions layered in. Combined across legs the same way computeSlipTrueProbability
+  // does - naive multiplication across fixtures, the real historical SGM correlation lift applied
+  // within a fixture - just fed a different per-leg probability source via sgmAdjustedProbability's
+  // probFn parameter.
+  function computeSlipHitRateProbability() {
+    const groups = slipFixtureGroups();
+    // Older slip legs saved before this field existed won't have teamHitRate - fall back to
+    // fairProb for those rather than silently breaking the calculator on a stale saved slip.
+    const hitProb = leg => (leg.teamHitRate ?? leg.fairProb * 100) / 100;
+    let totalProb = 1;
+    for (const legs of Object.values(groups)) {
+      totalProb *= legs.length >= 2 ? sgmAdjustedProbability(legs, hitProb) : hitProb(legs[0]);
+    }
+    return Math.max(totalProb, 0.0001);
+  }
+
   // Fractional-Kelly stake sizing against whatever odds the user is actually being offered - a
-  // genuine edge check against the slip's own correlation-adjusted probability estimate, not just
-  // a probability display. Expressed in units (1 unit = 1% of bankroll, the standard convention)
-  // since this dashboard has no idea of the user's actual bankroll size, only what fraction of it
-  // Kelly says to risk. 35% of full Kelly is a common conservative fraction - it trades some
-  // long-run growth rate for a much shallower drawdown than full Kelly's, which is appropriate
-  // given these probability estimates carry real uncertainty of their own (see the methodology
-  // notes above on sample size and modeled-vs-floor odds).
+  // genuine edge check, not just a probability display. Expressed in units (1 unit = 1% of
+  // bankroll, the standard convention) since this dashboard has no idea of the user's actual
+  // bankroll size, only what fraction of it Kelly says to risk. 35% of full Kelly is a common
+  // conservative fraction - it trades some long-run growth rate for a much shallower drawdown
+  // than full Kelly's, appropriate given a raw last-10-game hit rate carries real sample-size
+  // noise of its own.
   const KELLY_FRACTION = 0.35;
   function computeKellyStake(oddsTaken) {
-    const p = computeSlipTrueProbability();
+    const p = computeSlipHitRateProbability();
     const fullKelly = (p * oddsTaken - 1) / (oddsTaken - 1);
     return { fairOdds: 1 / p, fullKelly, units: Math.max(fullKelly, 0) * KELLY_FRACTION * 100 };
   }
@@ -2637,8 +2658,8 @@
     if (!slipLegs.length || !(odds > 1)) { el.innerHTML = ''; return; }
     const { fairOdds, fullKelly, units } = computeKellyStake(odds);
     el.innerHTML = fullKelly <= 0
-      ? `<p class="kelly-note kelly-none">No edge at ${odds.toFixed(2)} - the model's fair odds here are ${fairOdds.toFixed(2)}. 35% Kelly stake: <b>0u</b>.</p>`
-      : `<p class="kelly-note">35% Kelly stake: <b>${units.toFixed(1)}u</b> <span class="kelly-sub">(1u = 1% of bankroll &middot; model's fair odds ${fairOdds.toFixed(2)} &middot; full Kelly would be ${(fullKelly * 100).toFixed(1)}u)</span></p>`;
+      ? `<p class="kelly-note kelly-none">No edge at ${odds.toFixed(2)} - last-10-game hit rate implies fair odds of ${fairOdds.toFixed(2)}. 35% Kelly stake: <b>0u</b>.</p>`
+      : `<p class="kelly-note">35% Kelly stake: <b>${units.toFixed(1)}u</b> <span class="kelly-sub">(1u = 1% of bankroll &middot; last-10-game hit rate implies fair odds ${fairOdds.toFixed(2)} &middot; full Kelly would be ${(fullKelly * 100).toFixed(1)}u)</span></p>`;
   }
 
   // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
