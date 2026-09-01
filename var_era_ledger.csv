@@ -1785,3 +1785,12 @@ season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_
 2627,2026-08-23,Man City,Bournemouth,home_corners,Man City corners,OVER,5.5,8.0,True,75.0,20
 2627,2026-08-23,Newcastle,Liverpool,home_corners,Newcastle corners,UNDER,5.5,2.0,True,75.0,20
 2627,2026-08-24,Fulham,Chelsea,away_goals,Chelsea to score,UNDER,1.5,3.0,False,80.0,20
+2627,2026-08-28,Crystal Palace,Man City,home_goals,Crystal Palace to score,UNDER,1.5,1.0,True,75.0,20
+2627,2026-08-28,Crystal Palace,Man City,home_corners,Crystal Palace corners,UNDER,5.5,2.0,True,85.0,20
+2627,2026-08-28,Crystal Palace,Man City,away_corners,Man City corners,OVER,5.5,6.0,True,75.0,20
+2627,2026-08-29,Tottenham,Newcastle,away_corners,Newcastle corners,UNDER,5.5,7.0,False,80.0,20
+2627,2026-08-29,Tottenham,Newcastle,match_cards,Total match cards,OVER,3.5,3.0,False,75.0,20
+2627,2026-08-29,Coventry,Hull,away_corners,Hull corners,UNDER,5.5,2.0,True,85.0,20
+2627,2026-08-29,Coventry,Hull,away_sot,Hull shots on target,UNDER,4.5,2.0,True,75.0,20
+2627,2026-08-30,Chelsea,Brighton,home_goals,Chelsea to score,UNDER,1.5,4.0,False,75.0,20
+2627,2026-08-31,Aston Villa,Arsenal,home_corners,Aston Villa corners,UNDER,5.5,2.0,True,80.0,20
