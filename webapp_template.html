@@ -2643,11 +2643,21 @@
   // conservative fraction - it trades some long-run growth rate for a much shallower drawdown
   // than full Kelly's, appropriate given a raw last-10-game hit rate carries real sample-size
   // noise of its own.
+  // A raw last-10-game hit rate can sit at or near 100% just from a small sample landing that
+  // way (especially for a Strong-tier leg, which was flagged BECAUSE its hit rate is extreme) -
+  // full Kelly treats that as near-certainty and sizes accordingly, which blows up into an
+  // enormous stake at anything but very short odds (confirmed: a 90% hit rate at odds of 3.00
+  // full-Kellys to 85% of bankroll). Capped at 4u regardless of what the formula says, since no
+  // single-bet stake from a last-10-game sample this small should ever be sized bigger than that
+  // - the uncapped figure is still shown in the fine print so a capped bet is visibly different
+  // from an honestly-small one, not silently identical.
   const KELLY_FRACTION = 0.35;
+  const KELLY_MAX_UNITS = 4;
   function computeKellyStake(oddsTaken) {
     const p = computeSlipHitRateProbability();
     const fullKelly = (p * oddsTaken - 1) / (oddsTaken - 1);
-    return { fairOdds: 1 / p, fullKelly, units: Math.max(fullKelly, 0) * KELLY_FRACTION * 100 };
+    const rawUnits = Math.max(fullKelly, 0) * KELLY_FRACTION * 100;
+    return { fairOdds: 1 / p, fullKelly, rawUnits, units: Math.min(rawUnits, KELLY_MAX_UNITS) };
   }
 
   function renderKellyCalc() {
@@ -2656,10 +2666,11 @@
     const oddsEl = document.getElementById('slip-odds-input');
     const odds = oddsEl ? parseFloat(oddsEl.value) : NaN;
     if (!slipLegs.length || !(odds > 1)) { el.innerHTML = ''; return; }
-    const { fairOdds, fullKelly, units } = computeKellyStake(odds);
+    const { fairOdds, fullKelly, rawUnits, units } = computeKellyStake(odds);
+    const capped = rawUnits > KELLY_MAX_UNITS;
     el.innerHTML = fullKelly <= 0
       ? `<p class="kelly-note kelly-none">No edge at ${odds.toFixed(2)} - last-10-game hit rate implies fair odds of ${fairOdds.toFixed(2)}. 35% Kelly stake: <b>0u</b>.</p>`
-      : `<p class="kelly-note">35% Kelly stake: <b>${units.toFixed(1)}u</b> <span class="kelly-sub">(1u = 1% of bankroll &middot; last-10-game hit rate implies fair odds ${fairOdds.toFixed(2)} &middot; full Kelly would be ${(fullKelly * 100).toFixed(1)}u)</span></p>`;
+      : `<p class="kelly-note">35% Kelly stake: <b>${units.toFixed(1)}u</b> <span class="kelly-sub">(1u = 1% of bankroll &middot; last-10-game hit rate implies fair odds ${fairOdds.toFixed(2)}${capped ? ` &middot; capped at ${KELLY_MAX_UNITS}u - uncapped 35% Kelly would be ${rawUnits.toFixed(1)}u` : ` &middot; full Kelly would be ${(fullKelly * 100).toFixed(1)}u`})</span></p>`;
   }
 
   // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
