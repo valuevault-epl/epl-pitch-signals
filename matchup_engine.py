@@ -78,9 +78,12 @@ def modeled_fair_odds(line, direction, lam):
     return round(1 / p, 2)
 
 
-def alt_lines_for(anchor, direction, projection, team_values, opp_values, alt_range=ALT_RANGE):
-    """Ladder of lines around the anchor (both directions, same call), each with its backtested
-    hit rate and modeled fair odds - what the dashboard's per-signal dropdown offers."""
+def alt_lines_for(anchor, projection, team_values, opp_values, alt_range=ALT_RANGE):
+    """Ladder of lines around the anchor, in BOTH directions at every line - lets the dashboard's
+    per-signal dropdown offer Over AND Under at any distance from the anchor, rather than locking
+    a viewer into whichever direction the model's own projection happened to favor. (Team markets
+    only - player markets stay Over-only, see player_engine.py's OVER_ONLY_MARKETS for why an
+    Under is excluded there entirely rather than just de-emphasized.)"""
     steps = int(round(alt_range / LINE_STEP))
     lines = []
     for i in range(-steps, steps + 1):
@@ -89,12 +92,14 @@ def alt_lines_for(anchor, direction, projection, team_values, opp_values, alt_ra
             continue  # bookmakers use half-lines, not whole numbers, to avoid pushes
         if line <= 0:
             continue
-        lines.append({
-            'line': line,
-            'team_hit_rate': hit_rate_at(team_values, line, direction),
-            'opponent_hit_rate': hit_rate_at(opp_values, line, direction),
-            'modeled_odds': modeled_fair_odds(line, direction, projection),
-        })
+        for direction in ('OVER', 'UNDER'):
+            lines.append({
+                'line': line,
+                'direction': direction,
+                'team_hit_rate': hit_rate_at(team_values, line, direction),
+                'opponent_hit_rate': hit_rate_at(opp_values, line, direction),
+                'modeled_odds': modeled_fair_odds(line, direction, projection),
+            })
     return lines
 
 
@@ -117,7 +122,7 @@ def combine_matchup(team_trends, opponent_trends, team_market, opponent_market, 
         'line': line,
         'direction': direction,
         'anchor': anchor,
-        'alt_lines': alt_lines_for(anchor, direction, projection, t['values'], o['values']),
+        'alt_lines': alt_lines_for(anchor, projection, t['values'], o['values']),
         'team_market': team_market, 'opponent_market': opponent_market,
         'edge': round(projection - t['league_avg'], 2),
         'attack_strength': round(attack_strength, 2),
@@ -177,7 +182,7 @@ def _signals_from_trends(fixture, home_trends, away_trends):
             'label': 'Total match cards',
             'projection': round(projection, 2), 'line': line, 'direction': direction,
             'anchor': line,
-            'alt_lines': alt_lines_for(line, direction, projection, hc_total['values'], ac_total['values']),
+            'alt_lines': alt_lines_for(line, projection, hc_total['values'], ac_total['values']),
             'team_market': 'match_total_cards', 'opponent_market': 'match_total_cards',
             'edge': round(projection - league_total_cards, 2),
             'modeled_odds': modeled_fair_odds(line, direction, projection),

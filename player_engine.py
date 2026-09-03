@@ -103,6 +103,8 @@ def build_player_signal(player_name, team_title, trend, market, opponent_team_tr
         seen.add(al)
         alt_lines.append({
             'line': al,
+            'direction': direction,  # always OVER (see OVER_ONLY_MARKETS) - kept for shape
+                                      # parity with team alt_lines, which now carry both directions
             'hit_rate': hit_rate_at(stat['values'], al, direction),
             'modeled_odds': modeled_fair_odds(al, direction, projection),
         })

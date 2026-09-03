@@ -1647,14 +1647,16 @@
   }
 
   // ---------- Picking a different line ----------
-  // matchup_engine.py already computed hit rate + modeled odds for every line in the alt-line
-  // ladder around the anchor (see alt_lines_for) - picking one here is just a lookup, not a
-  // recompute, so there's no risk of the dropdown's numbers drifting from what the server
-  // actually calculated.
-  function withNewLine(sig, newLine) {
-    const entry = (sig.alt_lines || []).find(a => a.line === newLine);
+  // matchup_engine.py already computed hit rate + modeled odds for every line AND direction in
+  // the alt-line ladder around the anchor (see alt_lines_for) - picking one here is just a
+  // lookup, not a recompute, so there's no risk of the dropdown's numbers drifting from what the
+  // server actually calculated. Team markets carry both Over and Under at every line; player
+  // markets only ever carry Over (see player_engine.py's OVER_ONLY_MARKETS), so their dropdown
+  // naturally only offers Over even though this same lookup code handles both.
+  function withNewLine(sig, newDirection, newLine) {
+    const entry = (sig.alt_lines || []).find(a => a.line === newLine && a.direction === newDirection);
     if (!entry) return sig;
-    const updated = { ...sig, line: newLine, modeled_odds: entry.modeled_odds };
+    const updated = { ...sig, line: newLine, direction: newDirection, modeled_odds: entry.modeled_odds };
     if ('team_hit_rate' in sig) {
       updated.team_hit_rate = entry.team_hit_rate;
       updated.opponent_hit_rate = entry.opponent_hit_rate;
@@ -1734,7 +1736,7 @@
     // in that line's precomputed hit rate/modeled odds (see the 'change' listener below) - a
     // lookup, not a recompute - direction never changes, only how far out the line sits.
     const lineOptions = (sig.alt_lines || []).map(al =>
-      `<option value="${al.line}"${al.line === sig.line ? ' selected' : ''}>${direction} ${al.line}</option>`).join('');
+      `<option value="${al.direction}|${al.line}"${al.direction === direction && al.line === sig.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
 
     // Slip leg mirrors exactly what's on screen right now: same odds source (the historical floor
     // when this row qualifies for one, modeled fair odds otherwise) the floor chip above already
@@ -1986,8 +1988,8 @@
     const activeSignals = inVenueMode ? fx.signals_venue : fx.signals;
     const sig = activeSignals[key];
     if (!sig) return;
-    const newLine = parseFloat(sel.value);
-    const updatedSig = withNewLine(sig, newLine);
+    const [newDirection, newLineStr] = sel.value.split('|');
+    const updatedSig = withNewLine(sig, newDirection, parseFloat(newLineStr));
     const sideLabels = sideLabelsFor(fx);
     const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
     const row = sel.closest('.signal-row');
@@ -2314,15 +2316,16 @@
     renderSlip();
   }
 
-  function updateSlipLegLine(id, newLine) {
+  function updateSlipLegLine(id, newDirection, newLine) {
     const leg = slipLegs.find(l => l.id === id);
     if (!leg) return;
-    const entry = (leg.altLines || []).find(a => a.line === newLine);
+    const entry = (leg.altLines || []).find(a => a.line === newLine && a.direction === newDirection);
     if (!entry) return;
     const result = leg.signalType === 'team'
       ? teamOddsForLine(leg.market, entry)
       : { odds: entry.modeled_odds, source: 'Modeled', fairProb: 1 / entry.modeled_odds };
     leg.line = newLine;
+    leg.direction = newDirection;
     leg.odds = result.odds;
     leg.source = result.source;
     leg.fairProb = result.fairProb;
@@ -2459,7 +2462,7 @@
 
     bodyEl.innerHTML = slipLegs.map(leg => {
       const lineOptions = (leg.altLines || []).map(al =>
-        `<option value="${al.line}"${al.line === leg.line ? ' selected' : ''}>${leg.direction} ${al.line}</option>`).join('');
+        `<option value="${al.direction}|${al.line}"${al.direction === leg.direction && al.line === leg.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
       return `
       <div class="slip-leg">
         <div class="slip-leg-info">
@@ -2526,7 +2529,9 @@
   });
   document.getElementById('slip-body').addEventListener('change', (e) => {
     const sel = e.target.closest('.slip-leg-select');
-    if (sel) updateSlipLegLine(decodeURIComponent(sel.dataset.legId), parseFloat(sel.value));
+    if (!sel) return;
+    const [newDirection, newLineStr] = sel.value.split('|');
+    updateSlipLegLine(decodeURIComponent(sel.dataset.legId), newDirection, parseFloat(newLineStr));
   });
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.slip-add-btn');
