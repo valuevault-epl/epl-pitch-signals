@@ -292,6 +292,44 @@
     margin-top: 10px;
   }
 
+  .content-gate {
+    padding: 70px 20px;
+    text-align: center;
+  }
+
+  .content-gate-inner { max-width: 420px; margin: 0 auto; }
+
+  .content-gate h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+
+  .content-gate p {
+    color: var(--ink-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 22px;
+  }
+
+  .content-gate-btn {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    cursor: pointer;
+  }
+
+  .content-gate-btn:hover { opacity: 0.92; }
+
   /* ---------- Controls ---------- */
   .controls {
     display: flex;
@@ -1100,7 +1138,7 @@
     bottom: 76px;
     z-index: 40;
     width: min(400px, calc(100vw - 40px));
-    max-height: min(560px, calc(100vh - 120px));
+    max-height: min(700px, calc(100vh - 90px));
     display: flex;
     flex-direction: column;
     background: var(--surface);
@@ -1177,7 +1215,8 @@
   .slip-body {
     overflow-y: auto;
     padding: 4px 12px;
-    flex: 1;
+    flex: 1 1 auto;
+    min-height: 240px;
   }
 
   .slip-empty {
@@ -1192,16 +1231,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 10px;
-    padding: 10px 4px;
+    gap: 4px 10px;
+    padding: 7px 4px;
     border-bottom: 1px solid var(--border);
   }
 
   .slip-leg:last-child { border-bottom: none; }
 
   .slip-leg-info { flex: 1 1 130px; min-width: 0; }
-  .slip-leg-label { font-size: 12.5px; font-weight: 500; color: var(--ink); }
-  .slip-leg-fixture { font-size: 11px; color: var(--ink-faint); margin-top: 1px; }
+  .slip-leg-label { font-size: 12px; font-weight: 500; color: var(--ink); line-height: 1.25; }
+  .slip-leg-fixture { font-size: 10.5px; color: var(--ink-faint); margin-top: 1px; line-height: 1.2; }
 
   .slip-leg-select {
     font-family: "IBM Plex Mono", monospace;
@@ -1416,6 +1455,65 @@
     gap: 6px;
   }
 
+  .tracker-actions { display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+
+  .tracker-edit-btn {
+    font-size: 11px;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 2px 4px;
+  }
+
+  .tracker-edit-btn:hover { color: var(--ink); }
+
+  .tracker-edit-input, .tracker-edit-select {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 5px;
+    color: var(--ink);
+    width: 100%;
+    max-width: 100px;
+    box-sizing: border-box;
+  }
+
+  .tracker-edit-platform-other { margin-top: 4px; max-width: 140px; }
+
+  .tracker-edit-actions { display: flex; flex-direction: column; gap: 4px; white-space: nowrap; }
+
+  .tracker-edit-save {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: none;
+    border-radius: 5px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .tracker-edit-save:hover { opacity: 0.92; }
+
+  .tracker-edit-cancel {
+    font-size: 11px;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 2px 0;
+  }
+
   .tracker-stats {
     display: flex;
     flex-wrap: wrap;
@@ -1513,6 +1611,15 @@
     </div>
   </div>
 
+  <div class="content-gate" id="content-gate">
+    <div class="content-gate-inner">
+      <h2>Sign in to use Pitch Signals</h2>
+      <p>Create a free account to see fixtures, build slips, and track your bets - everything here needs an account first.</p>
+      <button class="content-gate-btn" id="content-gate-btn" type="button">Sign in / Create account</button>
+    </div>
+  </div>
+
+  <div id="app-content" hidden>
   <div class="view-tabs" role="tablist" aria-label="View">
     <button class="view-tab active" data-view="fixtures">Fixtures</button>
     <button class="view-tab" data-view="signals">All Signals</button>
@@ -1717,6 +1824,7 @@
     <div class="slip-summary" id="slip-summary"></div>
   </div>
   <div class="bet-toast" id="bet-toast" role="status" aria-live="polite"></div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2412,6 +2520,10 @@
     bar.innerHTML = currentUser
       ? `<span class="auth-email">${currentUser.email}</span><button class="auth-link-btn" id="auth-signout-btn" type="button">Sign out</button>`
       : `<button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>`;
+    // The whole app is gated, not just the slip/tracker - everything else (Fixtures, All
+    // Signals, Players) is real work product too, not a free preview.
+    document.getElementById('content-gate').hidden = !!currentUser;
+    document.getElementById('app-content').hidden = !currentUser;
   }
 
   function openAuthModal() {
@@ -2467,6 +2579,9 @@
   document.getElementById('auth-bar').addEventListener('click', (e) => {
     if (e.target.id === 'auth-open-btn') { setAuthMode('signin'); openAuthModal(); }
     if (e.target.id === 'auth-signout-btn') supabaseClient.auth.signOut();
+  });
+  document.getElementById('content-gate').addEventListener('click', (e) => {
+    if (e.target.id === 'content-gate-btn') { setAuthMode('signin'); openAuthModal(); }
   });
   document.getElementById('auth-close').addEventListener('click', closeAuthModal);
   document.getElementById('auth-modal').addEventListener('click', (e) => {
@@ -2864,6 +2979,11 @@
   // what was actually tracked). Persisted in Supabase's tracked_bets table, one row per bet,
   // scoped to the signed-in user by row-level security.
   let trackedBets = [];
+  // id of the bet currently open for editing in the tracker table, or null - a single row toggles
+  // into an edit form in place rather than opening a separate modal, so at most one bet is
+  // editable at a time.
+  let editingBetId = null;
+  const PLATFORM_OPTIONS = ['Bet365', 'Pointsbet', 'TAB', 'Sportsbet', 'Ladbrokes', 'Betfair'];
 
   async function loadTrackedBetsFromCloud() {
     if (!currentUser) { trackedBets = []; return; }
@@ -2880,6 +3000,44 @@
     if (currentUser) {
       await supabaseClient.from('tracked_bets').delete().eq('id', id).eq('user_id', currentUser.id);
     }
+  }
+
+  // Reads the edit row's inputs (per-leg line/direction dropdowns, odds/stake/platform) back into
+  // the bet, then resets it to Pending so the normal grading pass this same render already runs
+  // re-grades it fresh against whichever line/direction is now current - editing a leg on an
+  // already-settled bet without this would leave its Won/Lost status stale and wrong.
+  async function saveEditBet(id, row) {
+    const bet = trackedBets.find(b => b.id === id);
+    if (!bet || !row) return;
+
+    const oddsEl = row.querySelector('.tracker-edit-odds');
+    const stakeEl = row.querySelector('.tracker-edit-stake');
+    const platformSel = row.querySelector('.tracker-edit-platform');
+    const platformOtherEl = row.querySelector('.tracker-edit-platform-other');
+    if (!oddsEl.reportValidity() || !stakeEl.reportValidity()) return;
+    const platform = platformSel.value === 'Other' ? platformOtherEl.value.trim() : platformSel.value;
+    if (platformSel.value === 'Other' && !platform) { platformOtherEl.reportValidity(); return; }
+
+    row.querySelectorAll('.tracker-leg-edit-select').forEach(sel => {
+      const idx = parseInt(sel.dataset.legIndex, 10);
+      const [dir, lineStr] = sel.value.split('|');
+      bet.legs[idx].direction = dir;
+      bet.legs[idx].line = parseFloat(lineStr);
+      bet.legs[idx].status = 'Pending';
+    });
+    bet.oddsTaken = parseFloat(oddsEl.value);
+    bet.stake = parseFloat(stakeEl.value);
+    bet.platform = platform;
+    bet.status = 'Pending';
+    bet.settledAt = null;
+    bet.profit = null;
+
+    editingBetId = null;
+    if (currentUser) {
+      await supabaseClient.from('tracked_bets').update(betToDbRow(bet)).eq('id', id).eq('user_id', currentUser.id);
+    }
+    await renderTracker();
+    showBetToast('Bet updated');
   }
 
   function round2(n) { return Math.round(n * 100) / 100; }
@@ -2985,13 +3143,52 @@
       return;
     }
     tbody.innerHTML = trackedBets.map(bet => {
+      const potentialReturn = round2(bet.stake * bet.oddsTaken);
+      const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
+
+      if (bet.id === editingBetId) {
+        // Each leg's own alt-line ladder (captured when it was added to the slip) drives its
+        // dropdown here too - same composite "DIRECTION|line" value scheme the Fixtures tab and
+        // slip line-pickers use, so a leg can move to a different line AND flip Over/Under, not
+        // just shift distance. A leg with no ladder (shouldn't normally happen) falls back to
+        // static text rather than rendering a broken empty dropdown.
+        const legsHtml = bet.legs.map((l, i) => {
+          if (!(l.altLines || []).length) {
+            return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span></div>`;
+          }
+          const options = l.altLines.map(al =>
+            `<option value="${al.direction}|${al.line}"${al.direction === l.direction && al.line === l.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
+          return `<div class="tracker-leg-line">${l.label} <select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select></div>`;
+        }).join('');
+        const isCustomPlatform = !PLATFORM_OPTIONS.includes(bet.platform);
+        const platformOptions = PLATFORM_OPTIONS.map(p =>
+          `<option value="${p}"${p === bet.platform ? ' selected' : ''}>${p}</option>`).join('')
+          + `<option value="Other"${isCustomPlatform ? ' selected' : ''}>Other</option>`;
+        return `
+        <tr data-editing-bet="${encodeURIComponent(bet.id)}">
+          <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
+          <td>${legsHtml}</td>
+          <td>
+            <select class="tracker-edit-select tracker-edit-platform">${platformOptions}</select>
+            <input type="text" class="tracker-edit-input tracker-edit-platform-other" placeholder="Platform name" value="${isCustomPlatform ? bet.platform : ''}"${isCustomPlatform ? '' : ' hidden'}>
+          </td>
+          <td><input type="number" step="0.01" min="1.01" required class="tracker-edit-input tracker-edit-odds" value="${bet.oddsTaken}"></td>
+          <td><input type="number" step="0.01" min="0.01" required class="tracker-edit-input tracker-edit-stake" value="${bet.stake}"></td>
+          <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
+          <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
+          <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
+          <td class="tracker-edit-actions">
+            <button class="tracker-edit-save" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Save</button>
+            <button class="tracker-edit-cancel" type="button">Cancel</button>
+          </td>
+        </tr>`;
+      }
+
       const legsHtml = bet.legs.map(l => {
         const legTag = l.status && l.status !== 'Pending'
           ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
         return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span> ${legTag}</div>`;
       }).join('');
-      const potentialReturn = round2(bet.stake * bet.oddsTaken);
-      const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
       return `
       <tr>
         <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
@@ -3002,7 +3199,10 @@
         <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
         <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
         <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
-        <td><button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button></td>
+        <td class="tracker-actions">
+          <button class="tracker-edit-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Edit</button>
+          <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
+        </td>
       </tr>`;
     }).join('');
   }
@@ -3071,10 +3271,22 @@
     if (!document.getElementById('tracker-analytics-panel').hidden) await renderTrackerAnalytics();
   }
 
-  document.querySelector('#tracker-table tbody').addEventListener('click', (e) => {
+  document.querySelector('#tracker-table tbody').addEventListener('click', async (e) => {
     if (e.target.id === 'tracker-auth-btn') { openAuthModal(); return; }
+    const editBtn = e.target.closest('.tracker-edit-btn');
+    if (editBtn) { editingBetId = decodeURIComponent(editBtn.dataset.betId); await renderTrackerBets(); return; }
+    const cancelBtn = e.target.closest('.tracker-edit-cancel');
+    if (cancelBtn) { editingBetId = null; await renderTrackerBets(); return; }
+    const saveBtn = e.target.closest('.tracker-edit-save');
+    if (saveBtn) { await saveEditBet(decodeURIComponent(saveBtn.dataset.betId), saveBtn.closest('tr')); return; }
     const btn = e.target.closest('.slip-remove');
     if (btn) removeTrackedBet(decodeURIComponent(btn.dataset.betId));
+  });
+  document.querySelector('#tracker-table tbody').addEventListener('change', (e) => {
+    if (e.target.classList.contains('tracker-edit-platform')) {
+      const row = e.target.closest('tr');
+      row.querySelector('.tracker-edit-platform-other').hidden = e.target.value !== 'Other';
+    }
   });
 
   document.getElementById('tracker-stats').addEventListener('click', (e) => {
@@ -3112,6 +3324,7 @@
     } else {
       slipLegs = [];
       trackedBets = [];
+      editingBetId = null;
     }
     renderSlip();
     await renderTracker();
@@ -3130,6 +3343,7 @@
     } else {
       slipLegs = [];
       trackedBets = [];
+      editingBetId = null;
     }
     renderSlip();
     await renderTracker();
