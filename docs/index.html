@@ -1212,11 +1212,21 @@
 
   .slip-clear-btn:hover { color: var(--ink); }
 
-  .slip-body {
+  /* Legs and the place-form scroll together as ONE region below the fixed head, rather than each
+     having its own independent scrollbar - with two separate scroll areas sharing one fixed panel
+     height, enough legs could push the place-form past the panel's max-height with no way to
+     reach it (the panel itself didn't scroll, only the leg list did). Now the whole panel just
+     grows to its max-height and everything past that - legs, then the form below them in natural
+     document order - scrolls as a single unit, so the place button is always reachable no matter
+     how many legs are in the slip. */
+  .slip-scroll {
     overflow-y: auto;
-    padding: 4px 12px;
     flex: 1 1 auto;
-    min-height: 240px;
+    min-height: 0;
+  }
+
+  .slip-body {
+    padding: 4px 12px;
   }
 
   .slip-empty {
@@ -1455,7 +1465,22 @@
     gap: 6px;
   }
 
-  .tracker-actions { display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+  /* Both the normal row's Edit/Remove pair and the edit row's Save/Cancel pair share this one
+     class - same box model (vertical stack, same gap, same alignment) so the Actions column's
+     computed width doesn't jump around between a bet's normal and editing states, which is what
+     was producing the "column offset" look: an auto-layout table sizes each column once from the
+     widest content across EVERY row, so two visually different box shapes sharing one column
+     fought each other on width. Fixed pixel widths on the inputs/selects below, instead of the
+     percentage widths they had before, for the same reason - percentages have no well-defined
+     size inside a nowrap auto-layout cell, and that ambiguity is exactly the kind of thing
+     browsers resolve inconsistently. */
+  .tracker-actions, .tracker-edit-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    white-space: nowrap;
+  }
 
   .tracker-edit-btn {
     font-size: 11px;
@@ -1465,7 +1490,7 @@
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 2px;
-    padding: 2px 4px;
+    padding: 2px 0;
   }
 
   .tracker-edit-btn:hover { color: var(--ink); }
@@ -1478,14 +1503,11 @@
     border-radius: 5px;
     padding: 3px 5px;
     color: var(--ink);
-    width: 100%;
-    max-width: 100px;
+    width: 90px;
     box-sizing: border-box;
   }
 
-  .tracker-edit-platform-other { margin-top: 4px; max-width: 140px; }
-
-  .tracker-edit-actions { display: flex; flex-direction: column; gap: 4px; white-space: nowrap; }
+  .tracker-edit-platform-other { margin-top: 4px; width: 130px; }
 
   .tracker-edit-save {
     font-family: "Barlow Condensed", sans-serif;
@@ -1606,7 +1628,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Saturday 05 September 2026, 01:24</div>
+      <div class="updated">Updated Saturday 05 September 2026, 01:42</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1703,6 +1725,36 @@
     </div>
   </div>
 
+
+  <h2 class="section-heading">Team Trends</h2>
+  <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
+  <div class="team-table-wrap">
+    <table class="team-table" id="team-table">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are anchored at the standard main line real bookmakers actually use for each market (1.5 goals, 5.5 corners, 4.5 shots on target, 3.5 total cards) rather than derived from the projection - most books keep these standardized across teams and let the price reflect team strength instead of moving the line, so a heavy-corner side still gets offered 5.5, just at a much shorter price. Pick a different line from the dropdown on any signal to see an alt-line ladder around that anchor. Each line also shows a modeled fair odds estimate (Poisson model of the projection, no bookmaker margin) - an approximation to sanity-check against real quoted odds, not a substitute for them, since no live odds feed covers these specific team-level alt-line markets for free. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market. The two hit-rate chips under each signal are each team's OWN historical rate AT the current line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the line - note real books usually price cards as "booking points" (yellow=10, red=25) rather than a raw count, so this market's line is a rougher match to a real cards market than the others. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+  </footer>
+
+  <button class="slip-fab" id="slip-fab" type="button" aria-haspopup="dialog" aria-label="Open bet slip">
+    Slip <span class="slip-fab-count" id="slip-count">0</span>
+  </button>
+  <div class="slip-panel" id="slip-panel" role="dialog" aria-label="Bet slip">
+    <div class="slip-panel-head">
+      <h3>Slip</h3>
+      <button class="slip-clear-btn" id="slip-clear" type="button">Clear all</button>
+    </div>
+    <div class="slip-scroll">
+      <div class="slip-body" id="slip-body"></div>
+      <div class="slip-summary" id="slip-summary"></div>
+    </div>
+  </div>
+  <div class="bet-toast" id="bet-toast" role="status" aria-live="polite"></div>
+  </div>
+
   <div class="modal-overlay" id="game-modal" hidden>
     <div class="modal-panel">
       <div class="modal-head">
@@ -1768,12 +1820,12 @@
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
           <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
-          <li>Remove a bet with the "&times;" on its row if it was tracked by mistake - this can't be undone.</li>
+          <li>Edit a bet with the pencil-style "Edit" link on its row to change its odds, stake, platform, or any leg's line/direction - saving resets it to Pending so it re-grades against whatever you just changed. Remove a bet with the "&times;" if it was tracked by mistake - this can't be undone.</li>
           <li>The Analytics sub-tab charts cumulative profit over time across settled bets, plus win rate, total staked, and ROI.</li>
         </ul>
 
         <h3>Account &amp; sync</h3>
-        <p>Sign in (top right) to save your slip and tracker to your account - they'll sync across every device you sign in on. Your data is private to your account: nobody else who uses this page can see it, and you can't see anyone else's. Browsing the Fixtures/All Signals/Players/Team Trends tabs doesn't require an account; only the Slip and Tracker do.</p>
+        <p>Sign in (top right) to use this page - everything here, including just browsing Fixtures/All Signals/Players/Team Trends, needs an account. Your slip and tracker save to your account and sync across every device you sign in on. Your data is private: nobody else who uses this page can see it, and you can't see anyone else's.</p>
       </div>
     </div>
   </div>
@@ -1797,33 +1849,6 @@
         </p>
       </div>
     </div>
-  </div>
-
-  <h2 class="section-heading">Team Trends</h2>
-  <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
-  <div class="team-table-wrap">
-    <table class="team-table" id="team-table">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <footer>
-    <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are anchored at the standard main line real bookmakers actually use for each market (1.5 goals, 5.5 corners, 4.5 shots on target, 3.5 total cards) rather than derived from the projection - most books keep these standardized across teams and let the price reflect team strength instead of moving the line, so a heavy-corner side still gets offered 5.5, just at a much shorter price. Pick a different line from the dropdown on any signal to see an alt-line ladder around that anchor. Each line also shows a modeled fair odds estimate (Poisson model of the projection, no bookmaker margin) - an approximation to sanity-check against real quoted odds, not a substitute for them, since no live odds feed covers these specific team-level alt-line markets for free. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market. The two hit-rate chips under each signal are each team's OWN historical rate AT the current line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the line - note real books usually price cards as "booking points" (yellow=10, red=25) rather than a raw count, so this market's line is a rougher match to a real cards market than the others. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
-  </footer>
-
-  <button class="slip-fab" id="slip-fab" type="button" aria-haspopup="dialog" aria-label="Open bet slip">
-    Slip <span class="slip-fab-count" id="slip-count">0</span>
-  </button>
-  <div class="slip-panel" id="slip-panel" role="dialog" aria-label="Bet slip">
-    <div class="slip-panel-head">
-      <h3>Slip</h3>
-      <button class="slip-clear-btn" id="slip-clear" type="button">Clear all</button>
-    </div>
-    <div class="slip-body" id="slip-body"></div>
-    <div class="slip-summary" id="slip-summary"></div>
-  </div>
-  <div class="bet-toast" id="bet-toast" role="status" aria-live="polite"></div>
   </div>
 </div>
 
@@ -3028,9 +3053,23 @@
     bet.oddsTaken = parseFloat(oddsEl.value);
     bet.stake = parseFloat(stakeEl.value);
     bet.platform = platform;
-    bet.status = 'Pending';
-    bet.settledAt = null;
-    bet.profit = null;
+
+    // Pending goes back through the normal grading pass below (a line/direction change means any
+    // prior grade is stale anyway). Won/Lost picked here is a manual override that stands as-is -
+    // it's skipped by gradeAllTrackedBets (which only touches bets still Pending), so it won't get
+    // silently reverted the next time the tracker loads. Only the bet's own status/profit change;
+    // individual legs' status isn't forced to match, since a multi's other legs may genuinely be
+    // in a different state than whatever the user is correcting at the bet level.
+    const newStatus = row.querySelector('.tracker-edit-status').value;
+    if (newStatus === 'Won') {
+      bet.status = 'Won'; bet.settledAt = bet.settledAt || new Date().toISOString();
+      bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
+    } else if (newStatus === 'Lost') {
+      bet.status = 'Lost'; bet.settledAt = bet.settledAt || new Date().toISOString();
+      bet.profit = -bet.stake;
+    } else {
+      bet.status = 'Pending'; bet.settledAt = null; bet.profit = null;
+    }
 
     editingBetId = null;
     if (currentUser) {
@@ -3175,7 +3214,13 @@
           <td><input type="number" step="0.01" min="1.01" required class="tracker-edit-input tracker-edit-odds" value="${bet.oddsTaken}"></td>
           <td><input type="number" step="0.01" min="0.01" required class="tracker-edit-input tracker-edit-stake" value="${bet.stake}"></td>
           <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
-          <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
+          <td>
+            <select class="tracker-edit-select tracker-edit-status">
+              <option value="Pending"${bet.status === 'Pending' ? ' selected' : ''}>Pending</option>
+              <option value="Won"${bet.status === 'Won' ? ' selected' : ''}>Won</option>
+              <option value="Lost"${bet.status === 'Lost' ? ' selected' : ''}>Lost</option>
+            </select>
+          </td>
           <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
           <td class="tracker-edit-actions">
             <button class="tracker-edit-save" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Save</button>

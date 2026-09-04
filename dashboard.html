@@ -1052,11 +1052,21 @@
 
   .slip-clear-btn:hover { color: var(--ink); }
 
-  .slip-body {
+  /* Legs and the place-form scroll together as ONE region below the fixed head, rather than each
+     having its own independent scrollbar - with two separate scroll areas sharing one fixed panel
+     height, enough legs could push the place-form past the panel's max-height with no way to
+     reach it (the panel itself didn't scroll, only the leg list did). Now the whole panel just
+     grows to its max-height and everything past that - legs, then the form below them in natural
+     document order - scrolls as a single unit, so the place button is always reachable no matter
+     how many legs are in the slip. */
+  .slip-scroll {
     overflow-y: auto;
-    padding: 4px 12px;
     flex: 1 1 auto;
-    min-height: 240px;
+    min-height: 0;
+  }
+
+  .slip-body {
+    padding: 4px 12px;
   }
 
   .slip-empty {
@@ -1410,7 +1420,7 @@
       <button class="help-btn" id="help-btn" type="button" aria-haspopup="dialog" aria-label="How this dashboard works">?</button>
     </div>
     <div class="masthead-meta">
-      <div class="updated">Updated Saturday 05 September 2026, 01:24</div>
+      <div class="updated">Updated Saturday 05 September 2026, 01:42</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1591,8 +1601,10 @@
       <h3>Slip</h3>
       <button class="slip-clear-btn" id="slip-clear" type="button">Clear all</button>
     </div>
-    <div class="slip-body" id="slip-body"></div>
-    <div class="slip-summary" id="slip-summary"></div>
+    <div class="slip-scroll">
+      <div class="slip-body" id="slip-body"></div>
+      <div class="slip-summary" id="slip-summary"></div>
+    </div>
   </div>
   <div class="bet-toast" id="bet-toast" role="status" aria-live="polite"></div>
 </div>
