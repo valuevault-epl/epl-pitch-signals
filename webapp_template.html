@@ -685,6 +685,45 @@
 
   .modal-overlay[hidden] { display: none; }
 
+  /* The content modals above intentionally sit near the top (long game/help content needs room to
+     scroll below it) - a yes/no confirmation is short and reads better dead-centered instead. */
+  .modal-overlay-center { align-items: center; }
+
+  .confirm-panel {
+    max-width: 360px;
+    padding: 22px;
+    text-align: center;
+  }
+
+  .confirm-message {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+
+  .confirm-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .confirm-danger-btn {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #fff;
+    background: var(--negative);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    cursor: pointer;
+  }
+
+  .confirm-danger-btn:hover { opacity: 0.9; }
+
   .modal-panel {
     background: var(--surface);
     border-radius: 12px;
@@ -1926,6 +1965,16 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-overlay modal-overlay-center" id="confirm-modal" hidden>
+    <div class="modal-panel confirm-panel">
+      <p class="confirm-message" id="confirm-message">Remove this bet?</p>
+      <div class="confirm-actions">
+        <button class="tracker-edit-cancel" id="confirm-cancel-btn" type="button">Cancel</button>
+        <button class="confirm-danger-btn" id="confirm-remove-btn" type="button">Remove</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2344,7 +2393,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeGameModal(); closeHelp(); }
+    if (e.key === 'Escape') { closeGameModal(); closeHelp(); closeConfirmModal(); }
   });
 
   // ---------- View tabs ----------
@@ -2636,6 +2685,20 @@
   }
   function closeAuthModal() { document.getElementById('auth-modal').hidden = true; }
 
+  let pendingRemoveBetId = null;
+  function openConfirmRemoveModal(bet) {
+    pendingRemoveBetId = bet.id;
+    const legsSummary = bet.legs.map(l => l.label).join(', ');
+    const dateStr = (bet.placedAt || '').slice(0, 10);
+    document.getElementById('confirm-message').textContent =
+      `Remove this bet from ${dateStr} (${legsSummary})? You'll get a few seconds to undo it after.`;
+    document.getElementById('confirm-modal').hidden = false;
+  }
+  function closeConfirmModal() {
+    pendingRemoveBetId = null;
+    document.getElementById('confirm-modal').hidden = true;
+  }
+
   function setAuthMode(mode) {
     authMode = mode;
     document.getElementById('auth-modal-title').textContent = mode === 'signin' ? 'Sign in' : 'Sign up';
@@ -2687,6 +2750,15 @@
   document.getElementById('auth-close').addEventListener('click', closeAuthModal);
   document.getElementById('auth-modal').addEventListener('click', (e) => {
     if (e.target.id === 'auth-modal') closeAuthModal();
+  });
+  document.getElementById('confirm-cancel-btn').addEventListener('click', closeConfirmModal);
+  document.getElementById('confirm-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'confirm-modal') closeConfirmModal();
+  });
+  document.getElementById('confirm-remove-btn').addEventListener('click', () => {
+    const id = pendingRemoveBetId;
+    closeConfirmModal();
+    if (id) removeTrackedBet(id);
   });
   document.getElementById('auth-switch-btn').addEventListener('click', () => {
     setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
@@ -3646,7 +3718,10 @@
     const saveBtn = e.target.closest('.tracker-edit-save');
     if (saveBtn) { await saveEditBet(decodeURIComponent(saveBtn.dataset.betId), saveBtn.closest('tr')); return; }
     const btn = e.target.closest('.slip-remove');
-    if (btn) removeTrackedBet(decodeURIComponent(btn.dataset.betId));
+    if (btn) {
+      const removeBet = trackedBets.find(b => b.id === decodeURIComponent(btn.dataset.betId));
+      if (removeBet) openConfirmRemoveModal(removeBet);
+    }
   });
   document.querySelector('#tracker-table tbody').addEventListener('change', (e) => {
     if (e.target.classList.contains('tracker-edit-platform')) {
