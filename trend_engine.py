@@ -145,11 +145,24 @@ def fetch_current_data():
             except Exception:
                 pass  # season not started yet, or transient failure - fine, use what we have
 
+    # Same tolerance as the season loop above, and for the same reason: confirmed in production
+    # that football-data.co.uk can return a transient 503 here, and this used to be unguarded -
+    # one flaky request crashed trend_engine.py before match_archive (built later, from the
+    # season files already safely fetched above) ever got a chance to update, silently stalling
+    # every tracked bet's grading for as long as the outage lasted. load_fixtures() below falls
+    # back to whatever fixtures_raw.csv is already on disk (or an empty fixture list, on a fresh
+    # checkout with none yet) if this fetch fails, so the rest of the pipeline - trends, the odds
+    # floor, and crucially match_archive - still completes and the tracker keeps grading.
     fixtures_path = os.path.join(WORKDIR, "fixtures_raw.csv")
-    req = urllib.request.Request("https://www.football-data.co.uk/fixtures.csv", headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=20) as r:
-        with open(fixtures_path, 'wb') as f:
-            f.write(r.read())
+    try:
+        req = urllib.request.Request("https://www.football-data.co.uk/fixtures.csv", headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = r.read()
+        if len(data) > 500:
+            with open(fixtures_path, 'wb') as f:
+                f.write(data)
+    except Exception as e:
+        print(f"  Could not fetch fixtures.csv ({e}) - will use whatever's already on disk, if anything.")
 
 
 def current_season_code(today=None):
@@ -194,8 +207,23 @@ def load_fixtures(results=None, current_season=None):
     matches while fixtures.csv can still list the same already-played matches as 'upcoming' for a
     while. So once we know the current season's completed results, drop any fixture whose
     (HomeTeam, AwayTeam) pairing already has a result there - otherwise the dashboard would show
-    finished matches as next week's positions."""
-    df = pd.read_csv(os.path.join(WORKDIR, "fixtures_raw.csv"), encoding='utf-8-sig', on_bad_lines='skip')
+    finished matches as next week's positions.
+
+    Tolerates fixtures_raw.csv being missing entirely (fetch_current_data's own fetch of it can
+    fail - e.g. a transient 503 from football-data.co.uk - and a GitHub Actions runner starts from
+    a fresh checkout each run, so there's no previous copy left on disk to fall back to the way a
+    persistent machine would have). An empty fixture list for one run is a far smaller problem
+    than the whole pipeline crashing here and never reaching match_archive further down, which is
+    what tracked bets actually need graded."""
+    try:
+        df = pd.read_csv(os.path.join(WORKDIR, "fixtures_raw.csv"), encoding='utf-8-sig', on_bad_lines='skip')
+    except (FileNotFoundError, pd.errors.EmptyDataError):
+        # Every column anything downstream selects from this DataFrame (see __main__'s
+        # fd_fixtures[[...]] fallback path) - falls through the same processing below rather than
+        # returning early, so Date ends up the same datetime64 dtype a real fetch would produce
+        # (an early return with a raw object-dtype stub column would KeyError/AttributeError the
+        # moment something downstream calls .dt.strftime() on it).
+        df = pd.DataFrame(columns=['Div', 'Date', 'HomeTeam', 'AwayTeam', 'B365H', 'B365D', 'B365A'])
     e0 = df[df['Div'] == 'E0'].copy()
     e0['Date'] = pd.to_datetime(e0['Date'], format='mixed', dayfirst=True, errors='coerce')
     e0 = e0.dropna(subset=['Date', 'HomeTeam', 'AwayTeam']).sort_values('Date').reset_index(drop=True)
