@@ -1812,6 +1812,10 @@
         <div class="tracker-pl-box"><span>This week</span><b class="tracker-pl-value" id="tracker-week-pl">$0.00</b></div>
         <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
       </div>
+      <div class="filter-row" role="group" aria-label="Filter by round">
+        <span class="controls-label">Round</span>
+        <select id="tracker-round-select" class="chip-btn"></select>
+      </div>
       <div class="signal-list-wrap">
         <table class="signal-list" id="tracker-table">
           <colgroup>
@@ -1931,6 +1935,7 @@
         <h3>Tracker tab</h3>
         <ul>
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
+          <li>The Round dropdown groups bets by which Premier League round their fixture belongs to, defaulting to the current round so the list doesn't fill up with old bets - pick any earlier round, or "All rounds" to see everything at once. A bet takes its round from its first leg's fixture.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
           <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
           <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, or any leg's line/direction/result. Each leg has its own Won/Lost/Pending control - set it directly rather than relying on auto-grading, which is what lets you correct a leg that graded itself wrong, or one from before this page could grade legs individually at all. The bet's own status isn't edited separately - it's always whatever its legs say: Lost the moment any leg is, Won only once every leg is.</li>
@@ -3210,6 +3215,47 @@
   let editingBetId = null;
   const PLATFORM_OPTIONS = ['Bet365', 'Pointsbet', 'TAB', 'Sportsbet', 'Ladbrokes', 'Betfair'];
 
+  // 'all' or a round number. Defaults to the current round (DATA.current_round, computed at
+  // build time from openfootball's schedule - see trend_engine.py's fetch_openfootball_rounds) so
+  // the list opens uncluttered by default; falls back to 'all' when that couldn't be computed at
+  // all (openfootball unreachable during that build), since there'd be nothing else to default to.
+  let selectedRound = DATA.current_round || 'all';
+
+  // A bet's round is whichever round its FIRST leg's fixture falls in - legs almost always come
+  // from the same round in practice (that's how the slip/fixtures tab naturally groups them), and
+  // a bet needs exactly one round to live in for this filter to mean anything. Same fixture-string
+  // convention actualForTeamLeg already splits on. Returns null when the fixture predates
+  // DATA.match_rounds' coverage (an older season) or that data wasn't available at build time -
+  // such a bet only shows up under "All", never under a specific round.
+  function roundForLeg(leg) {
+    const sepIdx = (leg.fixture || '').indexOf(' v ');
+    if (sepIdx < 0 || !DATA.match_rounds) return null;
+    const home = leg.fixture.slice(0, sepIdx), away = leg.fixture.slice(sepIdx + 3);
+    return DATA.match_rounds[`${home}|${away}`] || null;
+  }
+  function roundForBet(bet) { return (bet.legs[0] && roundForLeg(bet.legs[0])) || null; }
+
+  // Every round that's actually worth offering: the current one (even with zero bets yet, so the
+  // default view isn't a dead end) plus any round that has at least one tracked bet, newest first.
+  function availableRounds() {
+    const set = new Set();
+    if (DATA.current_round) set.add(DATA.current_round);
+    trackedBets.forEach(b => { const r = roundForBet(b); if (r) set.add(r); });
+    return [...set].sort((a, b) => b - a);
+  }
+
+  function renderRoundSelector() {
+    const sel = document.getElementById('tracker-round-select');
+    if (!sel) return;
+    const rounds = availableRounds();
+    const options = [`<option value="all"${selectedRound === 'all' ? ' selected' : ''}>All rounds</option>`]
+      .concat(rounds.map(r => {
+        const label = r === DATA.current_round ? `Round ${r} (current)` : `Round ${r}`;
+        return `<option value="${r}"${String(selectedRound) === String(r) ? ' selected' : ''}>${label}</option>`;
+      }));
+    sel.innerHTML = options.join('');
+  }
+
   async function loadTrackedBetsFromCloud() {
     if (!currentUser) { trackedBets = []; return; }
     try {
@@ -3488,13 +3534,20 @@
     weekEl.className = 'tracker-pl-value' + (weekPL > 0 ? ' pos' : weekPL < 0 ? ' neg' : '');
     overallEl.textContent = fmtPL(overallPL);
     overallEl.className = 'tracker-pl-value' + (overallPL > 0 ? ' pos' : overallPL < 0 ? ' neg' : '');
+    renderRoundSelector();
 
     const tbody = document.querySelector('#tracker-table tbody');
     if (!trackedBets.length) {
       tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
       return;
     }
-    tbody.innerHTML = trackedBets.map(bet => {
+    const visibleBets = selectedRound === 'all' ? trackedBets : trackedBets.filter(b => roundForBet(b) === selectedRound);
+    if (!visibleBets.length) {
+      const roundLabel = selectedRound === DATA.current_round ? 'the current round' : `round ${selectedRound}`;
+      tbody.innerHTML = `<tr><td colspan="8" style="color:var(--ink-faint);">No bets in ${roundLabel} yet - check "All rounds" to see everything tracked.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = visibleBets.map(bet => {
       const potentialReturn = round2(bet.stake * bet.oddsTaken);
       const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
 
@@ -3745,6 +3798,10 @@
     if (e.target.id === 'tracker-analytics-auth-btn') openAuthModal();
   });
 
+  document.getElementById('tracker-round-select').addEventListener('change', async (e) => {
+    selectedRound = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
+    await renderTrackerBets();
+  });
   document.getElementById('analytics-unit-toggle').addEventListener('click', (e) => {
     const btn = e.target.closest('.venue-btn');
     if (!btn) return;

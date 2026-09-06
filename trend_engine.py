@@ -63,16 +63,13 @@ OPENFOOTBALL_TEAM_MAP = {
 }
 
 
-def fetch_openfootball_next_round(season_start_year, played_pairs):
-    """Parse openfootball's plain-text season fixture list and return the next round that hasn't
-    been fully played yet, as [{'Date': 'YYYY-MM-DD', 'HomeTeam': ..., 'AwayTeam': ...}, ...].
-    `played_pairs` is the set of (HomeTeam, AwayTeam) already confirmed played, from
-    football-data.co.uk's own results - openfootball's OWN score column isn't trusted for this,
-    because it can itself lag on filling in final scores for the last few matches of a round even
-    after football-data.co.uk already has them (confirmed: it once showed 4 of matchday 1's 10
-    games as still scoreless a full day after they'd finished with recorded results elsewhere).
-    Returns [] on any fetch/parse problem so the caller can fall back to another source - this is
-    a convenience supplement, not something that should ever crash the pipeline."""
+def _fetch_openfootball_matchdays(season_start_year):
+    """Parse openfootball's plain-text season fixture list into an ordered list of matchdays, each
+    a list of (date, HomeTeam, AwayTeam) tuples - position in the list IS the round number
+    (index 0 = Matchday 1, matching the "Matchday N" markers in the source file). Shared by
+    everything below that needs the full season schedule rather than just the next unplayed round.
+    Returns [] on any fetch/parse problem so callers can fall back to another source - this is a
+    convenience supplement, not something that should ever crash the pipeline."""
     season = f"{season_start_year}-{(season_start_year + 1) % 100:02d}"
     url = OPENFOOTBALL_URL.format(season=season)
     try:
@@ -120,12 +117,48 @@ def fetch_openfootball_next_round(season_start_year, played_pairs):
             matchdays.append(cur)
     except Exception:
         return []
+    return matchdays
 
+
+def fetch_openfootball_next_round(season_start_year, played_pairs):
+    """The next round that hasn't been fully played yet, as
+    [{'Date': 'YYYY-MM-DD', 'HomeTeam': ..., 'AwayTeam': ...}, ...]. `played_pairs` is the set of
+    (HomeTeam, AwayTeam) already confirmed played, from football-data.co.uk's own results -
+    openfootball's OWN score column isn't trusted for this, because it can itself lag on filling in
+    final scores for the last few matches of a round even after football-data.co.uk already has
+    them (confirmed: it once showed 4 of matchday 1's 10 games as still scoreless a full day after
+    they'd finished with recorded results elsewhere). Returns [] if openfootball can't be reached."""
+    matchdays = _fetch_openfootball_matchdays(season_start_year)
     for md in matchdays:
         unplayed = [(d, h, a) for (d, h, a) in md if (h, a) not in played_pairs]
         if unplayed:
             return [{'Date': d.isoformat(), 'HomeTeam': h, 'AwayTeam': a} for (d, h, a) in unplayed]
     return []
+
+
+def fetch_openfootball_rounds(season_start_year, played_pairs):
+    """Every fixture of the season mapped to its round number, as {"HomeTeam|AwayTeam": round_num}
+    (1-indexed) - what the tracker uses to group a bet's legs by round. Also returns which round
+    counts as "current": the first round with any fixture not yet in `played_pairs`, the same
+    definition fetch_openfootball_next_round uses for "what's next" - a round that's mid-way
+    through being played (some results in, some not) still counts as current rather than jumping
+    ahead to the following one. Falls back to the last parsed round once the whole season is
+    complete. Returns ({}, None) if openfootball can't be reached."""
+    matchdays = _fetch_openfootball_matchdays(season_start_year)
+    if not matchdays:
+        return {}, None
+    match_rounds = {}
+    for round_num, md in enumerate(matchdays, start=1):
+        for (_, h, a) in md:
+            match_rounds[f"{h}|{a}"] = round_num
+    current_round = None
+    for round_num, md in enumerate(matchdays, start=1):
+        if any((h, a) not in played_pairs for (_, h, a) in md):
+            current_round = round_num
+            break
+    if current_round is None:
+        current_round = len(matchdays)
+    return match_rounds, current_round
 
 
 def _fetch_with_retries(url, retries=2, backoff=1.5):
@@ -449,6 +482,9 @@ if __name__ == '__main__':
     season_start_year = int(f"20{current_season[:2]}")
     played_pairs = played_pairs_for_season(results, current_season)
     of_fixtures = fetch_openfootball_next_round(season_start_year, played_pairs)
+    match_rounds, current_round = fetch_openfootball_rounds(season_start_year, played_pairs)
+    print(f"Round mapping: {len(match_rounds)} fixtures across the season"
+          + (f", current round {current_round}" if current_round else " (openfootball unreachable - tracker round grouping will be unavailable)"))
 
     if of_fixtures:
         # enrich with odds from football-data.co.uk's feed when that same fixture is in it
@@ -481,7 +517,7 @@ if __name__ == '__main__':
 
     out = {'generated_at': datetime.datetime.now().isoformat(), 'league_avgs': league_avgs,
            'trends': trends, 'trends_home': trends_home, 'trends_away': trends_away,
-           'fixtures': fixtures_out}
+           'fixtures': fixtures_out, 'match_rounds': match_rounds, 'current_round': current_round}
     with open(os.path.join(WORKDIR, 'trends_data.json'), 'w') as f:
         json.dump(out, f, indent=2, default=str)
     print("Saved trends_data.json")
