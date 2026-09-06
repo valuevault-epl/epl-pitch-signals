@@ -227,7 +227,8 @@ def fetch_espn_recent_played_pairs(days_back=6):
     date_range = f"{start.strftime('%Y%m%d')}-{today.strftime('%Y%m%d')}"
     try:
         board = _espn_get(f"{ESPN_SCOREBOARD_URL}?dates={date_range}")
-    except Exception:
+    except Exception as e:
+        print(f"    [diag] fetch_espn_recent_played_pairs failed ({type(e).__name__}: {e})")
         return set()
     pairs = set()
     for event in board.get('events', []):
@@ -729,6 +730,13 @@ if __name__ == '__main__':
     fetch_current_data(mode=REFRESH_MODE)
 
     if REFRESH_MODE == 'quick':
+        # TEMPORARY diagnostic: isolate whether ESPN's 403 (confirmed on GitHub's runners) is a
+        # blanket IP-level block, or specific to this call's larger limit=1000/wide-date-range
+        # shape - fetch_espn_recent_played_pairs uses the plain small-range query the pipeline has
+        # already been calling for a few runs now. Remove once this question is answered.
+        _diag_pairs = fetch_espn_recent_played_pairs(days_back=7)
+        print(f"  [diag] fetch_espn_recent_played_pairs (small query, no limit=1000): {len(_diag_pairs)} pairs")
+
         current_season = current_season_code()
         season_start_year = int(f"20{current_season[:2]}")
         current_season_path = os.path.join(WORKDIR, "seasons", f"E0_{current_season}.csv")
