@@ -790,28 +790,17 @@
   .auth-modal-brand { display: flex; align-items: center; gap: 10px; }
   .auth-modal-logo { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; }
 
+  /* Holds a "Last 10" section and (when the fixture has the split available) a "Last 10
+     (Home/Away)" section - each just a title followed by that window's own .signals list, the
+     exact same row markup/styling the fixture card itself uses. */
   .modal-teams {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding-bottom: 20px;
   }
 
-  @media (max-width: 700px) {
-    .modal-teams { grid-template-columns: 1fr; }
-  }
-
-  .modal-team h3 {
-    font-family: "Barlow Condensed", sans-serif;
-    font-weight: 600;
-    font-size: 17px;
-    margin: 0 0 8px;
-  }
-
-  /* Spans both grid columns so it reads as a divider between the two stacked team-pair rows,
-     rather than getting boxed into whichever column it happens to land in. */
   .modal-section-title {
-    grid-column: 1 / -1;
     font-family: "Barlow Condensed", sans-serif;
     font-weight: 600;
     font-size: 13px;
@@ -822,83 +811,9 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .modal-section-title:not(:first-child) { margin-top: 6px; }
+  .modal-section-title:not(:first-child) { margin-top: 10px; }
 
-  .modal-venue-tag {
-    font-family: "Barlow Condensed", sans-serif;
-    font-weight: 600;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ink-faint);
-  }
-
-  table.game-history {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 12px;
-  }
-
-  table.game-history th, table.game-history td {
-    padding: 5px 6px;
-    text-align: right;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-
-  table.game-history th:first-child, table.game-history td:first-child,
-  table.game-history th:nth-child(2), table.game-history td:nth-child(2) { text-align: left; }
-
-  table.game-history thead th {
-    font-family: "Barlow Condensed", sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 10px;
-    color: var(--ink-faint);
-  }
-
-  table.game-history td.mono-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
-  table.game-history tr.champ-game td { color: var(--ink-faint); font-style: italic; }
-
-  .game-record {
-    font-family: "IBM Plex Mono", monospace;
-    font-variant-numeric: tabular-nums;
-    font-size: 12px;
-    color: var(--ink-muted);
-    margin-bottom: 8px;
-  }
-
-  .game-record-n { color: var(--ink-faint); }
-
-  .game-history-scroll {
-    max-height: 380px;
-    overflow-y: auto;
-    border-radius: 8px;
-  }
-
-  table.game-history thead th {
-    position: sticky;
-    top: 0;
-    background: var(--surface);
-    z-index: 1;
-  }
-
-  .result-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 18px;
-    padding: 0 4px;
-    border-radius: 4px;
-    font-family: "Barlow Condensed", sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-  }
-
-  .result-chip.result-w { background: var(--strong-pos-soft); color: var(--strong-pos); }
-  .result-chip.result-l { background: var(--strong-neg-soft); color: var(--strong-neg); }
-  .result-chip.result-d { background: var(--border); color: var(--ink-faint); }
+  .modal-empty { color: var(--ink-faint); font-size: 13px; margin: 4px 0 0; }
 
   /* ---------- Help modal ---------- */
   .help-panel { max-width: 640px; padding-bottom: 20px; }
@@ -2367,6 +2282,23 @@
   // toggling one card doesn't affect any other.
   const venueModeFixtures = new Set();
 
+  // The actual per-market signal rows (Strong/Moderate/Weak tier, edge, hit rates) for one fixture
+  // under one sample window - shared between the fixture card itself and the team-history modal,
+  // which shows this same list twice (Last 10, then Last 10 Home/Away) rather than duplicating the
+  // sort/label/render logic for each.
+  function renderSignalRowsFor(fx, activeSignals) {
+    if (!activeSignals) return '';
+    const sortedKeys = MARKET_ORDER
+      .filter(k => activeSignals[k])
+      .sort((a, b) => Math.abs(activeSignals[b].edge) - Math.abs(activeSignals[a].edge));
+    const sideLabels = sideLabelsFor(fx);
+    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+    return sortedKeys.map(k => {
+      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+      return renderSignalRow(activeSignals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
+    }).join('');
+  }
+
   function renderFixtureCard(fx) {
     const dateObj = new Date(fx.Date + 'T12:00:00');
     const dateStr = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -2384,17 +2316,7 @@
 
     const inVenueMode = !!(fx.signals_venue && venueModeFixtures.has(fx.HomeTeam));
     const activeSignals = inVenueMode ? fx.signals_venue : fx.signals;
-
-    const sortedKeys = MARKET_ORDER
-      .filter(k => activeSignals[k])
-      .sort((a, b) => Math.abs(activeSignals[b].edge) - Math.abs(activeSignals[a].edge));
-
-    const sideLabels = sideLabelsFor(fx);
-    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
-    const rows = sortedKeys.map(k => {
-      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
-      return renderSignalRow(activeSignals[k], k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
-    }).join('');
+    const rows = renderSignalRowsFor(fx, activeSignals);
 
     const notes = [];
     const ht = DATA.trends[fx.HomeTeam], at = DATA.trends[fx.AwayTeam];
@@ -2456,55 +2378,24 @@
     renderFixtures(activeSort ? activeSort.dataset.sort : 'strength');
   });
 
-  // ---------- Game history modal ----------
-  // Raw per-game log lives on each team's trend record (_games) - exactly the games the current
-  // adaptive window is built from (10-game bridge from last season early on, growing uncapped
-  // with current-season games only once that reaches 10 - same window as everywhere else on this
-  // page, just shown match-by-match here instead of as an aggregate).
-  function gameHistoryTable(team, trendsSource) {
-    const games = ((trendsSource || DATA.trends)[team] || {})._games || [];
-    if (!games.length) return '<p style="color:var(--ink-faint);font-size:12px;">No game history available.</p>';
-    let w = 0, d = 0, l = 0;
-    const rows = games.map(g => {
-      const cls = g.division === 'Championship' ? ' class="champ-game"' : '';
-      const oppTag = g.is_home ? 'v' : '@';
-      let resultCls = 'result-d', resultLabel = '—';
-      if (g.goals_for != null && g.goals_against != null) {
-        if (g.goals_for > g.goals_against) { resultCls = 'result-w'; resultLabel = 'W'; w++; }
-        else if (g.goals_for < g.goals_against) { resultCls = 'result-l'; resultLabel = 'L'; l++; }
-        else { resultCls = 'result-d'; resultLabel = 'D'; d++; }
-      }
-      return `<tr${cls}>
-        <td class="mono-cell">${g.date}</td>
-        <td>${oppTag} ${g.opponent}</td>
-        <td><span class="result-chip ${resultCls}">${resultLabel}</span></td>
-        <td class="mono-cell">${g.goals_for ?? '—'}-${g.goals_against ?? '—'}</td>
-        <td class="mono-cell">${g.corners_for ?? '—'}-${g.corners_against ?? '—'}</td>
-        <td class="mono-cell">${g.shots_on_target_for ?? '—'}-${g.shots_on_target_against ?? '—'}</td>
-        <td class="mono-cell">${g.cards_for ?? '—'}</td>
-      </tr>`;
-    }).join('');
-    return `<div class="game-record">${w}W &middot; ${d}D &middot; ${l}L <span class="game-record-n">(last ${games.length})</span></div>
-    <div class="game-history-scroll"><table class="game-history">
-      <thead><tr><th>Date</th><th>Opponent</th><th>Res</th><th>Goals</th><th>Corners</th><th>SoT</th><th>Cards</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
-  }
-
-  // Both sample windows the fixture card's own toggle switches between (see venue-toggle /
-  // renderFixtureCard), shown together here instead of picking one - "Last 10" is each team's
-  // blended recent form regardless of venue; "Last 10 (Home/Away)" is the split the toggle's
-  // venue mode uses (home team's last 10 AT HOME, away team's last 10 AWAY), which is why it pulls
-  // from trends_home/trends_away rather than trends_home for both sides.
+  // ---------- Game modal ----------
+  // The exact same signal rows the fixture card itself shows (Strong/Moderate/Weak tier, edge, hit
+  // rates) - both sample windows the card's own toggle switches between, shown together here
+  // instead of picking just one: "Last 10" (fx.signals, each team's blended recent form) and "Last
+  // 10 (Home/Away)" (fx.signals_venue, home team's last 10 AT HOME vs away team's last 10 AWAY).
+  // Skips the Home/Away section entirely for a fixture that never had that split available, same
+  // as the card's own toggle only appearing when fx.signals_venue exists.
   function openGameModal(home, away) {
+    const fx = DATA.fixtures.find(f => f.HomeTeam === home && f.AwayTeam === away);
     document.getElementById('modal-title').textContent = `${home} v ${away}`;
-    document.getElementById('modal-teams').innerHTML = `
-      <div class="modal-section-title">Last 10</div>
-      <div class="modal-team"><h3>${home}</h3>${gameHistoryTable(home, DATA.trends)}</div>
-      <div class="modal-team"><h3>${away}</h3>${gameHistoryTable(away, DATA.trends)}</div>
-      <div class="modal-section-title">Last 10 (Home/Away)</div>
-      <div class="modal-team"><h3>${home} <span class="modal-venue-tag">home</span></h3>${gameHistoryTable(home, DATA.trends_home)}</div>
-      <div class="modal-team"><h3>${away} <span class="modal-venue-tag">away</span></h3>${gameHistoryTable(away, DATA.trends_away)}</div>`;
+    const overallRows = fx ? renderSignalRowsFor(fx, fx.signals) : '';
+    let html = `<div class="modal-section-title">Last 10</div>
+      <div class="signals">${overallRows || '<p class="modal-empty">Not enough recent data for one or both teams yet.</p>'}</div>`;
+    if (fx && fx.signals_venue) {
+      html += `<div class="modal-section-title">Last 10 (Home/Away)</div>
+      <div class="signals">${renderSignalRowsFor(fx, fx.signals_venue)}</div>`;
+    }
+    document.getElementById('modal-teams').innerHTML = html;
     document.getElementById('game-modal').hidden = false;
   }
 
