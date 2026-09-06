@@ -808,6 +808,31 @@
     margin: 0 0 8px;
   }
 
+  /* Spans both grid columns so it reads as a divider between the two stacked team-pair rows,
+     rather than getting boxed into whichever column it happens to land in. */
+  .modal-section-title {
+    grid-column: 1 / -1;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-section-title:not(:first-child) { margin-top: 6px; }
+
+  .modal-venue-tag {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+  }
+
   table.game-history {
     border-collapse: collapse;
     width: 100%;
@@ -1832,7 +1857,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Monday 07 September 2026, 00:06</div>
+      <div class="updated">Updated Monday 07 September 2026, 00:10</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -2436,8 +2461,8 @@
   // adaptive window is built from (10-game bridge from last season early on, growing uncapped
   // with current-season games only once that reaches 10 - same window as everywhere else on this
   // page, just shown match-by-match here instead of as an aggregate).
-  function gameHistoryTable(team) {
-    const games = (DATA.trends[team] || {})._games || [];
+  function gameHistoryTable(team, trendsSource) {
+    const games = ((trendsSource || DATA.trends)[team] || {})._games || [];
     if (!games.length) return '<p style="color:var(--ink-faint);font-size:12px;">No game history available.</p>';
     let w = 0, d = 0, l = 0;
     const rows = games.map(g => {
@@ -2466,11 +2491,20 @@
     </table></div>`;
   }
 
+  // Both sample windows the fixture card's own toggle switches between (see venue-toggle /
+  // renderFixtureCard), shown together here instead of picking one - "Last 10" is each team's
+  // blended recent form regardless of venue; "Last 10 (Home/Away)" is the split the toggle's
+  // venue mode uses (home team's last 10 AT HOME, away team's last 10 AWAY), which is why it pulls
+  // from trends_home/trends_away rather than trends_home for both sides.
   function openGameModal(home, away) {
     document.getElementById('modal-title').textContent = `${home} v ${away}`;
     document.getElementById('modal-teams').innerHTML = `
-      <div class="modal-team"><h3>${home}</h3>${gameHistoryTable(home)}</div>
-      <div class="modal-team"><h3>${away}</h3>${gameHistoryTable(away)}</div>`;
+      <div class="modal-section-title">Last 10</div>
+      <div class="modal-team"><h3>${home}</h3>${gameHistoryTable(home, DATA.trends)}</div>
+      <div class="modal-team"><h3>${away}</h3>${gameHistoryTable(away, DATA.trends)}</div>
+      <div class="modal-section-title">Last 10 (Home/Away)</div>
+      <div class="modal-team"><h3>${home} <span class="modal-venue-tag">home</span></h3>${gameHistoryTable(home, DATA.trends_home)}</div>
+      <div class="modal-team"><h3>${away} <span class="modal-venue-tag">away</span></h3>${gameHistoryTable(away, DATA.trends_away)}</div>`;
     document.getElementById('game-modal').hidden = false;
   }
 
