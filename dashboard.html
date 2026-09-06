@@ -1417,7 +1417,7 @@
       <button class="help-btn" id="help-btn" type="button" aria-haspopup="dialog" aria-label="How this dashboard works">?</button>
     </div>
     <div class="masthead-meta">
-      <div class="updated">Updated Monday 07 September 2026, 00:52</div>
+      <div class="updated">Updated Monday 07 September 2026, 01:03</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1966,13 +1966,13 @@
     const orderedKeys = MARKET_ORDER.filter(k => fx.signals[k] || (fx.signals_venue && fx.signals_venue[k]));
     const soloClass = fx.signals_venue ? '' : ' modal-column-solo';
     let html = `
-      <div class="modal-column${soloClass}">
+      <div class="modal-column${soloClass}" data-window="overall">
         <div class="modal-section-title">Last 10</div>
         <div class="signals">${renderAlignedSignalColumn(fx, fx.signals, orderedKeys)}</div>
       </div>`;
     if (fx.signals_venue) {
       html += `
-      <div class="modal-column">
+      <div class="modal-column" data-window="venue">
         <div class="modal-section-title">Last 10 (Home/Away)</div>
         <div class="signals">${renderAlignedSignalColumn(fx, fx.signals_venue, orderedKeys)}</div>
       </div>`;
@@ -2023,6 +2023,31 @@
   document.getElementById('modal-close').addEventListener('click', closeGameModal);
   document.getElementById('game-modal').addEventListener('click', (e) => {
     if (e.target.id === 'game-modal') closeGameModal();
+  });
+
+  // Same live line-swap the fixture card's own listener does, adapted for the modal: instead of
+  // venueModeFixtures (one active window per fixture card) picking which signal set is "active",
+  // each of the modal's two columns carries its own fixed data-window ('overall' or 'venue') on
+  // the .modal-column that a changed select lives inside, since both windows are visible here at
+  // once rather than one at a time.
+  document.getElementById('modal-teams').addEventListener('change', (e) => {
+    const sel = e.target.closest('select.line-select');
+    if (!sel) return;
+    const fx = DATA.fixtures.find(f => f.HomeTeam === sel.dataset.team || f.AwayTeam === sel.dataset.team);
+    if (!fx) return;
+    const column = sel.closest('.modal-column');
+    const activeSignals = (column && column.dataset.window === 'venue') ? fx.signals_venue : fx.signals;
+    if (!activeSignals) return;
+    const key = sel.dataset.key;
+    const sig = activeSignals[key];
+    if (!sig) return;
+    const [newDirection, newLineStr] = sel.value.split('|');
+    const updatedSig = withNewLine(sig, newDirection, parseFloat(newLineStr));
+    const sideLabels = sideLabelsFor(fx);
+    const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[key] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+    const row = sel.closest('.signal-row');
+    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+    if (row) row.outerHTML = renderSignalRow(updatedSig, key, scaleFor(key), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
   });
 
   function openHelp() { document.getElementById('help-modal').hidden = false; }
