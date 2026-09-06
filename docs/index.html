@@ -1503,31 +1503,13 @@
     margin-bottom: 18px;
   }
 
-  .tracker-pl-hide-btn {
-    font-family: "Barlow Condensed", sans-serif;
-    font-weight: 600;
-    font-size: 11.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--ink-muted);
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 6px 14px;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .tracker-pl-hide-btn:hover { color: var(--ink); border-color: var(--border-strong); }
-  .tracker-pl-hide-btn.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
-
   /* .venue-toggle's own margin is tuned for its original spot (stacked above other controls in
      .tracker-analytics-controls) - reset it here so it sits centered in this horizontal bar
      instead of pushed down from a top margin meant for a different layout. */
   .tracker-pl-bar .venue-toggle { margin: 0; flex-shrink: 0; }
 
   .tracker-pl-box {
+    position: relative;
     flex: 1;
     padding: 14px 16px;
     background: var(--surface);
@@ -1555,6 +1537,28 @@
     font-weight: 600;
     color: var(--ink);
   }
+
+  /* One per box rather than one shared toggle - each amount hides independently, e.g. keeping
+     "This round" visible while masking "All-time" (or the other way around). */
+  .tracker-pl-box-hide-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 9px;
+    cursor: pointer;
+  }
+
+  .tracker-pl-box-hide-btn:hover { color: var(--ink); border-color: var(--border-strong); }
+  .tracker-pl-box-hide-btn.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 
   .tracker-leg-group + .tracker-leg-group { margin-top: 6px; }
 
@@ -1775,7 +1779,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 20:01</div>
+      <div class="updated">Updated Sunday 06 September 2026, 20:15</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1855,13 +1859,18 @@
 
     <div id="tracker-bets-panel">
       <div class="tracker-pl-bar">
-        <div class="tracker-pl-box"><span id="tracker-round-pl-label">This round</span><b class="tracker-pl-value" id="tracker-round-pl">$0.00</b></div>
-        <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
+        <div class="tracker-pl-box">
+          <button class="tracker-pl-box-hide-btn" data-pl-key="round" type="button" title="Hide this amount">Hide</button>
+          <span id="tracker-round-pl-label">This round</span><b class="tracker-pl-value" id="tracker-round-pl">$0.00</b>
+        </div>
+        <div class="tracker-pl-box">
+          <button class="tracker-pl-box-hide-btn" data-pl-key="overall" type="button" title="Hide this amount">Hide</button>
+          <span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b>
+        </div>
         <div class="venue-toggle" id="tracker-pl-unit-toggle" role="group" aria-label="Display as">
           <button type="button" class="venue-btn active" data-unitmode="money">Money</button>
           <button type="button" class="venue-btn" data-unitmode="units">Units</button>
         </div>
-        <button class="tracker-pl-hide-btn" id="tracker-pl-hide-btn" type="button" title="Hide these amounts">Hide</button>
       </div>
       <div class="filter-row" role="group" aria-label="Filter by round and status">
         <span class="controls-label">Round</span>
@@ -1996,7 +2005,7 @@
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
           <li>The Round dropdown groups bets by which Premier League round their fixture belongs to, defaulting to the current round so the list doesn't fill up with old bets - pick any earlier round, or "All rounds" to see everything at once. A bet takes its round from its first leg's fixture. The Status dropdown next to it narrows further to just Won, Lost, or Pending bets within whichever round is selected - the two combine, so "Lost" + "Round 2" shows only Round 2's losses.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
-          <li>The P/L bar at the top shows running profit/loss for all-time, plus whichever round the Round dropdown is set to right now (its label switches with the dropdown - "This round", "Round 2", "All rounds"...), from settled bets only (pending bets don't count yet) - unaffected by the Status filter, since a true P/L needs both wins and losses counted. Toggle Money/Units for these two boxes specifically (separate from the same toggle in Analytics below). "Hide" masks both amounts (handy before sharing a screen) and stays hidden next time you load the page until you toggle it back.</li>
+          <li>The P/L bar at the top shows running profit/loss for all-time, plus whichever round the Round dropdown is set to right now (its label switches with the dropdown - "This round", "Round 2", "All rounds"...), from settled bets only (pending bets don't count yet) - unaffected by the Status filter, since a true P/L needs both wins and losses counted. Toggle Money/Units for these two boxes specifically (separate from the same toggle in Analytics below). Each box has its own "Hide" in the corner - mask just one (say, All-time) while leaving the other visible, or both. Stays hidden next time you load the page until you toggle it back.</li>
           <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, or any leg's line/direction/result. Each leg has its own Won/Lost/Pending control - set it directly rather than relying on auto-grading, which is what lets you correct a leg that graded itself wrong, or one from before this page could grade legs individually at all. The bet's own status isn't edited separately - it's always whatever its legs say: Lost the moment any leg is, Won only once every leg is.</li>
           <li>Removing a bet or saving an edit shows an "Undo" button for a few seconds - one level (your last action), not a full history.</li>
           <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. This only affects the suggestion for new bets.</li>
@@ -3593,20 +3602,22 @@
     return { roundPL: round2(roundPL), overallPL: round2(overallPL), roundLabel: label };
   }
 
-  // Persisted (not just per-session) since the whole point is not having to re-hide it every time
+  // Each box hides independently (round vs overall) rather than one shared toggle for both -
+  // persisted (not just per-session) since the whole point is not having to re-hide it every time
   // the page loads before, say, sharing a screen. Never touches the underlying numbers - purely
-  // what gets rendered into the two boxes.
-  let plHidden = localStorage.getItem('tracker_pl_hidden') === 'true';
-  function setPLBox(el, value) {
-    if (plHidden) { el.textContent = '••••'; el.className = 'tracker-pl-value'; return; }
+  // what gets rendered into each box.
+  let plHidden = { round: false, overall: false };
+  try { plHidden = { ...plHidden, ...JSON.parse(localStorage.getItem('tracker_pl_hidden_by_box') || '{}') }; } catch (e) {}
+  function setPLBox(el, value, key) {
+    if (plHidden[key]) { el.textContent = '••••'; el.className = 'tracker-pl-value'; return; }
     el.textContent = fmtPLFor(value, betsUnitMode);
     el.className = 'tracker-pl-value' + (value > 0 ? ' pos' : value < 0 ? ' neg' : '');
   }
 
   async function renderTrackerBets() {
     if (!currentUser) {
-      setPLBox(document.getElementById('tracker-round-pl'), 0);
-      setPLBox(document.getElementById('tracker-overall-pl'), 0);
+      setPLBox(document.getElementById('tracker-round-pl'), 0, 'round');
+      setPLBox(document.getElementById('tracker-overall-pl'), 0, 'overall');
       document.querySelector('#tracker-table tbody').innerHTML =
         '<tr><td colspan="8"><div class="auth-gate">Sign in to track your bets across devices.<br><button class="auth-link-btn" id="tracker-auth-btn" type="button">Sign in</button></div></td></tr>';
       return;
@@ -3615,8 +3626,8 @@
     await repairLegacyLegs();
     const { roundPL, overallPL, roundLabel } = computePL();
     document.getElementById('tracker-round-pl-label').textContent = roundLabel;
-    setPLBox(document.getElementById('tracker-round-pl'), roundPL);
-    setPLBox(document.getElementById('tracker-overall-pl'), overallPL);
+    setPLBox(document.getElementById('tracker-round-pl'), roundPL, 'round');
+    setPLBox(document.getElementById('tracker-overall-pl'), overallPL, 'overall');
     renderRoundSelector();
 
     const tbody = document.querySelector('#tracker-table tbody');
@@ -3952,17 +3963,22 @@
     document.querySelectorAll('#tracker-pl-unit-toggle .venue-btn').forEach(b => b.classList.toggle('active', b === btn));
     await renderTrackerBets();
   });
-  function syncPLHideButton() {
-    const btn = document.getElementById('tracker-pl-hide-btn');
-    btn.textContent = plHidden ? 'Show' : 'Hide';
-    btn.classList.toggle('active', plHidden);
-    btn.title = plHidden ? 'Show these amounts' : 'Hide these amounts';
+  function syncPLHideButtons() {
+    document.querySelectorAll('.tracker-pl-box-hide-btn').forEach(btn => {
+      const hidden = plHidden[btn.dataset.plKey];
+      btn.textContent = hidden ? 'Show' : 'Hide';
+      btn.classList.toggle('active', hidden);
+      btn.title = hidden ? 'Show this amount' : 'Hide this amount';
+    });
   }
-  syncPLHideButton();
-  document.getElementById('tracker-pl-hide-btn').addEventListener('click', async () => {
-    plHidden = !plHidden;
-    localStorage.setItem('tracker_pl_hidden', plHidden);
-    syncPLHideButton();
+  syncPLHideButtons();
+  document.querySelector('.tracker-pl-bar').addEventListener('click', async (e) => {
+    const btn = e.target.closest('.tracker-pl-box-hide-btn');
+    if (!btn) return;
+    const key = btn.dataset.plKey;
+    plHidden[key] = !plHidden[key];
+    localStorage.setItem('tracker_pl_hidden_by_box', JSON.stringify(plHidden));
+    syncPLHideButtons();
     await renderTrackerBets();
   });
   document.getElementById('analytics-unit-toggle').addEventListener('click', (e) => {
