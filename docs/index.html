@@ -938,6 +938,19 @@
      vs middle align look identical anyway. */
   #tracker-table td { vertical-align: top; }
 
+  /* The real cause of the row separators looking crooked around an edit row: .signal-list's
+     shared auto-layout recomputes EVERY row's column widths together from whichever cell content
+     is currently widest in each column, table-wide. An edit row's inputs/selects briefly change
+     what's widest, so the whole table's column boundaries (and the horizontal border lines that
+     sit at each row's edges) shift while that one row is being edited, even for rows nowhere near
+     it - not a per-row layout bug, a table-wide one. table-layout:fixed with an explicit colgroup
+     removes the recomputation entirely: column widths come only from these declared percentages,
+     never from content, so nothing about entering or leaving edit mode can move anything. Cells
+     go back to wrapping (not the shared nowrap) since fixed columns can't grow for long content
+     the way auto-layout ones do. */
+  #tracker-table { table-layout: fixed; }
+  #tracker-table td { white-space: normal; overflow-wrap: break-word; }
+
   table.signal-list thead th {
     font-family: "Barlow Condensed", sans-serif;
     text-transform: uppercase;
@@ -1669,7 +1682,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 13:33</div>
+      <div class="updated">Updated Sunday 06 September 2026, 13:52</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1754,6 +1767,11 @@
       </div>
       <div class="signal-list-wrap">
         <table class="signal-list" id="tracker-table">
+          <colgroup>
+            <col style="width:8%"><col style="width:26%"><col style="width:12%">
+            <col style="width:9%"><col style="width:9%"><col style="width:9%">
+            <col style="width:9%"><col style="width:9%"><col style="width:9%">
+          </colgroup>
           <thead><tr><th>Date</th><th>Legs</th><th>Platform</th><th>Odds</th><th>Stake</th><th>Return</th><th>Status</th><th>P/L</th><th></th></tr></thead>
           <tbody></tbody>
         </table>
@@ -3470,7 +3488,8 @@
     if (analyticsShowAdvanced) {
       const avgOdds = settled.reduce((s, b) => s + b.oddsTaken, 0) / settled.length;
       const avgStakeDisplay = totalStakedDisplay / settled.length;
-      const avgUnits = settled.reduce((s, b) => s + b.stake / betUnitSize(b), 0) / settled.length;
+      const avgStakeUnits = settled.reduce((s, b) => s + b.stake / betUnitSize(b), 0) / settled.length;
+      const avgStakeDollars = totalStakedDollars / settled.length;
       const avgLegs = settled.reduce((s, b) => s + b.legs.length, 0) / settled.length;
       const winAmounts = settled.filter(b => b.status === 'Won').map(b => toDisplayAmount(b, b.profit));
       const lossAmounts = settled.filter(b => b.status === 'Lost').map(b => toDisplayAmount(b, b.profit));
@@ -3483,10 +3502,17 @@
         else if (settled[i].status === streakType) streak++;
         else break;
       }
+      // "Avg stake" above already IS the units figure once the Units toggle is on - repeating it
+      // as its own "Avg units/bet" stat just showed the identical number under a second label.
+      // Show whichever OTHER denomination "Avg stake" isn't currently using instead, so this is
+      // always a genuinely different, complementary number rather than a duplicate.
+      const complementaryLabel = analyticsUnitMode === 'units' ? 'Avg stake ($)' : 'Avg units/bet';
+      const complementaryValue = analyticsUnitMode === 'units'
+        ? `$${avgStakeDollars.toFixed(2)}` : `${avgStakeUnits.toFixed(1)}u`;
       html += `
       <div class="tracker-stat"><span>Avg odds taken</span><b>${avgOdds.toFixed(2)}</b></div>
       <div class="tracker-stat"><span>Avg stake</span><b>${fmtAmt(avgStakeDisplay)}</b></div>
-      <div class="tracker-stat"><span>Avg units/bet</span><b>${avgUnits.toFixed(1)}u</b></div>
+      <div class="tracker-stat"><span>${complementaryLabel}</span><b>${complementaryValue}</b></div>
       <div class="tracker-stat"><span>Avg legs/bet</span><b>${avgLegs.toFixed(1)}</b></div>
       <div class="tracker-stat"><span>Biggest win</span><b class="pos">${winAmounts.length ? fmtAmtSigned(biggestWin) : '—'}</b></div>
       <div class="tracker-stat"><span>Biggest loss</span><b class="neg">${lossAmounts.length ? fmtAmtSigned(biggestLoss) : '—'}</b></div>
