@@ -951,15 +951,6 @@
   #tracker-table { table-layout: fixed; }
   #tracker-table td { white-space: normal; overflow-wrap: break-word; }
 
-  /* What was actually being reported as "the edit button is offset" on a multi-leg row: top-align
-     (above) is right for the Legs cell itself, but it also pins the Actions cell's Edit/Remove pair
-     to the very top of a row that's much taller than that pair is, leaving it visibly stranded with
-     a gap of empty space below before the row's real bottom border - looking like it belongs to the
-     wrong row rather than the one it's actually in. Centering just this cell against the row's full
-     (tallest-cell-driven) height anchors it to the row as a whole regardless of how many legs that
-     row has, instead of to whichever cell happens to be shortest. */
-  #tracker-table td.tracker-actions, #tracker-table td.tracker-edit-actions { vertical-align: middle; }
-
   table.signal-list thead th {
     font-family: "Barlow Condensed", sans-serif;
     text-transform: uppercase;
@@ -1511,20 +1502,19 @@
     gap: 6px;
   }
 
-  /* Both the normal row's Edit/Remove pair and the edit row's Save/Cancel pair share this one
-     class - same box model (vertical stack, same gap, same alignment) so the Actions column's
-     computed width doesn't jump around between a bet's normal and editing states, which is what
-     was producing the "column offset" look: an auto-layout table sizes each column once from the
-     widest content across EVERY row, so two visually different box shapes sharing one column
-     fought each other on width. Fixed pixel widths on the inputs/selects below, instead of the
-     percentage widths they had before, for the same reason - percentages have no well-defined
-     size inside a nowrap auto-layout cell, and that ambiguity is exactly the kind of thing
-     browsers resolve inconsistently. */
-  .tracker-actions, .tracker-edit-actions {
+  /* Edit/Remove (or Save/Cancel while editing) used to live in their own dedicated column, which
+     meant aligning them against a row whose height is set by something else entirely (however many
+     legs that bet has) - every version of the "edit button looks offset" complaint traced back to
+     that mismatch in one form or another. Attaching them to the end of the Legs cell's own content
+     instead means there's nothing separate to misalign with: they sit wherever that bet's content
+     actually ends, for every bet, regardless of leg count. */
+  .tracker-row-actions {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    align-items: center;
+    gap: 14px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
     white-space: nowrap;
   }
 
@@ -1786,11 +1776,11 @@
       <div class="signal-list-wrap">
         <table class="signal-list" id="tracker-table">
           <colgroup>
-            <col style="width:8%"><col style="width:26%"><col style="width:12%">
+            <col style="width:8%"><col style="width:35%"><col style="width:12%">
             <col style="width:9%"><col style="width:9%"><col style="width:9%">
-            <col style="width:9%"><col style="width:9%"><col style="width:9%">
+            <col style="width:9%"><col style="width:9%">
           </colgroup>
-          <thead><tr><th>Date</th><th>Legs</th><th>Platform</th><th>Odds</th><th>Stake</th><th>Return</th><th>Status</th><th>P/L</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th>Legs</th><th>Platform</th><th>Odds</th><th>Stake</th><th>Return</th><th>Status</th><th>P/L</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -3225,6 +3215,17 @@
       const leg = bet.legs[idx];
       if (leg.direction !== dir || leg.line !== newLine) { leg.direction = dir; leg.line = newLine; }
     });
+    // The manual Over/Under + free-typed line pair, for a leg whose alt-line ladder isn't
+    // trustworthy enough to build a snap-to-a-known-line dropdown from (see the render above).
+    row.querySelectorAll('.tracker-leg-manual-dir').forEach(sel => {
+      const idx = parseInt(sel.dataset.legIndex, 10);
+      const dir = sel.value;
+      const lineEl = row.querySelector(`.tracker-leg-manual-line[data-leg-index="${idx}"]`);
+      const newLine = lineEl ? parseFloat(lineEl.value) : NaN;
+      if (!isRealDirection(dir) || !Number.isFinite(newLine)) return;
+      const leg = bet.legs[idx];
+      if (leg.direction !== dir || leg.line !== newLine) { leg.direction = dir; leg.line = newLine; }
+    });
     // Every leg's Won/Lost/Pending is now a direct, independent choice (see the per-leg status
     // select in the render above) rather than something inferred from whether its line moved -
     // that inference is what caused every version of this bug, since it couldn't tell "the user
@@ -3403,7 +3404,7 @@
       weekEl.textContent = '$0.00'; weekEl.className = 'tracker-pl-value';
       overallEl.textContent = '$0.00'; overallEl.className = 'tracker-pl-value';
       document.querySelector('#tracker-table tbody').innerHTML =
-        '<tr><td colspan="9"><div class="auth-gate">Sign in to track your bets across devices.<br><button class="auth-link-btn" id="tracker-auth-btn" type="button">Sign in</button></div></td></tr>';
+        '<tr><td colspan="8"><div class="auth-gate">Sign in to track your bets across devices.<br><button class="auth-link-btn" id="tracker-auth-btn" type="button">Sign in</button></div></td></tr>';
       return;
     }
     await gradeAllTrackedBets();
@@ -3418,7 +3419,7 @@
 
     const tbody = document.querySelector('#tracker-table tbody');
     if (!trackedBets.length) {
-      tbody.innerHTML = '<tr><td colspan="9" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
       return;
     }
     tbody.innerHTML = trackedBets.map(bet => {
@@ -3443,7 +3444,6 @@
         // even possible, so this is the only way to correct a leg like that. The bet's overall
         // status (shown read-only below) is always computed from these, not edited separately.
         const legsHtml = bet.legs.map((l, i) => {
-          const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
           const altLinesUsable = (l.altLines || []).length > 0 && isRealDirection(l.direction)
             && l.altLines.every(al => isRealDirection(al.direction));
           let lineHtml;
@@ -3452,7 +3452,15 @@
               `<option value="${al.direction}|${al.line}"${al.direction === l.direction && al.line === l.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
             lineHtml = `<select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select>`;
           } else {
-            lineHtml = `<span class="mono">${dirText}</span>`;
+            // No trustworthy alt-line ladder to build a dropdown from (see above) - that doesn't
+            // mean this leg has to stay stuck read-only forever, just that its editor can't be a
+            // snap-to-a-known-line dropdown. A plain manual Over/Under choice plus a free-typed
+            // line number needs nothing from the ladder at all, so it works regardless of how
+            // broken or missing that historical data is.
+            const dirOptions = ['OVER', 'UNDER'].map(d =>
+              `<option value="${d}"${l.direction === d ? ' selected' : ''}>${d}</option>`).join('');
+            lineHtml = `<select class="tracker-edit-select tracker-leg-manual-dir" data-leg-index="${i}">${dirOptions}</select>` +
+              `<input type="number" step="0.5" class="tracker-edit-input tracker-leg-manual-line" data-leg-index="${i}" value="${Number.isFinite(l.line) ? l.line : ''}">`;
           }
           const legStatus = l.status || 'Pending';
           const statusOptions = ['Pending', 'Won', 'Lost'].map(s =>
@@ -3466,7 +3474,12 @@
         return `
         <tr data-editing-bet="${encodeURIComponent(bet.id)}">
           <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
-          <td>${legsHtml}</td>
+          <td>${legsHtml}
+            <div class="tracker-row-actions">
+              <button class="tracker-edit-save" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Save</button>
+              <button class="tracker-edit-cancel" type="button">Cancel</button>
+            </div>
+          </td>
           <td>
             <select class="tracker-edit-select tracker-edit-platform">${platformOptions}</select>
             <input type="text" class="tracker-edit-input tracker-edit-platform-other" placeholder="Platform name" value="${isCustomPlatform ? bet.platform : ''}"${isCustomPlatform ? '' : ' hidden'}>
@@ -3476,10 +3489,6 @@
           <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
           <td class="tracker-status-cell"><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span><br><span class="tracker-status-derived">from legs</span></td>
           <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
-          <td class="tracker-edit-actions">
-            <button class="tracker-edit-save" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Save</button>
-            <button class="tracker-edit-cancel" type="button">Cancel</button>
-          </td>
         </tr>`;
       }
 
@@ -3492,17 +3501,18 @@
       return `
       <tr>
         <td class="mono-cell">${(bet.placedAt || '').slice(0, 10)}</td>
-        <td>${legsHtml}</td>
+        <td>${legsHtml}
+          <div class="tracker-row-actions">
+            <button class="tracker-edit-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Edit</button>
+            <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
+          </div>
+        </td>
         <td>${bet.platform}</td>
         <td class="mono-cell">${bet.oddsTaken.toFixed(2)}</td>
         <td class="mono-cell">$${bet.stake.toFixed(2)}</td>
         <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
         <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
         <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
-        <td class="tracker-actions">
-          <button class="tracker-edit-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Edit</button>
-          <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
-        </td>
       </tr>`;
     }).join('');
   }
