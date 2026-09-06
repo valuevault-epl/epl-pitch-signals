@@ -1691,7 +1691,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 17:12</div>
+      <div class="updated">Updated Sunday 06 September 2026, 17:38</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -3212,6 +3212,7 @@
     row.querySelectorAll('.tracker-leg-edit-select').forEach(sel => {
       const idx = parseInt(sel.dataset.legIndex, 10);
       const [dir, lineStr] = sel.value.split('|');
+      if (!isRealDirection(dir)) return; // never apply a corrupted or placeholder option value
       const newLine = parseFloat(lineStr);
       const leg = bet.legs[idx];
       if (leg.direction !== dir || leg.line !== newLine) {
@@ -3279,6 +3280,12 @@
     return match ? match[leg.market] : undefined;
   }
 
+  // A leg's direction should only ever be exactly 'OVER' or 'UNDER'. Treating anything else (most
+  // notably the literal string "undefined", which is truthy and used to slip past a plain !leg.direction
+  // check) as good enough to grade with is what let a corrupted leg produce a confident-looking
+  // but meaningless Won/Lost - checked everywhere a direction gets trusted, not just here.
+  function isRealDirection(d) { return d === 'OVER' || d === 'UNDER'; }
+
   function gradeLeg(leg) {
     const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
     if (actual === undefined || actual === null) return 'Pending';
@@ -3309,41 +3316,42 @@
     return false;
   }
 
-  // Two distinct, permanent gaps in already-settled legacy bets, each recoverable from facts we
-  // already trust rather than guessed: (1) a leg's own .status can get stuck wrong - wiped to
-  // Pending, or left at whatever it was before an edit that touched the bet without touching that
-  // leg (the old pre-fix edit bug did this unconditionally) - and once the bet itself is settled,
-  // gradeTrackedBet never revisits that leg to correct it, so a wrong value sticks forever. (2) a
-  // leg's own .direction can be missing entirely on bets placed before Over/Under became a per-leg
-  // choice - unrecoverable from the leg alone, but NOT unrecoverable in general: a Won multi means
-  // every leg in it won, and a single-leg bet's own status always equals that one leg's status, so
-  // either one pins down the leg's true outcome, and the archived actual result then tells us which
-  // direction must have produced it. Both repairs are pure display-truth recovery, never a guess -
-  // and once found, worth persisting so the gap doesn't have to be recomputed every render.
+  // A settled bet's own status is a stronger fact than any fresh per-leg recompute: a single-leg
+  // bet's status IS that one leg's status, by definition, and a Won multi only ever settles once
+  // EVERY leg individually graded Won (see gradeTrackedBet) - both are hard equivalences, not
+  // estimates. A leg's own .direction/.status, on the other hand, can end up wrong in ways the bet
+  // status can't: wiped or left stale by an edit that touched the bet without meaning to touch
+  // that leg (the old pre-fix edit bug did this unconditionally, and a corrupted alt-line dropdown
+  // - see the tracker-leg-edit-select rendering above - could still do it before that was closed
+  // off), or never recorded at all on bets placed before Over/Under became a per-leg choice. So
+  // wherever the bet's own status pins a leg's outcome down for certain, that's what the leg is
+  // set to - never the other way around, and never a fresh gradeLeg call second-guessing it. Only
+  // where the bet's status genuinely doesn't determine the leg (a Lost multi can have Won legs
+  // alongside the one that actually lost) does this fall back to grading that one leg directly,
+  // and only when its own direction is a real, trustworthy value.
   function repairLeg(bet, leg) {
-    // Case 1: direction is already known - grade straight from the archive, the same comparison
-    // normal settling uses, regardless of leg count. This is authoritative, so any existing
-    // leg.status - blank, stale, or flat-out wrong - gets overwritten with it unconditionally
-    // rather than only when it looked empty (which is what let a Won leg keep showing Lost).
-    if (leg.direction) {
-      const graded = gradeLeg(leg);
-      if (graded !== 'Pending' && leg.status !== graded) { leg.status = graded; return true; }
+    if (bet.legs.length === 1 && (bet.status === 'Won' || bet.status === 'Lost')) {
+      let changed = false;
+      if (leg.status !== bet.status) { leg.status = bet.status; changed = true; }
+      if (!isRealDirection(leg.direction)) {
+        const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+        if (actual !== undefined && actual !== null && actual !== leg.line) {
+          const wentOver = actual > leg.line;
+          leg.direction = (bet.status === 'Won') === wentOver ? 'OVER' : 'UNDER';
+          changed = true;
+        }
+      }
+      return changed;
+    }
+    if (bet.status === 'Won') {
+      if (leg.status !== 'Won') { leg.status = 'Won'; return true; }
       return false;
     }
-    // Case 2: direction was never recorded. Only recoverable when this leg's own true outcome is
-    // pinned down some other way: a Won multi (every leg won) or a single-leg bet (its status IS
-    // that leg's status). A Lost multi doesn't qualify - which leg(s) actually lost isn't knowable
-    // from the bet's overall status alone, so it's left alone rather than guessed.
-    let knownStatus = null;
-    if (bet.status === 'Won') knownStatus = 'Won';
-    else if (bet.status === 'Lost' && bet.legs.length === 1) knownStatus = 'Lost';
-    if (!knownStatus) return false;
-    const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
-    if (actual === undefined || actual === null || actual === leg.line) return false;
-    const wentOver = actual > leg.line;
-    leg.direction = (knownStatus === 'Won') === wentOver ? 'OVER' : 'UNDER';
-    leg.status = knownStatus;
-    return true;
+    if (isRealDirection(leg.direction)) {
+      const graded = gradeLeg(leg);
+      if (graded !== 'Pending' && leg.status !== graded) { leg.status = graded; return true; }
+    }
+    return false;
   }
 
   async function repairLegacyLegs() {
@@ -3425,8 +3433,19 @@
         const legsHtml = bet.legs.map((l, i) => {
           const legTag = l.status && l.status !== 'Pending'
             ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
-          const dirText = l.direction ? `${l.direction} ${l.line}` : `${l.line}`;
-          if (!(l.altLines || []).length) {
+          const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
+          // altLines captured before Over/Under became a per-leg choice never got a real direction
+          // on their entries - every option's value would read "undefined|X", none would ever
+          // match this leg's own direction for the `selected` check below, so the browser would
+          // silently default to whichever option happens to sit first. Saving from that state
+          // then looks exactly like the user picked a different (garbage) line/direction, even
+          // though they never touched this dropdown - corrupting the leg on a save that was only
+          // ever meant to change stake or odds. Falling back to plain text (nothing to select,
+          // nothing to corrupt) whenever any option in the ladder can't be trusted closes that off
+          // completely rather than trying to patch the mismatch some other way.
+          const altLinesUsable = (l.altLines || []).length > 0 && isRealDirection(l.direction)
+            && l.altLines.every(al => isRealDirection(al.direction));
+          if (!altLinesUsable) {
             return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
           }
           const options = l.altLines.map(al =>
@@ -3466,7 +3485,7 @@
       const legsHtml = bet.legs.map(l => {
         const legTag = l.status && l.status !== 'Pending'
           ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
-        const dirText = l.direction ? `${l.direction} ${l.line}` : `${l.line}`;
+        const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
         return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
       }).join('');
       return `
