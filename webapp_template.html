@@ -1522,6 +1522,11 @@
   .tracker-pl-hide-btn:hover { color: var(--ink); border-color: var(--border-strong); }
   .tracker-pl-hide-btn.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 
+  /* .venue-toggle's own margin is tuned for its original spot (stacked above other controls in
+     .tracker-analytics-controls) - reset it here so it sits centered in this horizontal bar
+     instead of pushed down from a top margin meant for a different layout. */
+  .tracker-pl-bar .venue-toggle { margin: 0; flex-shrink: 0; }
+
   .tracker-pl-box {
     flex: 1;
     padding: 14px 16px;
@@ -1841,11 +1846,22 @@
       <div class="tracker-pl-bar">
         <div class="tracker-pl-box"><span id="tracker-round-pl-label">This round</span><b class="tracker-pl-value" id="tracker-round-pl">$0.00</b></div>
         <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
+        <div class="venue-toggle" id="tracker-pl-unit-toggle" role="group" aria-label="Display as">
+          <button type="button" class="venue-btn active" data-unitmode="money">Money</button>
+          <button type="button" class="venue-btn" data-unitmode="units">Units</button>
+        </div>
         <button class="tracker-pl-hide-btn" id="tracker-pl-hide-btn" type="button" title="Hide these amounts">Hide</button>
       </div>
-      <div class="filter-row" role="group" aria-label="Filter by round">
+      <div class="filter-row" role="group" aria-label="Filter by round and status">
         <span class="controls-label">Round</span>
         <select id="tracker-round-select" class="chip-btn"></select>
+        <span class="controls-label" style="margin-left:14px;">Status</span>
+        <select id="tracker-status-select" class="chip-btn">
+          <option value="all">All</option>
+          <option value="Won">Won</option>
+          <option value="Lost">Lost</option>
+          <option value="Pending">Pending</option>
+        </select>
       </div>
       <div class="signal-list-wrap">
         <table class="signal-list" id="tracker-table">
@@ -1967,9 +1983,9 @@
         <h3>Tracker tab</h3>
         <ul>
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
-          <li>The Round dropdown groups bets by which Premier League round their fixture belongs to, defaulting to the current round so the list doesn't fill up with old bets - pick any earlier round, or "All rounds" to see everything at once. A bet takes its round from its first leg's fixture.</li>
+          <li>The Round dropdown groups bets by which Premier League round their fixture belongs to, defaulting to the current round so the list doesn't fill up with old bets - pick any earlier round, or "All rounds" to see everything at once. A bet takes its round from its first leg's fixture. The Status dropdown next to it narrows further to just Won, Lost, or Pending bets within whichever round is selected - the two combine, so "Lost" + "Round 2" shows only Round 2's losses.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
-          <li>The P/L bar at the top shows running profit/loss for all-time, plus whichever round the Round dropdown is set to right now (its label switches with the dropdown - "This round", "Round 2", "All rounds"...), from settled bets only (pending bets don't count yet). "Hide" masks both amounts (handy before sharing a screen) and stays hidden next time you load the page until you toggle it back.</li>
+          <li>The P/L bar at the top shows running profit/loss for all-time, plus whichever round the Round dropdown is set to right now (its label switches with the dropdown - "This round", "Round 2", "All rounds"...), from settled bets only (pending bets don't count yet) - unaffected by the Status filter, since a true P/L needs both wins and losses counted. Toggle Money/Units for these two boxes specifically (separate from the same toggle in Analytics below). "Hide" masks both amounts (handy before sharing a screen) and stays hidden next time you load the page until you toggle it back.</li>
           <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, or any leg's line/direction/result. Each leg has its own Won/Lost/Pending control - set it directly rather than relying on auto-grading, which is what lets you correct a leg that graded itself wrong, or one from before this page could grade legs individually at all. The bet's own status isn't edited separately - it's always whatever its legs say: Lost the moment any leg is, Won only once every leg is.</li>
           <li>Removing a bet or saving an edit shows an "Undo" button for a few seconds - one level (your last action), not a full history.</li>
           <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. This only affects the suggestion for new bets.</li>
@@ -3252,6 +3268,10 @@
   // the list opens uncluttered by default; falls back to 'all' when that couldn't be computed at
   // all (openfootball unreachable during that build), since there'd be nothing else to default to.
   let selectedRound = DATA.current_round || 'all';
+  // 'all' | 'Won' | 'Lost' | 'Pending' - a second, independent filter on top of the round one, so
+  // "all Won bets in Round 2" or "every Lost bet across all rounds" are both just the two filters
+  // combined, rather than needing separate controls for each combination.
+  let selectedStatus = 'all';
 
   // A bet's round is whichever round its FIRST leg's fixture falls in - legs almost always come
   // from the same round in practice (that's how the slip/fixtures tab naturally groups them), and
@@ -3533,6 +3553,14 @@
     }
   }
 
+  // Independent of the Analytics sub-tab's own Money/Units toggle (analyticsUnitMode) - these two
+  // boxes are a different, always-visible summary, not part of that panel, so they get their own
+  // mode rather than reaching into Analytics' state (or forcing the two toggles to stay in sync
+  // with each other, which would mean updating both UIs any time either one changes).
+  let betsUnitMode = 'money';
+  function toDisplayProfitFor(bet, mode) { return mode === 'units' ? unitsProfit(bet) : bet.profit; }
+  function fmtPLFor(n, mode) { return mode === 'units' ? `${n >= 0 ? '+' : ''}${n.toFixed(1)}u` : fmtPL(n); }
+
   // Tracks whatever round the table itself is filtered to (selectedRound), not always the current
   // one - switching the Round dropdown updates this box right along with the table below it,
   // rather than leaving it stuck on a fixed scope while the table shows something else entirely.
@@ -3540,8 +3568,9 @@
     let roundPL = 0, overallPL = 0;
     for (const bet of trackedBets) {
       if (bet.status === 'Pending') continue;
-      overallPL += bet.profit;
-      if (selectedRound === 'all' || roundForBet(bet) === selectedRound) roundPL += bet.profit;
+      const profit = toDisplayProfitFor(bet, betsUnitMode);
+      overallPL += profit;
+      if (selectedRound === 'all' || roundForBet(bet) === selectedRound) roundPL += profit;
     }
     const label = selectedRound === 'all' ? 'All rounds'
       : selectedRound === DATA.current_round ? 'This round' : `Round ${selectedRound}`;
@@ -3554,7 +3583,7 @@
   let plHidden = localStorage.getItem('tracker_pl_hidden') === 'true';
   function setPLBox(el, value) {
     if (plHidden) { el.textContent = '••••'; el.className = 'tracker-pl-value'; return; }
-    el.textContent = fmtPL(value);
+    el.textContent = fmtPLFor(value, betsUnitMode);
     el.className = 'tracker-pl-value' + (value > 0 ? ' pos' : value < 0 ? ' neg' : '');
   }
 
@@ -3579,10 +3608,14 @@
       tbody.innerHTML = '<tr><td colspan="8" style="color:var(--ink-faint);">No bets tracked yet - place one from the slip.</td></tr>';
       return;
     }
-    const visibleBets = selectedRound === 'all' ? trackedBets : trackedBets.filter(b => roundForBet(b) === selectedRound);
+    const visibleBets = trackedBets
+      .filter(b => selectedRound === 'all' || roundForBet(b) === selectedRound)
+      .filter(b => selectedStatus === 'all' || b.status === selectedStatus);
     if (!visibleBets.length) {
-      const roundLabel = selectedRound === DATA.current_round ? 'the current round' : `round ${selectedRound}`;
-      tbody.innerHTML = `<tr><td colspan="8" style="color:var(--ink-faint);">No bets in ${roundLabel} yet - check "All rounds" to see everything tracked.</td></tr>`;
+      const roundDesc = selectedRound === 'all' ? 'any round'
+        : selectedRound === DATA.current_round ? 'the current round' : `round ${selectedRound}`;
+      const statusDesc = selectedStatus === 'all' ? '' : ` with status ${selectedStatus}`;
+      tbody.innerHTML = `<tr><td colspan="8" style="color:var(--ink-faint);">No bets${statusDesc} in ${roundDesc} - try widening the Round or Status filter.</td></tr>`;
       return;
     }
     tbody.innerHTML = visibleBets.map(bet => {
@@ -3884,6 +3917,17 @@
 
   document.getElementById('tracker-round-select').addEventListener('change', async (e) => {
     selectedRound = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
+    await renderTrackerBets();
+  });
+  document.getElementById('tracker-status-select').addEventListener('change', async (e) => {
+    selectedStatus = e.target.value;
+    await renderTrackerBets();
+  });
+  document.getElementById('tracker-pl-unit-toggle').addEventListener('click', async (e) => {
+    const btn = e.target.closest('.venue-btn');
+    if (!btn) return;
+    betsUnitMode = btn.dataset.unitmode;
+    document.querySelectorAll('#tracker-pl-unit-toggle .venue-btn').forEach(b => b.classList.toggle('active', b === btn));
     await renderTrackerBets();
   });
   function syncPLHideButton() {
