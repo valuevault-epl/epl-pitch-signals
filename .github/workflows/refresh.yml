@@ -17,7 +17,13 @@ on:
     # completed results show up promptly and pending tracked bets grade themselves.
     - cron: '0 12,14,16,18,20,22 * * 5,6,0,1,2'
     - cron: '0 0 * * 6,0,1,2'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Refresh mode (leave as auto to match what a real schedule trigger would pick)'
+        type: choice
+        default: auto
+        options: [auto, full, quick]
 
 permissions:
   contents: write
@@ -51,16 +57,19 @@ jobs:
           restore-keys: |
             seasons-
 
-      # The Wednesday cron (and a manual run) does today's full football-data.co.uk refresh,
-      # unchanged - including re-syncing the current season from there too, so any drift between
-      # ESPN's and football-data.co.uk's own stat definitions never compounds for more than a
-      # week. The frequent matchday crons run 'quick' instead: they skip football-data.co.uk
-      # entirely and pull just the current season from ESPN (see fetch_current_data and
+      # The Wednesday cron does today's full football-data.co.uk refresh, unchanged - including
+      # re-syncing the current season from there too, so any drift between ESPN's and
+      # football-data.co.uk's own stat definitions never compounds for more than a week. The
+      # frequent matchday crons run 'quick' instead: they skip football-data.co.uk entirely and
+      # pull just the current season from ESPN (see fetch_current_data and
       # fetch_espn_current_season_results in trend_engine.py) - the thing actually worth checking
-      # every couple of hours, without re-fetching 53 season files that never change in between.
+      # every couple of hours, without re-fetching 53 season files that never change in between. A
+      # manual run defaults to whichever mode the real schedule it's standing in for would use
+      # ('auto', below) so "run it now" behaves like the schedule firing early, not a third
+      # behavior of its own - override via the mode input only to deliberately test the other path.
       - name: Run the pipeline
         env:
-          REFRESH_MODE: ${{ github.event.schedule == '0 0 * * 3' && 'full' || (github.event.schedule && 'quick' || 'full') }}
+          REFRESH_MODE: ${{ (github.event.inputs.mode && github.event.inputs.mode != 'auto') && github.event.inputs.mode || (github.event.schedule == '0 0 * * 3' && 'full' || (github.event.schedule && 'quick' || 'full')) }}
         run: |
           python trend_engine.py
           python matchup_engine.py
