@@ -931,6 +931,13 @@
     white-space: nowrap;
   }
 
+  /* A multi's Legs cell stacks one line per leg, making that row taller than a single-leg one -
+     the default vertical-align:middle then centers every OTHER cell's short content within that
+     extra height, while the eye expects it flush with the top (first) leg. Scoped to this table
+     alone since every other .signal-list table's rows are uniform single-line height, where top
+     vs middle align look identical anyway. */
+  #tracker-table td { vertical-align: top; }
+
   table.signal-list thead th {
     font-family: "Barlow Condensed", sans-serif;
     text-transform: uppercase;
@@ -1178,9 +1185,25 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
-  .bet-toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .bet-toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
 
   .bet-toast::before { content: '\2713'; font-weight: 700; }
+
+  .bet-toast-undo {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 12px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 10px;
+    cursor: pointer;
+  }
+
+  .bet-toast-undo:hover { background: rgba(255, 255, 255, 0.32); }
 
   @media (prefers-reduced-motion: reduce) { .bet-toast { transition: none; } }
 
@@ -1536,6 +1559,24 @@
     padding: 2px 0;
   }
 
+  .tracker-analytics-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .tracker-advanced-toggle {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
   .tracker-stats {
     display: flex;
     flex-wrap: wrap;
@@ -1628,7 +1669,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 12:47</div>
+      <div class="updated">Updated Sunday 06 September 2026, 13:33</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1720,6 +1761,13 @@
     </div>
 
     <div id="tracker-analytics-panel" hidden>
+      <div class="tracker-analytics-controls">
+        <div class="venue-toggle" id="analytics-unit-toggle" role="group" aria-label="Display as">
+          <button type="button" class="venue-btn active" data-unitmode="money">Money</button>
+          <button type="button" class="venue-btn" data-unitmode="units">Units</button>
+        </div>
+        <label class="tracker-advanced-toggle"><input type="checkbox" id="analytics-advanced-toggle"> Advanced stats</label>
+      </div>
       <div class="tracker-stats" id="tracker-stats"></div>
       <div class="profit-chart-wrap" id="tracker-chart"></div>
     </div>
@@ -1820,8 +1868,10 @@
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
           <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
-          <li>Edit a bet with the pencil-style "Edit" link on its row to change its odds, stake, platform, or any leg's line/direction - saving resets it to Pending so it re-grades against whatever you just changed. Remove a bet with the "&times;" if it was tracked by mistake - this can't be undone.</li>
-          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, plus win rate, total staked, and ROI.</li>
+          <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, status, or any leg's line/direction. Only what you actually change is touched - editing odds/stake/platform alone never affects Won/Lost, and only a leg whose line or direction you change gets reset to Pending for re-grading. Setting the status dropdown to Won or Lost directly overrides the automatic grade; setting it back to Pending hands it back to normal auto-grading.</li>
+          <li>Removing a bet or saving an edit shows an "Undo" button for a few seconds - one level (your last action), not a full history.</li>
+          <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. Changing unit size later never reshapes bets already placed; each one keeps the unit size it was placed at.</li>
+          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, with win rate, total staked, and ROI - toggle Money/Units to see it all in dollars or in units (each bet converts using its own unit size, not whatever the live setting currently is), and check "Advanced stats" for average odds, average stake, average units and legs per bet, biggest win/loss, and your current streak.</li>
         </ul>
 
         <h3>Account &amp; sync</h3>
@@ -2629,18 +2679,26 @@
   // behind auth entirely: with nobody signed in there's nowhere to save it.
   let slipLegs = [];
 
+  // Dollar value of "1 unit" for staking purposes - lives on the slips row (one per user already)
+  // rather than a new table, synced like everything else here. Live/current value only: each
+  // PLACED bet snapshots whatever this was at placement time onto its own row (see
+  // placeBetFromSlip), so changing it later never reaches back and changes what an already-placed
+  // bet is worth in units.
+  let unitSize = 20;
+
   async function loadSlipFromCloud() {
-    if (!currentUser) { slipLegs = []; return; }
+    if (!currentUser) { slipLegs = []; unitSize = 20; return; }
     try {
-      const { data, error } = await supabaseClient.from('slips').select('legs').eq('user_id', currentUser.id).maybeSingle();
+      const { data, error } = await supabaseClient.from('slips').select('legs, unit_size').eq('user_id', currentUser.id).maybeSingle();
       slipLegs = (!error && data && data.legs) ? data.legs : [];
-    } catch (e) { slipLegs = []; }
+      unitSize = (!error && data && data.unit_size) ? Number(data.unit_size) : 20;
+    } catch (e) { slipLegs = []; unitSize = 20; }
   }
 
   async function saveSlipToCloud() {
     if (!currentUser) return;
     try {
-      await supabaseClient.from('slips').upsert({ user_id: currentUser.id, legs: slipLegs, updated_at: new Date().toISOString() });
+      await supabaseClient.from('slips').upsert({ user_id: currentUser.id, legs: slipLegs, unit_size: unitSize, updated_at: new Date().toISOString() });
     } catch (e) {}
   }
 
@@ -2774,10 +2832,15 @@
     const el = document.getElementById('stake-calc');
     if (!el) return;
     const oddsEl = document.getElementById('slip-odds-input');
+    const stakeEl = document.getElementById('slip-stake-input');
     const odds = oddsEl ? parseFloat(oddsEl.value) : NaN;
     if (!slipLegs.length || !(odds > 1)) { el.innerHTML = ''; return; }
     const units = computeStakeUnits(odds);
-    el.innerHTML = `<p class="stake-note">Suggested stake: <b>${units.toFixed(1)}u</b> <span class="stake-sub">(1u = 1% of bankroll &middot; scaled from odds taken - shorter odds size up toward ${STAKE_MAX_UNITS}u, longer odds size down)</span></p>`;
+    const suggestedStake = round2(units * unitSize);
+    if (stakeEl && !stakeManuallyEdited) {
+      stakeEl.value = suggestedStake > 0 ? suggestedStake : '';
+    }
+    el.innerHTML = `<p class="stake-note">Suggested stake: <b>${units.toFixed(1)}u</b> ${unitSize > 0 ? `(<b>$${suggestedStake.toFixed(2)}</b> at $${unitSize.toFixed(2)}/unit)` : ''} <span class="stake-sub">scaled from odds taken - shorter odds size up toward ${STAKE_MAX_UNITS}u, longer odds size down. Filled in automatically; change Stake or Unit size freely, nothing here is locked.</span></p>`;
   }
 
   // Each Strong-tier leg backed by the historical floor was, by construction, priced to require a
@@ -2800,7 +2863,14 @@
     return { combinedOdds, floorLegs, impliedEdgePct };
   }
 
+  // Whether the viewer has typed into the Stake box themselves during the slip form's current
+  // lifetime - once true, renderStakeCalc stops overwriting it as the odds field changes, so the
+  // auto-fill is a starting suggestion, never something fighting a deliberate manual stake.
+  // Rebuilt fresh (reset to false) every renderSlip, same as the input elements themselves are.
+  let stakeManuallyEdited = false;
+
   function renderSlip() {
+    stakeManuallyEdited = false;
     const countEl = document.getElementById('slip-count');
     const fabEl = document.getElementById('slip-fab');
     const bodyEl = document.getElementById('slip-body');
@@ -2853,6 +2923,9 @@
       ${sgmNotesHtml}
       <p class="slip-note">${floorLegs}/${slipLegs.length} leg${slipLegs.length === 1 ? '' : 's'} backed by the historical odds floor (each requiring a 5% edge); the rest use modeled fair odds with no edge cushion built in. Same-fixture legs above are corrected for real historical correlation (see methodology); cross-fixture legs are genuinely independent already. Treat all of this as a guide, not a precise number.</p>
       <div class="slip-place-form">
+        <div class="slip-place-row">
+          <label>Unit size ($)<input type="number" step="0.01" min="0.01" id="slip-unitsize-input" value="${unitSize}" title="What 1 unit is worth in your own staking plan - changing this only affects new bets, never ones already placed"></label>
+        </div>
         <div class="slip-place-row">
           <label>Odds taken<input type="number" step="0.01" min="1" id="slip-odds-input" placeholder="e.g. 2.10"></label>
           <label>Stake<input type="number" step="0.01" min="0" id="slip-stake-input" placeholder="e.g. 20"></label>
@@ -2915,6 +2988,16 @@
   });
   document.getElementById('slip-panel').addEventListener('input', (e) => {
     if (e.target.id === 'slip-odds-input') renderStakeCalc();
+    if (e.target.id === 'slip-stake-input') stakeManuallyEdited = true;
+    if (e.target.id === 'slip-unitsize-input') {
+      const v = parseFloat(e.target.value);
+      if (v > 0) {
+        unitSize = v;
+        stakeManuallyEdited = false; // a new unit size is a fresh basis - let it re-suggest
+        renderStakeCalc();
+        saveSlipToCloud();
+      }
+    }
   });
   document.getElementById('slip-panel').addEventListener('click', (e) => {
     if (e.target.id !== 'slip-place-btn') return;
@@ -2924,7 +3007,7 @@
   function betToDbRow(bet) {
     return {
       id: bet.id, user_id: currentUser.id, placed_at: bet.placedAt, legs: bet.legs,
-      platform: bet.platform, odds_taken: bet.oddsTaken, stake: bet.stake,
+      platform: bet.platform, odds_taken: bet.oddsTaken, stake: bet.stake, unit_size: bet.unitSize ?? null,
       status: bet.status, settled_at: bet.settledAt, profit: bet.profit,
     };
   }
@@ -2933,18 +3016,31 @@
     return {
       id: row.id, placedAt: row.placed_at, legs: row.legs, platform: row.platform,
       oddsTaken: Number(row.odds_taken), stake: Number(row.stake), status: row.status,
+      // Bets placed before this field existed have no snapshot - fall back to whatever the live
+      // unit size is when something needs one (analytics' units toggle), an estimate rather than
+      // a rewrite of history that can't actually be known for those older rows.
+      unitSize: (row.unit_size === null || row.unit_size === undefined) ? null : Number(row.unit_size),
       settledAt: row.settled_at, profit: (row.profit === null || row.profit === undefined) ? null : Number(row.profit),
     };
   }
 
   let betToastTimer = null;
-  function showBetToast(message) {
+  function showBetToast(message, undoFn) {
     const el = document.getElementById('bet-toast');
     if (!el) return;
-    el.textContent = message;
+    el.innerHTML = undoFn
+      ? `<span>${message}</span><button class="bet-toast-undo" type="button">Undo</button>`
+      : message;
     el.classList.add('show');
     clearTimeout(betToastTimer);
-    betToastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    betToastTimer = setTimeout(() => el.classList.remove('show'), undoFn ? 8000 : 2500);
+    if (undoFn) {
+      el.querySelector('.bet-toast-undo').onclick = () => {
+        clearTimeout(betToastTimer);
+        el.classList.remove('show');
+        undoFn();
+      };
+    }
   }
 
   async function placeBetFromSlip() {
@@ -2971,7 +3067,7 @@
       placedAt: new Date().toISOString(),
       legs: slipLegs.map(l => ({ ...l, status: 'Pending' })),
       platform: platformSel === 'Other' ? platformOther : platformSel,
-      oddsTaken: odds, stake,
+      oddsTaken: odds, stake, unitSize,
       status: 'Pending', settledAt: null, profit: null,
     };
 
@@ -3019,18 +3115,52 @@
     } catch (e) { trackedBets = []; }
   }
 
+  // ---------- Undo ----------
+  // One level, not a full history - "undo my last tracker action" covers the actual ask (recover
+  // from an accidental remove or a bad edit) without the complexity of a multi-step stack. A fresh
+  // action always replaces whatever was pending, and the toast itself times out the offer instead
+  // of tracking it separately.
+  let lastUndo = null; // { type: 'remove', bet } | { type: 'edit', id, before }
+
+  async function undoLastTrackerAction() {
+    const snap = lastUndo;
+    if (!snap) return;
+    lastUndo = null;
+    if (snap.type === 'remove') {
+      trackedBets.push(snap.bet);
+      trackedBets.sort((a, b) => new Date(b.placedAt) - new Date(a.placedAt));
+      if (currentUser) await supabaseClient.from('tracked_bets').insert(betToDbRow(snap.bet));
+    } else if (snap.type === 'edit') {
+      const idx = trackedBets.findIndex(b => b.id === snap.id);
+      if (idx >= 0) trackedBets[idx] = snap.before;
+      if (currentUser) {
+        await supabaseClient.from('tracked_bets').update(betToDbRow(snap.before))
+          .eq('id', snap.id).eq('user_id', currentUser.id);
+      }
+    }
+    await renderTracker();
+    showBetToast('Undone');
+  }
+
   async function removeTrackedBet(id) {
+    const bet = trackedBets.find(b => b.id === id);
+    if (!bet) return;
+    lastUndo = { type: 'remove', bet: JSON.parse(JSON.stringify(bet)) };
     trackedBets = trackedBets.filter(b => b.id !== id);
     renderTracker();
     if (currentUser) {
       await supabaseClient.from('tracked_bets').delete().eq('id', id).eq('user_id', currentUser.id);
     }
+    showBetToast('Bet removed', undoLastTrackerAction);
   }
 
-  // Reads the edit row's inputs (per-leg line/direction dropdowns, odds/stake/platform) back into
-  // the bet, then resets it to Pending so the normal grading pass this same render already runs
-  // re-grades it fresh against whichever line/direction is now current - editing a leg on an
-  // already-settled bet without this would leave its Won/Lost status stale and wrong.
+  // Reads the edit row's inputs (per-leg line/direction dropdowns, odds/stake/platform/status)
+  // back into the bet. The core fix here: everything is compared against a snapshot of the bet
+  // taken BEFORE any of these lines run, and status/settledAt/profit are only ever touched when
+  // something that actually bears on them changed - the status dropdown itself, or a leg's line
+  // or direction. An edit that only touches odds/stake/platform now leaves Won/Lost completely
+  // alone, and a leg that wasn't touched keeps its own existing Won/Lost/Pending tag instead of
+  // being blanket-reset to Pending just because SOME leg in the same bet was edited.
   async function saveEditBet(id, row) {
     const bet = trackedBets.find(b => b.id === id);
     if (!bet || !row) return;
@@ -3043,40 +3173,55 @@
     const platform = platformSel.value === 'Other' ? platformOtherEl.value.trim() : platformSel.value;
     if (platformSel.value === 'Other' && !platform) { platformOtherEl.reportValidity(); return; }
 
+    const before = JSON.parse(JSON.stringify(bet));
+
+    let anyLegChanged = false;
     row.querySelectorAll('.tracker-leg-edit-select').forEach(sel => {
       const idx = parseInt(sel.dataset.legIndex, 10);
       const [dir, lineStr] = sel.value.split('|');
-      bet.legs[idx].direction = dir;
-      bet.legs[idx].line = parseFloat(lineStr);
-      bet.legs[idx].status = 'Pending';
+      const newLine = parseFloat(lineStr);
+      const leg = bet.legs[idx];
+      if (leg.direction !== dir || leg.line !== newLine) {
+        leg.direction = dir;
+        leg.line = newLine;
+        leg.status = 'Pending'; // this leg's old grade no longer applies to its new line
+        anyLegChanged = true;
+      }
+      // else: leave leg.status exactly as it was - this leg wasn't touched.
     });
     bet.oddsTaken = parseFloat(oddsEl.value);
     bet.stake = parseFloat(stakeEl.value);
     bet.platform = platform;
 
-    // Pending goes back through the normal grading pass below (a line/direction change means any
-    // prior grade is stale anyway). Won/Lost picked here is a manual override that stands as-is -
-    // it's skipped by gradeAllTrackedBets (which only touches bets still Pending), so it won't get
-    // silently reverted the next time the tracker loads. Only the bet's own status/profit change;
-    // individual legs' status isn't forced to match, since a multi's other legs may genuinely be
-    // in a different state than whatever the user is correcting at the bet level.
     const newStatus = row.querySelector('.tracker-edit-status').value;
-    if (newStatus === 'Won') {
-      bet.status = 'Won'; bet.settledAt = bet.settledAt || new Date().toISOString();
-      bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
-    } else if (newStatus === 'Lost') {
-      bet.status = 'Lost'; bet.settledAt = bet.settledAt || new Date().toISOString();
-      bet.profit = -bet.stake;
-    } else {
+    if (newStatus !== before.status) {
+      // A deliberate, detected change from what this bet's status actually was when the edit form
+      // opened - either a manual Won/Lost override, or switching back to Pending.
+      if (newStatus === 'Won') {
+        bet.status = 'Won'; bet.settledAt = bet.settledAt || new Date().toISOString();
+        bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
+      } else if (newStatus === 'Lost') {
+        bet.status = 'Lost'; bet.settledAt = bet.settledAt || new Date().toISOString();
+        bet.profit = -bet.stake;
+      } else {
+        bet.status = 'Pending'; bet.settledAt = null; bet.profit = null;
+      }
+    } else if (anyLegChanged && bet.status !== 'Pending') {
+      // Status dropdown untouched, but a line/direction change invalidated whatever grade this
+      // bet already had - back to Pending so the normal grading pass (gradeAllTrackedBets, run at
+      // the top of every renderTrackerBets) re-settles it against the new line.
       bet.status = 'Pending'; bet.settledAt = null; bet.profit = null;
     }
+    // else: status untouched AND no leg changed - status/settledAt/profit stay byte-for-byte as
+    // they were. An odds/stake/platform-only edit can never flip Won/Lost.
 
+    lastUndo = { type: 'edit', id, before };
     editingBetId = null;
     if (currentUser) {
       await supabaseClient.from('tracked_bets').update(betToDbRow(bet)).eq('id', id).eq('user_id', currentUser.id);
     }
     await renderTracker();
-    showBetToast('Bet updated');
+    showBetToast('Bet updated', undoLastTrackerAction);
   }
 
   function round2(n) { return Math.round(n * 100) / 100; }
@@ -3276,6 +3421,17 @@
     </svg>`;
   }
 
+  // 'money' | 'units'. A bet's OWN unit_size snapshot converts it (falling back to the live
+  // unitSize for bets placed before that field existed) - never the CURRENT live setting for
+  // every bet, which would silently reshape old bets' unit counts every time unit size changes.
+  let analyticsUnitMode = 'money';
+  let analyticsShowAdvanced = false;
+
+  function betUnitSize(bet) { return (bet.unitSize && bet.unitSize > 0) ? bet.unitSize : (unitSize || 20); }
+  function toDisplayAmount(bet, dollars) { return analyticsUnitMode === 'units' ? dollars / betUnitSize(bet) : dollars; }
+  function fmtAmt(n) { return analyticsUnitMode === 'units' ? `${n.toFixed(1)}u` : `$${n.toFixed(2)}`; }
+  function fmtAmtSigned(n) { return analyticsUnitMode === 'units' ? `${n >= 0 ? '+' : ''}${n.toFixed(1)}u` : fmtPL(n); }
+
   async function renderTrackerAnalytics() {
     if (!currentUser) {
       document.getElementById('tracker-stats').innerHTML =
@@ -3296,18 +3452,48 @@
     }
 
     let cumulative = 0;
-    const points = settled.map(b => { cumulative = round2(cumulative + b.profit); return cumulative; });
-    const totalStaked = settled.reduce((s, b) => s + b.stake, 0);
+    const points = settled.map(b => { cumulative = round2(cumulative + toDisplayAmount(b, b.profit)); return cumulative; });
+    const totalStakedDisplay = settled.reduce((s, b) => s + toDisplayAmount(b, b.stake), 0);
+    const totalStakedDollars = settled.reduce((s, b) => s + b.stake, 0);
+    const totalProfitDollars = settled.reduce((s, b) => s + b.profit, 0);
     const wins = settled.filter(b => b.status === 'Won').length;
     const finalPL = points[points.length - 1];
-    const roi = totalStaked > 0 ? (finalPL / totalStaked * 100) : 0;
+    const roi = totalStakedDollars > 0 ? (totalProfitDollars / totalStakedDollars * 100) : 0;
 
-    statsEl.innerHTML = `
+    let html = `
       <div class="tracker-stat"><span>Settled bets</span><b>${settled.length}</b></div>
       <div class="tracker-stat"><span>Win rate</span><b>${(wins / settled.length * 100).toFixed(0)}%</b></div>
-      <div class="tracker-stat"><span>Total staked</span><b>$${totalStaked.toFixed(2)}</b></div>
-      <div class="tracker-stat"><span>Net P/L</span><b class="${finalPL >= 0 ? 'pos' : 'neg'}">${fmtPL(finalPL)}</b></div>
+      <div class="tracker-stat"><span>Total staked</span><b>${fmtAmt(totalStakedDisplay)}</b></div>
+      <div class="tracker-stat"><span>Net P/L</span><b class="${finalPL >= 0 ? 'pos' : 'neg'}">${fmtAmtSigned(finalPL)}</b></div>
       <div class="tracker-stat"><span>ROI</span><b class="${roi >= 0 ? 'pos' : 'neg'}">${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%</b></div>`;
+
+    if (analyticsShowAdvanced) {
+      const avgOdds = settled.reduce((s, b) => s + b.oddsTaken, 0) / settled.length;
+      const avgStakeDisplay = totalStakedDisplay / settled.length;
+      const avgUnits = settled.reduce((s, b) => s + b.stake / betUnitSize(b), 0) / settled.length;
+      const avgLegs = settled.reduce((s, b) => s + b.legs.length, 0) / settled.length;
+      const winAmounts = settled.filter(b => b.status === 'Won').map(b => toDisplayAmount(b, b.profit));
+      const lossAmounts = settled.filter(b => b.status === 'Lost').map(b => toDisplayAmount(b, b.profit));
+      const biggestWin = winAmounts.length ? Math.max(...winAmounts) : 0;
+      const biggestLoss = lossAmounts.length ? Math.min(...lossAmounts) : 0;
+      // Current streak: walk back from the most recently settled bet while status keeps matching.
+      let streak = 0, streakType = null;
+      for (let i = settled.length - 1; i >= 0; i--) {
+        if (streakType === null) { streakType = settled[i].status; streak = 1; }
+        else if (settled[i].status === streakType) streak++;
+        else break;
+      }
+      html += `
+      <div class="tracker-stat"><span>Avg odds taken</span><b>${avgOdds.toFixed(2)}</b></div>
+      <div class="tracker-stat"><span>Avg stake</span><b>${fmtAmt(avgStakeDisplay)}</b></div>
+      <div class="tracker-stat"><span>Avg units/bet</span><b>${avgUnits.toFixed(1)}u</b></div>
+      <div class="tracker-stat"><span>Avg legs/bet</span><b>${avgLegs.toFixed(1)}</b></div>
+      <div class="tracker-stat"><span>Biggest win</span><b class="pos">${winAmounts.length ? fmtAmtSigned(biggestWin) : '—'}</b></div>
+      <div class="tracker-stat"><span>Biggest loss</span><b class="neg">${lossAmounts.length ? fmtAmtSigned(biggestLoss) : '—'}</b></div>
+      <div class="tracker-stat"><span>Current streak</span><b class="${streakType === 'Won' ? 'pos' : streakType === 'Lost' ? 'neg' : ''}">${streak}${streakType === 'Won' ? ' W' : streakType === 'Lost' ? ' L' : ''}</b></div>`;
+    }
+
+    statsEl.innerHTML = html;
     chartEl.innerHTML = renderProfitChart(points);
   }
 
@@ -3336,6 +3522,18 @@
 
   document.getElementById('tracker-stats').addEventListener('click', (e) => {
     if (e.target.id === 'tracker-analytics-auth-btn') openAuthModal();
+  });
+
+  document.getElementById('analytics-unit-toggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('.venue-btn');
+    if (!btn) return;
+    analyticsUnitMode = btn.dataset.unitmode;
+    document.querySelectorAll('#analytics-unit-toggle .venue-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderTrackerAnalytics();
+  });
+  document.getElementById('analytics-advanced-toggle').addEventListener('change', (e) => {
+    analyticsShowAdvanced = e.target.checked;
+    renderTrackerAnalytics();
   });
 
   document.querySelectorAll('.tracker-subtabs .view-tab').forEach(btn => {
