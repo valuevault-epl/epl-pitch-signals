@@ -951,6 +951,15 @@
   #tracker-table { table-layout: fixed; }
   #tracker-table td { white-space: normal; overflow-wrap: break-word; }
 
+  /* What was actually being reported as "the edit button is offset" on a multi-leg row: top-align
+     (above) is right for the Legs cell itself, but it also pins the Actions cell's Edit/Remove pair
+     to the very top of a row that's much taller than that pair is, leaving it visibly stranded with
+     a gap of empty space below before the row's real bottom border - looking like it belongs to the
+     wrong row rather than the one it's actually in. Centering just this cell against the row's full
+     (tallest-cell-driven) height anchors it to the row as a whole regardless of how many legs that
+     row has, instead of to whichever cell happens to be shortest. */
+  #tracker-table td.tracker-actions, #tracker-table td.tracker-edit-actions { vertical-align: middle; }
+
   table.signal-list thead th {
     font-family: "Barlow Condensed", sans-serif;
     text-transform: uppercase;
@@ -2708,16 +2717,24 @@
     if (!currentUser) { slipLegs = []; unitSize = 20; return; }
     try {
       const { data, error } = await supabaseClient.from('slips').select('legs, unit_size').eq('user_id', currentUser.id).maybeSingle();
+      if (error) console.error('loadSlipFromCloud:', error.message);
       slipLegs = (!error && data && data.legs) ? data.legs : [];
       unitSize = (!error && data && data.unit_size) ? Number(data.unit_size) : 20;
-    } catch (e) { slipLegs = []; unitSize = 20; }
+    } catch (e) { console.error('loadSlipFromCloud:', e); slipLegs = []; unitSize = 20; }
   }
 
+  // Swallowing this used to mean a failed save (eg. a schema mismatch on the DB side) looked
+  // identical to a successful one - the unit size box would happily accept a new value and even
+  // use it for the rest of the session, then silently revert to the default next time the page
+  // loaded, with nothing anywhere saying why. Surfacing it lets callers that care (the unit size
+  // input) tell the user their change didn't actually stick, instead of it just quietly not.
   async function saveSlipToCloud() {
-    if (!currentUser) return;
+    if (!currentUser) return true;
     try {
-      await supabaseClient.from('slips').upsert({ user_id: currentUser.id, legs: slipLegs, unit_size: unitSize, updated_at: new Date().toISOString() });
-    } catch (e) {}
+      const { error } = await supabaseClient.from('slips').upsert({ user_id: currentUser.id, legs: slipLegs, unit_size: unitSize, updated_at: new Date().toISOString() });
+      if (error) { console.error('saveSlipToCloud:', error.message); return false; }
+      return true;
+    } catch (e) { console.error('saveSlipToCloud:', e); return false; }
   }
 
   // Same odds-source logic renderSignalRow's floor chip uses (historical floor when the line
@@ -3013,7 +3030,9 @@
         unitSize = v;
         stakeManuallyEdited = false; // a new unit size is a fresh basis - let it re-suggest
         renderStakeCalc();
-        saveSlipToCloud();
+        saveSlipToCloud().then(ok => {
+          if (!ok) showBetToast("Couldn't save unit size - it'll reset next time you load the page");
+        });
       }
     }
   });
@@ -3294,6 +3313,56 @@
     return false;
   }
 
+  // Two distinct, permanent gaps in already-settled legacy bets, each recoverable from facts we
+  // already trust rather than guessed: (1) a leg's own .status can get wiped back to Pending by an
+  // edit that touches the bet without touching that leg (the old pre-fix edit bug did this
+  // unconditionally) - once the bet itself is settled, gradeTrackedBet never revisits that leg to
+  // re-populate it, so it just stays blank forever. Re-grading it directly (same math as normal
+  // settling) fixes it, as long as the leg still has a direction to grade against. (2) a leg's own
+  // .direction can be missing entirely on bets placed before Over/Under became a per-leg choice -
+  // unrecoverable from the leg alone, but NOT unrecoverable in general: a Won multi means every leg
+  // in it won, and a single-leg bet's own status always equals that one leg's status, so either one
+  // pins down the leg's true outcome, and the archived actual result then tells us which direction
+  // must have produced that outcome. Both repairs are pure display-truth recovery, never a guess -
+  // and once found, worth persisting so the gap doesn't have to be recomputed every render.
+  function repairLeg(bet, leg) {
+    let changed = false;
+    if (leg.direction && (!leg.status || leg.status === 'Pending') && bet.status !== 'Pending') {
+      const graded = gradeLeg(leg);
+      if (graded !== 'Pending') { leg.status = graded; changed = true; }
+    }
+    if (!leg.direction) {
+      let knownStatus = leg.status;
+      if (bet.status === 'Won') knownStatus = 'Won';
+      else if (bet.status === 'Lost' && bet.legs.length === 1) knownStatus = 'Lost';
+      if (knownStatus === 'Won' || knownStatus === 'Lost') {
+        const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+        if (actual !== undefined && actual !== null && actual !== leg.line) {
+          const wentOver = actual > leg.line;
+          leg.direction = (knownStatus === 'Won') === wentOver ? 'OVER' : 'UNDER';
+          if (!leg.status || leg.status === 'Pending') leg.status = knownStatus;
+          changed = true;
+        }
+      }
+    }
+    return changed;
+  }
+
+  async function repairLegacyLegs() {
+    const repaired = [];
+    for (const bet of trackedBets) {
+      if (bet.status === 'Pending') continue;
+      let changed = false;
+      for (const leg of bet.legs) { if (repairLeg(bet, leg)) changed = true; }
+      if (changed) repaired.push(bet);
+    }
+    if (repaired.length && currentUser) {
+      await Promise.all(repaired.map(bet =>
+        supabaseClient.from('tracked_bets').update({ legs: bet.legs }).eq('id', bet.id).eq('user_id', currentUser.id)
+      ));
+    }
+  }
+
   async function gradeAllTrackedBets() {
     const settled = [];
     for (const bet of trackedBets) { if (gradeTrackedBet(bet)) settled.push(bet); }
@@ -3331,6 +3400,7 @@
       return;
     }
     await gradeAllTrackedBets();
+    await repairLegacyLegs();
     const { weekPL, overallPL } = computePL();
     const weekEl = document.getElementById('tracker-week-pl');
     const overallEl = document.getElementById('tracker-overall-pl');
@@ -3355,12 +3425,15 @@
         // just shift distance. A leg with no ladder (shouldn't normally happen) falls back to
         // static text rather than rendering a broken empty dropdown.
         const legsHtml = bet.legs.map((l, i) => {
+          const legTag = l.status && l.status !== 'Pending'
+            ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
+          const dirText = l.direction ? `${l.direction} ${l.line}` : `${l.line}`;
           if (!(l.altLines || []).length) {
-            return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span></div>`;
+            return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
           }
           const options = l.altLines.map(al =>
             `<option value="${al.direction}|${al.line}"${al.direction === l.direction && al.line === l.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
-          return `<div class="tracker-leg-line">${l.label} <select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select></div>`;
+          return `<div class="tracker-leg-line">${l.label} <select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select> ${legTag}</div>`;
         }).join('');
         const isCustomPlatform = !PLATFORM_OPTIONS.includes(bet.platform);
         const platformOptions = PLATFORM_OPTIONS.map(p =>
@@ -3395,7 +3468,8 @@
       const legsHtml = bet.legs.map(l => {
         const legTag = l.status && l.status !== 'Pending'
           ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
-        return `<div class="tracker-leg-line">${l.label} <span class="mono">${l.direction} ${l.line}</span> ${legTag}</div>`;
+        const dirText = l.direction ? `${l.direction} ${l.line}` : `${l.line}`;
+        return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
       }).join('');
       return `
       <tr>
@@ -3487,9 +3561,13 @@
 
     if (analyticsShowAdvanced) {
       const avgOdds = settled.reduce((s, b) => s + b.oddsTaken, 0) / settled.length;
-      const avgStakeDisplay = totalStakedDisplay / settled.length;
-      const avgStakeUnits = settled.reduce((s, b) => s + b.stake / betUnitSize(b), 0) / settled.length;
-      const avgStakeDollars = totalStakedDollars / settled.length;
+      // "Placed" (stake) and "profited" (P/L) are two different questions, each worth its own box -
+      // the earlier single "Avg units/bet" stat didn't say which one it meant, and with unitSize
+      // silently stuck on a fallback default (see betUnitSize/loadSlipFromCloud - the DB column
+      // this reads from doesn't exist yet, so a custom unit size never actually persists) it looked
+      // wrong for a second, unrelated reason on top of that ambiguity.
+      const avgStakePlaced = totalStakedDisplay / settled.length;
+      const avgProfitPerBet = settled.reduce((s, b) => s + toDisplayAmount(b, b.profit), 0) / settled.length;
       const avgLegs = settled.reduce((s, b) => s + b.legs.length, 0) / settled.length;
       const winAmounts = settled.filter(b => b.status === 'Won').map(b => toDisplayAmount(b, b.profit));
       const lossAmounts = settled.filter(b => b.status === 'Lost').map(b => toDisplayAmount(b, b.profit));
@@ -3502,17 +3580,10 @@
         else if (settled[i].status === streakType) streak++;
         else break;
       }
-      // "Avg stake" above already IS the units figure once the Units toggle is on - repeating it
-      // as its own "Avg units/bet" stat just showed the identical number under a second label.
-      // Show whichever OTHER denomination "Avg stake" isn't currently using instead, so this is
-      // always a genuinely different, complementary number rather than a duplicate.
-      const complementaryLabel = analyticsUnitMode === 'units' ? 'Avg stake ($)' : 'Avg units/bet';
-      const complementaryValue = analyticsUnitMode === 'units'
-        ? `$${avgStakeDollars.toFixed(2)}` : `${avgStakeUnits.toFixed(1)}u`;
       html += `
       <div class="tracker-stat"><span>Avg odds taken</span><b>${avgOdds.toFixed(2)}</b></div>
-      <div class="tracker-stat"><span>Avg stake</span><b>${fmtAmt(avgStakeDisplay)}</b></div>
-      <div class="tracker-stat"><span>${complementaryLabel}</span><b>${complementaryValue}</b></div>
+      <div class="tracker-stat"><span>Avg stake placed</span><b>${fmtAmt(avgStakePlaced)}</b></div>
+      <div class="tracker-stat"><span>Avg profit/bet</span><b class="${avgProfitPerBet > 0 ? 'pos' : avgProfitPerBet < 0 ? 'neg' : ''}">${fmtAmtSigned(avgProfitPerBet)}</b></div>
       <div class="tracker-stat"><span>Avg legs/bet</span><b>${avgLegs.toFixed(1)}</b></div>
       <div class="tracker-stat"><span>Biggest win</span><b class="pos">${winAmounts.length ? fmtAmtSigned(biggestWin) : '—'}</b></div>
       <div class="tracker-stat"><span>Biggest loss</span><b class="neg">${lossAmounts.length ? fmtAmtSigned(biggestLoss) : '—'}</b></div>
