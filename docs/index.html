@@ -1759,7 +1759,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 19:35</div>
+      <div class="updated">Updated Sunday 06 September 2026, 19:44</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1839,7 +1839,7 @@
 
     <div id="tracker-bets-panel">
       <div class="tracker-pl-bar">
-        <div class="tracker-pl-box"><span>This round</span><b class="tracker-pl-value" id="tracker-round-pl">$0.00</b></div>
+        <div class="tracker-pl-box"><span id="tracker-round-pl-label">This round</span><b class="tracker-pl-value" id="tracker-round-pl">$0.00</b></div>
         <div class="tracker-pl-box"><span>All-time</span><b class="tracker-pl-value" id="tracker-overall-pl">$0.00</b></div>
         <button class="tracker-pl-hide-btn" id="tracker-pl-hide-btn" type="button" title="Hide these amounts">Hide</button>
       </div>
@@ -1969,7 +1969,7 @@
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
           <li>The Round dropdown groups bets by which Premier League round their fixture belongs to, defaulting to the current round so the list doesn't fill up with old bets - pick any earlier round, or "All rounds" to see everything at once. A bet takes its round from its first leg's fixture.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
-          <li>The P/L bar at the top shows running profit/loss for the current round and all-time, from settled bets only (pending bets don't count yet) - "Hide" masks both amounts (handy before sharing a screen) and stays hidden next time you load the page until you toggle it back.</li>
+          <li>The P/L bar at the top shows running profit/loss for all-time, plus whichever round the Round dropdown is set to right now (its label switches with the dropdown - "This round", "Round 2", "All rounds"...), from settled bets only (pending bets don't count yet). "Hide" masks both amounts (handy before sharing a screen) and stays hidden next time you load the page until you toggle it back.</li>
           <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, or any leg's line/direction/result. Each leg has its own Won/Lost/Pending control - set it directly rather than relying on auto-grading, which is what lets you correct a leg that graded itself wrong, or one from before this page could grade legs individually at all. The bet's own status isn't edited separately - it's always whatever its legs say: Lost the moment any leg is, Won only once every leg is.</li>
           <li>Removing a bet or saving an edit shows an "Undo" button for a few seconds - one level (your last action), not a full history.</li>
           <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. This only affects the suggestion for new bets.</li>
@@ -3533,17 +3533,19 @@
     }
   }
 
-  // "This round" is always the CURRENT round specifically (DATA.current_round) - independent of
-  // whatever round the table below is filtered to, the same way "This week" used to always mean
-  // the last 7 days regardless of any other filter on the page.
+  // Tracks whatever round the table itself is filtered to (selectedRound), not always the current
+  // one - switching the Round dropdown updates this box right along with the table below it,
+  // rather than leaving it stuck on a fixed scope while the table shows something else entirely.
   function computePL() {
     let roundPL = 0, overallPL = 0;
     for (const bet of trackedBets) {
       if (bet.status === 'Pending') continue;
       overallPL += bet.profit;
-      if (DATA.current_round && roundForBet(bet) === DATA.current_round) roundPL += bet.profit;
+      if (selectedRound === 'all' || roundForBet(bet) === selectedRound) roundPL += bet.profit;
     }
-    return { roundPL: round2(roundPL), overallPL: round2(overallPL) };
+    const label = selectedRound === 'all' ? 'All rounds'
+      : selectedRound === DATA.current_round ? 'This round' : `Round ${selectedRound}`;
+    return { roundPL: round2(roundPL), overallPL: round2(overallPL), roundLabel: label };
   }
 
   // Persisted (not just per-session) since the whole point is not having to re-hide it every time
@@ -3566,7 +3568,8 @@
     }
     await gradeAllTrackedBets();
     await repairLegacyLegs();
-    const { roundPL, overallPL } = computePL();
+    const { roundPL, overallPL, roundLabel } = computePL();
+    document.getElementById('tracker-round-pl-label').textContent = roundLabel;
     setPLBox(document.getElementById('tracker-round-pl'), roundPL);
     setPLBox(document.getElementById('tracker-overall-pl'), overallPL);
     renderRoundSelector();
