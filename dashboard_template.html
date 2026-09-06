@@ -1419,6 +1419,26 @@
 
   footer strong { color: var(--ink-muted); }
 
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-brand-logo { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+
+  .footer-brand span {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
   @media (max-width: 560px) {
     .fixtures { grid-template-columns: 1fr; }
     .masthead { flex-direction: column; align-items: flex-start; }
@@ -1619,6 +1639,10 @@
 
   <footer>
     <strong>Methodology.</strong> Each team's own game sample is adaptive: early in a season it's a 10-game window bridging in the tail of last season (dropping its oldest game as each new current-season game arrives), and once a team has played 10 games in the current season alone, the bridge stops permanently and every new game just accumulates for the rest of that season (up to 38) rather than pushing anything out - so trends lean on last season's form early on and become pure current-season form as the season matures. Click any fixture's team names to see that exact game-by-game history. Each team gets a strength rating per market: its own rolling rate divided by the current league average (1.00 = exactly average, 1.30 = 30% above, 0.70 = 30% below). Matchup projections multiply attack strength &times; defense strength &times; league average - the standard expected-goals-style approach used across football analytics - so a big raw number racked up against weak opposition isn't treated the same as the same raw number against strong opposition. Lines are anchored at the standard main line real bookmakers actually use for each market (1.5 goals, 5.5 corners, 4.5 shots on target, 3.5 total cards) rather than derived from the projection - most books keep these standardized across teams and let the price reflect team strength instead of moving the line, so a heavy-corner side still gets offered 5.5, just at a much shorter price. Pick a different line from the dropdown on any signal to see an alt-line ladder around that anchor. Each line also shows a modeled fair odds estimate (Poisson model of the projection, no bookmaker margin) - an approximation to sanity-check against real quoted odds, not a substitute for them, since no live odds feed covers these specific team-level alt-line markets for free. The headline number is the projection versus the market's league average, so +2.1 means the projection sits 2.1 above what's typical for that market. The two hit-rate chips under each signal are each team's OWN historical rate AT the current line, on their OWN side of the market (e.g. how often the scorer's own games cleared it, and separately how often the conceder's own games did too) - always labeled by name, never blended into one number. Match cards sums both teams' own card rates directly (cards are additive, not a for/against pair) and checks each team's own match history for how often their combined-with-opponent total cleared the line - note real books usually price cards as "booking points" (yellow=10, red=25) rather than a raw count, so this market's line is a rougher match to a real cards market than the others. Newly promoted teams with fewer than 6 top-flight games are topped up with their most recent Championship form, flagged inline. Data: football-data.co.uk. This page surfaces statistical trends only &mdash; it is not betting advice, and past trends are not a guarantee of what happens next.
+    <div class="footer-brand">
+      <img class="footer-brand-logo" src="data:image/png;base64,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" alt="">
+      <span>ValueVault</span>
+    </div>
   </footer>
 
   <button class="slip-fab" id="slip-fab" type="button" aria-haspopup="dialog" aria-label="Open bet slip">
