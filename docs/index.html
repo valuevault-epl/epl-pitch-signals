@@ -1556,6 +1556,17 @@
     color: var(--ink);
   }
 
+  .tracker-leg-group + .tracker-leg-group { margin-top: 6px; }
+
+  .tracker-leg-fixture {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 10px;
+    color: var(--ink-faint);
+    line-height: 1.4;
+  }
+
   .tracker-leg-line {
     font-size: 12px;
     line-height: 1.7;
@@ -1764,7 +1775,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Sunday 06 September 2026, 19:55</div>
+      <div class="updated">Updated Sunday 06 September 2026, 20:01</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -3459,6 +3470,11 @@
   // but meaningless Won/Lost - checked everywhere a direction gets trusted, not just here.
   function isRealDirection(d) { return d === 'OVER' || d === 'UNDER'; }
 
+  // A leg's own label ("Everton shots on target") never says who they're playing - which fixture
+  // it's from only showed up at all if the market name happened to spell it out. Shown per leg
+  // (not once per bet) since a multi's legs aren't guaranteed to share one fixture.
+  function legFixtureHtml(l) { return l.fixture ? `<div class="tracker-leg-fixture">${l.fixture}</div>` : ''; }
+
   function gradeLeg(leg) {
     const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
     if (actual === undefined || actual === null) return 'Pending';
@@ -3661,7 +3677,10 @@
           const legStatus = l.status || 'Pending';
           const statusOptions = ['Pending', 'Won', 'Lost'].map(s =>
             `<option value="${s}"${legStatus === s ? ' selected' : ''}>${s}</option>`).join('');
-          return `<div class="tracker-leg-line">${l.label} ${lineHtml} <select class="tracker-edit-select tracker-leg-status-select" data-leg-index="${i}">${statusOptions}</select></div>`;
+          return `<div class="tracker-leg-group">
+            ${legFixtureHtml(l)}
+            <div class="tracker-leg-line">${l.label} ${lineHtml} <select class="tracker-edit-select tracker-leg-status-select" data-leg-index="${i}">${statusOptions}</select></div>
+          </div>`;
         }).join('');
         const isCustomPlatform = !PLATFORM_OPTIONS.includes(bet.platform);
         const platformOptions = PLATFORM_OPTIONS.map(p =>
@@ -3692,7 +3711,10 @@
         const legTag = l.status && l.status !== 'Pending'
           ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
         const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
-        return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
+        return `<div class="tracker-leg-group">
+          ${legFixtureHtml(l)}
+          <div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>
+        </div>`;
       }).join('');
       return `
       <tr>
