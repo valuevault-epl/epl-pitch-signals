@@ -18,6 +18,7 @@ matchup_engine.py), and the hit-rate shown is each team's own history AT that re
 """
 import json
 import re
+import time
 import numpy as np
 import pandas as pd
 import urllib.request
@@ -127,23 +128,55 @@ def fetch_openfootball_next_round(season_start_year, played_pairs):
     return []
 
 
+def _fetch_with_retries(url, retries=2, backoff=1.5):
+    """A handful of the 54 back-to-back requests fetch_current_data fires at football-data.co.uk
+    (27 seasons x 2 divisions, no delay between them) failing with a transient 503 is one thing -
+    that's what the per-file try/except below already tolerates. ALL of them failing at once
+    (confirmed in production: a GitHub Actions run got zero usable season files, crashing
+    load_results downstream with a cryptic "No objects to concatenate" rather than anything
+    pointing at the real cause) looks more like momentary rate-limiting from firing that many
+    requests at one host with no pacing at all, which a short retry-with-backoff can ride out
+    without needing to slow down the happy-path case where nothing is wrong."""
+    last_err = None
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=20) as r:
+                return r.read()
+        except Exception as e:
+            last_err = e
+            if attempt < retries:
+                time.sleep(backoff * (attempt + 1))
+    raise last_err
+
+
 def fetch_current_data():
     """Refetch all season files + upcoming fixtures - safe to call repeatedly (weekly)."""
     seasons = [f"{y % 100:02d}{(y + 1) % 100:02d}" for y in range(2000, 2027)]
     os.makedirs(os.path.join(WORKDIR, "seasons"), exist_ok=True)
+    ok, failed = 0, 0
     for div in ['E0', 'E1']:  # E1 = Championship, used as fallback for newly promoted teams
         for season in seasons:
             url = f"https://www.football-data.co.uk/mmz4281/{season}/{div}.csv"
             out_path = os.path.join(WORKDIR, "seasons", f"{div}_{season}.csv")
             try:
-                req = urllib.request.Request(url, headers=HEADERS)
-                with urllib.request.urlopen(req, timeout=20) as r:
-                    data = r.read()
+                data = _fetch_with_retries(url)
                 if len(data) > 500:
                     with open(out_path, 'wb') as f:
                         f.write(data)
+                    ok += 1
             except Exception:
-                pass  # season not started yet, or transient failure - fine, use what we have
+                failed += 1  # season not started yet, or a fetch that never recovered - fine
+                             # individually, use what we have; see the check just below for when
+                             # EVERY file failed, which isn't fine at all.
+
+    print(f"  Season file fetch: {ok} succeeded, {failed} failed/skipped "
+          f"(unstarted seasons count as failed here too, so some are always expected).")
+    if ok == 0:
+        raise RuntimeError(
+            "Every single football-data.co.uk season-file fetch failed this run - likely a site "
+            "outage or rate-limiting, not just one flaky request. Failing loudly here instead of "
+            "letting load_results() crash later with a much less obvious pandas error.")
 
     # Same tolerance as the season loop above, and for the same reason: confirmed in production
     # that football-data.co.uk can return a transient 503 here, and this used to be unguarded -
@@ -155,9 +188,7 @@ def fetch_current_data():
     # floor, and crucially match_archive - still completes and the tracker keeps grading.
     fixtures_path = os.path.join(WORKDIR, "fixtures_raw.csv")
     try:
-        req = urllib.request.Request("https://www.football-data.co.uk/fixtures.csv", headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=20) as r:
-            data = r.read()
+        data = _fetch_with_retries("https://www.football-data.co.uk/fixtures.csv")
         if len(data) > 500:
             with open(fixtures_path, 'wb') as f:
                 f.write(data)
