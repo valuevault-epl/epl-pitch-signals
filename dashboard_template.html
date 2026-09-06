@@ -614,15 +614,25 @@
 
   .modal-close:hover { color: var(--ink); border-color: var(--border-strong); }
 
-  /* Holds a "Last 10" section and (when the fixture has the split available) a "Last 10
-     (Home/Away)" section - each just a title followed by that window's own .signals list, the
-     exact same row markup/styling the fixture card itself uses. */
+  /* Two side-by-side columns - "Last 10" and "Last 10 (Home/Away)" - each just a title followed
+     by that window's own .signals list, the exact same row markup/styling the fixture card itself
+     uses. Side by side (not stacked) specifically so the same market's numbers under each window
+     can be compared at a glance, which is also why openGameModal aligns both columns to one fixed
+     row order instead of each column sorting itself by its own edge strength. */
   .modal-teams {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
     padding-bottom: 20px;
   }
+
+  @media (max-width: 700px) {
+    .modal-teams { grid-template-columns: 1fr; }
+  }
+
+  /* A fixture with no Home/Away split available renders only one column - span both grid tracks
+     so it isn't left stranded at half width with an empty gap beside it. */
+  .modal-column-solo { grid-column: 1 / -1; }
 
   .modal-section-title {
     font-family: "Barlow Condensed", sans-serif;
@@ -632,10 +642,9 @@
     letter-spacing: 0.06em;
     color: var(--ink-muted);
     padding-bottom: 6px;
+    margin-bottom: 4px;
     border-bottom: 1px solid var(--border);
   }
-
-  .modal-section-title:not(:first-child) { margin-top: 10px; }
 
   .modal-empty { color: var(--ink-faint); font-size: 13px; margin: 4px 0 0; }
 
@@ -1929,20 +1938,44 @@
 
   // ---------- Game modal ----------
   // The exact same signal rows the fixture card itself shows (Strong/Moderate/Weak tier, edge, hit
-  // rates) - both sample windows the card's own toggle switches between, shown together here
-  // instead of picking just one: "Last 10" (fx.signals, each team's blended recent form) and "Last
-  // 10 (Home/Away)" (fx.signals_venue, home team's last 10 AT HOME vs away team's last 10 AWAY).
-  // Skips the Home/Away section entirely for a fixture that never had that split available, same
-  // as the card's own toggle only appearing when fx.signals_venue exists.
+  // rates), as two side-by-side columns - one per sample window the card's own toggle switches
+  // between - instead of picking just one. Unlike renderSignalRowsFor (used by the fixture card),
+  // rows here are NOT sorted by each window's own edge strength: both columns use the same fixed
+  // market order, so market k sits at the same row in both columns and the two numbers for it can
+  // be compared directly. A market missing from one window's signals still gets a placeholder row
+  // there so the row that WOULD sit next to it in the other column doesn't shift up.
+  function renderAlignedSignalColumn(fx, activeSignals, orderedKeys) {
+    const sideLabels = sideLabelsFor(fx);
+    const fixtureLabel = `${fx.HomeTeam} v ${fx.AwayTeam}`;
+    return orderedKeys.map(k => {
+      const sig = activeSignals && activeSignals[k];
+      if (!sig) return `<div class="signal-row"><span class="modal-empty">${MARKET_LABELS[k] || k} - no data for this window</span></div>`;
+      const [teamLabel, oppLabel, side, teamVerb, oppVerb] = sideLabels[k] || [fx.HomeTeam, fx.AwayTeam, null, '', ''];
+      return renderSignalRow(sig, k, scaleFor(k), teamLabel, oppLabel, side, teamVerb, oppVerb, fixtureLabel, fx.Date);
+    }).join('');
+  }
+
   function openGameModal(home, away) {
     const fx = DATA.fixtures.find(f => f.HomeTeam === home && f.AwayTeam === away);
     document.getElementById('modal-title').textContent = `${home} v ${away}`;
-    const overallRows = fx ? renderSignalRowsFor(fx, fx.signals) : '';
-    let html = `<div class="modal-section-title">Last 10</div>
-      <div class="signals">${overallRows || '<p class="modal-empty">Not enough recent data for one or both teams yet.</p>'}</div>`;
-    if (fx && fx.signals_venue) {
-      html += `<div class="modal-section-title">Last 10 (Home/Away)</div>
-      <div class="signals">${renderSignalRowsFor(fx, fx.signals_venue)}</div>`;
+    if (!fx || !fx.signals) {
+      document.getElementById('modal-teams').innerHTML = '<p class="modal-empty">Not enough recent data for one or both teams yet.</p>';
+      document.getElementById('game-modal').hidden = false;
+      return;
+    }
+    const orderedKeys = MARKET_ORDER.filter(k => fx.signals[k] || (fx.signals_venue && fx.signals_venue[k]));
+    const soloClass = fx.signals_venue ? '' : ' modal-column-solo';
+    let html = `
+      <div class="modal-column${soloClass}">
+        <div class="modal-section-title">Last 10</div>
+        <div class="signals">${renderAlignedSignalColumn(fx, fx.signals, orderedKeys)}</div>
+      </div>`;
+    if (fx.signals_venue) {
+      html += `
+      <div class="modal-column">
+        <div class="modal-section-title">Last 10 (Home/Away)</div>
+        <div class="signals">${renderAlignedSignalColumn(fx, fx.signals_venue, orderedKeys)}</div>
+      </div>`;
     }
     document.getElementById('modal-teams').innerHTML = html;
     document.getElementById('game-modal').hidden = false;
