@@ -3044,7 +3044,7 @@
   function betToDbRow(bet) {
     return {
       id: bet.id, user_id: currentUser.id, placed_at: bet.placedAt, legs: bet.legs,
-      platform: bet.platform, odds_taken: bet.oddsTaken, stake: bet.stake, unit_size: bet.unitSize ?? null,
+      platform: bet.platform, odds_taken: bet.oddsTaken, stake: bet.stake,
       status: bet.status, settled_at: bet.settledAt, profit: bet.profit,
     };
   }
@@ -3053,10 +3053,6 @@
     return {
       id: row.id, placedAt: row.placed_at, legs: row.legs, platform: row.platform,
       oddsTaken: Number(row.odds_taken), stake: Number(row.stake), status: row.status,
-      // Bets placed before this field existed have no snapshot - fall back to whatever the live
-      // unit size is when something needs one (analytics' units toggle), an estimate rather than
-      // a rewrite of history that can't actually be known for those older rows.
-      unitSize: (row.unit_size === null || row.unit_size === undefined) ? null : Number(row.unit_size),
       settledAt: row.settled_at, profit: (row.profit === null || row.profit === undefined) ? null : Number(row.profit),
     };
   }
@@ -3104,7 +3100,7 @@
       placedAt: new Date().toISOString(),
       legs: slipLegs.map(l => ({ ...l, status: 'Pending' })),
       platform: platformSel === 'Other' ? platformOther : platformSel,
-      oddsTaken: odds, stake, unitSize,
+      oddsTaken: odds, stake,
       status: 'Pending', settledAt: null, profit: null,
     };
 
@@ -3314,38 +3310,40 @@
   }
 
   // Two distinct, permanent gaps in already-settled legacy bets, each recoverable from facts we
-  // already trust rather than guessed: (1) a leg's own .status can get wiped back to Pending by an
-  // edit that touches the bet without touching that leg (the old pre-fix edit bug did this
-  // unconditionally) - once the bet itself is settled, gradeTrackedBet never revisits that leg to
-  // re-populate it, so it just stays blank forever. Re-grading it directly (same math as normal
-  // settling) fixes it, as long as the leg still has a direction to grade against. (2) a leg's own
-  // .direction can be missing entirely on bets placed before Over/Under became a per-leg choice -
-  // unrecoverable from the leg alone, but NOT unrecoverable in general: a Won multi means every leg
-  // in it won, and a single-leg bet's own status always equals that one leg's status, so either one
-  // pins down the leg's true outcome, and the archived actual result then tells us which direction
-  // must have produced that outcome. Both repairs are pure display-truth recovery, never a guess -
+  // already trust rather than guessed: (1) a leg's own .status can get stuck wrong - wiped to
+  // Pending, or left at whatever it was before an edit that touched the bet without touching that
+  // leg (the old pre-fix edit bug did this unconditionally) - and once the bet itself is settled,
+  // gradeTrackedBet never revisits that leg to correct it, so a wrong value sticks forever. (2) a
+  // leg's own .direction can be missing entirely on bets placed before Over/Under became a per-leg
+  // choice - unrecoverable from the leg alone, but NOT unrecoverable in general: a Won multi means
+  // every leg in it won, and a single-leg bet's own status always equals that one leg's status, so
+  // either one pins down the leg's true outcome, and the archived actual result then tells us which
+  // direction must have produced it. Both repairs are pure display-truth recovery, never a guess -
   // and once found, worth persisting so the gap doesn't have to be recomputed every render.
   function repairLeg(bet, leg) {
-    let changed = false;
-    if (leg.direction && (!leg.status || leg.status === 'Pending') && bet.status !== 'Pending') {
+    // Case 1: direction is already known - grade straight from the archive, the same comparison
+    // normal settling uses, regardless of leg count. This is authoritative, so any existing
+    // leg.status - blank, stale, or flat-out wrong - gets overwritten with it unconditionally
+    // rather than only when it looked empty (which is what let a Won leg keep showing Lost).
+    if (leg.direction) {
       const graded = gradeLeg(leg);
-      if (graded !== 'Pending') { leg.status = graded; changed = true; }
+      if (graded !== 'Pending' && leg.status !== graded) { leg.status = graded; return true; }
+      return false;
     }
-    if (!leg.direction) {
-      let knownStatus = leg.status;
-      if (bet.status === 'Won') knownStatus = 'Won';
-      else if (bet.status === 'Lost' && bet.legs.length === 1) knownStatus = 'Lost';
-      if (knownStatus === 'Won' || knownStatus === 'Lost') {
-        const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
-        if (actual !== undefined && actual !== null && actual !== leg.line) {
-          const wentOver = actual > leg.line;
-          leg.direction = (knownStatus === 'Won') === wentOver ? 'OVER' : 'UNDER';
-          if (!leg.status || leg.status === 'Pending') leg.status = knownStatus;
-          changed = true;
-        }
-      }
-    }
-    return changed;
+    // Case 2: direction was never recorded. Only recoverable when this leg's own true outcome is
+    // pinned down some other way: a Won multi (every leg won) or a single-leg bet (its status IS
+    // that leg's status). A Lost multi doesn't qualify - which leg(s) actually lost isn't knowable
+    // from the bet's overall status alone, so it's left alone rather than guessed.
+    let knownStatus = null;
+    if (bet.status === 'Won') knownStatus = 'Won';
+    else if (bet.status === 'Lost' && bet.legs.length === 1) knownStatus = 'Lost';
+    if (!knownStatus) return false;
+    const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+    if (actual === undefined || actual === null || actual === leg.line) return false;
+    const wentOver = actual > leg.line;
+    leg.direction = (knownStatus === 'Won') === wentOver ? 'OVER' : 'UNDER';
+    leg.status = knownStatus;
+    return true;
   }
 
   async function repairLegacyLegs() {
@@ -3513,14 +3511,28 @@
     </svg>`;
   }
 
-  // 'money' | 'units'. A bet's OWN unit_size snapshot converts it (falling back to the live
-  // unitSize for bets placed before that field existed) - never the CURRENT live setting for
-  // every bet, which would silently reshape old bets' unit counts every time unit size changes.
+  // 'money' | 'units'. Units used to mean "this bet's stake divided by whatever $/unit setting
+  // was in effect" - which meant every old bet's unit count silently reshaped itself whenever that
+  // setting changed (or, until it's actually persisted, just reverted to a hardcoded default on
+  // every reload regardless of what was typed in). Units mode now means something a bet can never
+  // lose: computeStakeUnits(oddsTaken) is the app's own staking curve (the same one the slip's
+  // stake suggestion already uses) - "the units this bet was always supposed to represent," a pure
+  // function of the odds actually taken and nothing else. Money mode is the mirror image: it never
+  // touches units at all, just the real dollars actually staked and won/lost.
   let analyticsUnitMode = 'money';
   let analyticsShowAdvanced = false;
 
-  function betUnitSize(bet) { return (bet.unitSize && bet.unitSize > 0) ? bet.unitSize : (unitSize || 20); }
-  function toDisplayAmount(bet, dollars) { return analyticsUnitMode === 'units' ? dollars / betUnitSize(bet) : dollars; }
+  function unitsStaked(bet) { return computeStakeUnits(bet.oddsTaken); }
+  // Profit as a multiple of stake is (odds-1) on a win, -1 on a loss, regardless of what stake is
+  // denominated in - so the units figure follows directly from unitsStaked and the bet's own
+  // result, without ever needing a dollars-per-unit conversion.
+  function unitsProfit(bet) {
+    if (bet.status === 'Won') return unitsStaked(bet) * (bet.oddsTaken - 1);
+    if (bet.status === 'Lost') return -unitsStaked(bet);
+    return 0;
+  }
+  function toDisplayStake(bet) { return analyticsUnitMode === 'units' ? unitsStaked(bet) : bet.stake; }
+  function toDisplayProfit(bet) { return analyticsUnitMode === 'units' ? unitsProfit(bet) : bet.profit; }
   function fmtAmt(n) { return analyticsUnitMode === 'units' ? `${n.toFixed(1)}u` : `$${n.toFixed(2)}`; }
   function fmtAmtSigned(n) { return analyticsUnitMode === 'units' ? `${n >= 0 ? '+' : ''}${n.toFixed(1)}u` : fmtPL(n); }
 
@@ -3544,8 +3556,8 @@
     }
 
     let cumulative = 0;
-    const points = settled.map(b => { cumulative = round2(cumulative + toDisplayAmount(b, b.profit)); return cumulative; });
-    const totalStakedDisplay = settled.reduce((s, b) => s + toDisplayAmount(b, b.stake), 0);
+    const points = settled.map(b => { cumulative = round2(cumulative + toDisplayProfit(b)); return cumulative; });
+    const totalStakedDisplay = settled.reduce((s, b) => s + toDisplayStake(b), 0);
     const totalStakedDollars = settled.reduce((s, b) => s + b.stake, 0);
     const totalProfitDollars = settled.reduce((s, b) => s + b.profit, 0);
     const wins = settled.filter(b => b.status === 'Won').length;
@@ -3561,16 +3573,12 @@
 
     if (analyticsShowAdvanced) {
       const avgOdds = settled.reduce((s, b) => s + b.oddsTaken, 0) / settled.length;
-      // "Placed" (stake) and "profited" (P/L) are two different questions, each worth its own box -
-      // the earlier single "Avg units/bet" stat didn't say which one it meant, and with unitSize
-      // silently stuck on a fallback default (see betUnitSize/loadSlipFromCloud - the DB column
-      // this reads from doesn't exist yet, so a custom unit size never actually persists) it looked
-      // wrong for a second, unrelated reason on top of that ambiguity.
+      // "Placed" (stake) and "profited" (P/L) are two different questions, each worth its own box.
       const avgStakePlaced = totalStakedDisplay / settled.length;
-      const avgProfitPerBet = settled.reduce((s, b) => s + toDisplayAmount(b, b.profit), 0) / settled.length;
+      const avgProfitPerBet = settled.reduce((s, b) => s + toDisplayProfit(b), 0) / settled.length;
       const avgLegs = settled.reduce((s, b) => s + b.legs.length, 0) / settled.length;
-      const winAmounts = settled.filter(b => b.status === 'Won').map(b => toDisplayAmount(b, b.profit));
-      const lossAmounts = settled.filter(b => b.status === 'Lost').map(b => toDisplayAmount(b, b.profit));
+      const winAmounts = settled.filter(b => b.status === 'Won').map(b => toDisplayProfit(b));
+      const lossAmounts = settled.filter(b => b.status === 'Lost').map(b => toDisplayProfit(b));
       const biggestWin = winAmounts.length ? Math.max(...winAmounts) : 0;
       const biggestLoss = lossAmounts.length ? Math.min(...lossAmounts) : 0;
       // Current streak: walk back from the most recently settled bet while status keeps matching.
