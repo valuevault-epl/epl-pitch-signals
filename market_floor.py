@@ -249,9 +249,9 @@ def build_team_match_archive(results, since_season=MATCH_ARCHIVE_START):
 # used ONLY to fill match_archive gaps for grading - never merged into `results` itself, and never
 # allowed to override a football-data.co.uk entry that already exists for the same match.
 # ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP, _espn_get and _espn_match_boxscore live in trend_engine.py
-# (imported above) since that file's own ESPN-based helpers (fetch_espn_recent_played_pairs,
-# fetch_espn_current_season_results) need the identical scoreboard/team-name/box-score
-# infrastructure - one shared implementation to keep correct beats several drifting copies.
+# (imported above) since that file's own ESPN-based helper (fetch_espn_recent_played_pairs) needs
+# the identical scoreboard/team-name/box-score infrastructure - one shared implementation to keep
+# correct beats several drifting copies.
 def fetch_espn_recent_matches(days_back=6):
     """Recently-finished EPL matches from ESPN's scoreboard, in the same shape
     build_team_match_archive produces - a same-day-ish stopgap for grading (see the note above).
