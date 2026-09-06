@@ -21,12 +21,12 @@ import datetime
 import json
 import os
 import time
-import urllib.request
 import pandas as pd
 
 from trend_engine import (
     load_results, build_team_history, league_averages_from_matches, build_all_trends, WORKDIR,
     compute_team_card_count, HEADERS, ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP, _espn_get,
+    _espn_match_boxscore,
 )
 from matchup_engine import build_fixture_signals, ANCHOR_LINE
 from backtest_2025_26 import tier, blended_hit_rate, grade_signal
@@ -248,13 +248,10 @@ def build_team_match_archive(results, since_season=MATCH_ARCHIVE_START):
 # understat.com, which this project already scrapes) scoreboard is typically same-day, so it's
 # used ONLY to fill match_archive gaps for grading - never merged into `results` itself, and never
 # allowed to override a football-data.co.uk entry that already exists for the same match.
-# ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP and _espn_get live in trend_engine.py (imported above) since
-# trend_engine.py's own fetch_espn_recent_played_pairs needs the identical scoreboard/team-name
-# infrastructure for a lighter purpose (freshening "played", not full box scores) - one shared
-# team-name map to keep correct beats two drifting copies.
-ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
-
-
+# ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP, _espn_get and _espn_match_boxscore live in trend_engine.py
+# (imported above) since that file's own ESPN-based helpers (fetch_espn_recent_played_pairs,
+# fetch_espn_current_season_results) need the identical scoreboard/team-name/box-score
+# infrastructure - one shared implementation to keep correct beats several drifting copies.
 def fetch_espn_recent_matches(days_back=6):
     """Recently-finished EPL matches from ESPN's scoreboard, in the same shape
     build_team_match_archive produces - a same-day-ish stopgap for grading (see the note above).
@@ -271,44 +268,16 @@ def fetch_espn_recent_matches(days_back=6):
 
     archive = {}
     for event in board.get('events', []):
-        try:
-            comp = event['competitions'][0]
-            if not comp['status']['type'].get('completed'):
-                continue
-            home_c = next(t for t in comp['competitors'] if t['homeAway'] == 'home')
-            away_c = next(t for t in comp['competitors'] if t['homeAway'] == 'away')
-            home = ESPN_TEAM_MAP.get(home_c['team']['displayName'])
-            away = ESPN_TEAM_MAP.get(away_c['team']['displayName'])
-            if not home or not away:
-                continue
-            match_date = event['date'][:10]  # ISO date prefix, e.g. "2026-08-30T13:00Z" -> date
-            key = f"{home}|{away}|{match_date}"
-
-            summary = _espn_get(f"{ESPN_SUMMARY_URL}?event={event['id']}")
-            time.sleep(0.3)  # polite pacing against an undocumented, unrate-limited-by-us endpoint
-            stat_teams = {t['team']['displayName']: t.get('statistics', [])
-                          for t in summary.get('boxscore', {}).get('teams', [])}
-
-            def stat(team_name, stat_name):
-                for s in stat_teams.get(team_name, []):
-                    if s.get('name') == stat_name:
-                        try:
-                            return int(float(s['displayValue']))
-                        except (TypeError, ValueError):
-                            return None
-                return None
-
-            home_name, away_name = home_c['team']['displayName'], away_c['team']['displayName']
-            home_cards = (stat(home_name, 'yellowCards') or 0) + (stat(home_name, 'redCards') or 0)
-            away_cards = (stat(away_name, 'yellowCards') or 0) + (stat(away_name, 'redCards') or 0)
-            archive[key] = {
-                'home_goals': int(home_c['score']), 'away_goals': int(away_c['score']),
-                'home_corners': stat(home_name, 'wonCorners'), 'away_corners': stat(away_name, 'wonCorners'),
-                'home_sot': stat(home_name, 'shotsOnTarget'), 'away_sot': stat(away_name, 'shotsOnTarget'),
-                'match_cards': home_cards + away_cards,
-            }
-        except Exception:
-            continue  # one malformed event shouldn't drop every other one
+        box = _espn_match_boxscore(event)
+        if not box:
+            continue
+        key = f"{box['home']}|{box['away']}|{box['date']}"
+        archive[key] = {
+            'home_goals': box['home_goals'], 'away_goals': box['away_goals'],
+            'home_corners': box['home_corners'], 'away_corners': box['away_corners'],
+            'home_sot': box['home_sot'], 'away_sot': box['away_sot'],
+            'match_cards': (box['home_yellow'] + box['home_red']) + (box['away_yellow'] + box['away_red']),
+        }
     return archive
 
 

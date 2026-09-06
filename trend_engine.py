@@ -230,6 +230,142 @@ def fetch_espn_recent_played_pairs(days_back=6):
     return pairs
 
 
+# Box-score detail for grading (market_floor.fetch_espn_recent_matches) and the full season-CSV
+# rebuild below (fetch_espn_current_season_results) need the identical per-match extraction, just
+# packaged differently afterward (a keyed archive dict vs. season-CSV-shaped rows) - shared here so
+# there's one place that knows how to read an ESPN event's box score, not two copies that could
+# quietly drift apart.
+ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
+
+
+def _espn_match_boxscore(event):
+    """One completed ESPN scoreboard event's box score, or None if it isn't usable (not completed
+    yet, a team not in ESPN_TEAM_MAP, or a fetch/parse problem - never allowed to raise and take
+    down the rest of the season's fetch with it). Yellow/red cards are kept separate (not summed)
+    since football-data.co.uk's own HY/AY/HR/AR columns - and everything downstream that reads
+    them - expect them that way."""
+    try:
+        comp = event['competitions'][0]
+        if not comp['status']['type'].get('completed'):
+            return None
+        home_c = next(t for t in comp['competitors'] if t['homeAway'] == 'home')
+        away_c = next(t for t in comp['competitors'] if t['homeAway'] == 'away')
+        home = ESPN_TEAM_MAP.get(home_c['team']['displayName'])
+        away = ESPN_TEAM_MAP.get(away_c['team']['displayName'])
+        if not home or not away:
+            return None
+        match_date = event['date'][:10]  # ISO date prefix, e.g. "2026-08-30T13:00Z" -> date
+
+        summary = _espn_get(f"{ESPN_SUMMARY_URL}?event={event['id']}")
+        time.sleep(0.3)  # polite pacing against an undocumented, unrate-limited-by-us endpoint
+        stat_teams = {t['team']['displayName']: t.get('statistics', [])
+                      for t in summary.get('boxscore', {}).get('teams', [])}
+
+        def stat(team_name, stat_name):
+            for s in stat_teams.get(team_name, []):
+                if s.get('name') == stat_name:
+                    try:
+                        return int(float(s['displayValue']))
+                    except (TypeError, ValueError):
+                        return None
+            return None
+
+        home_name, away_name = home_c['team']['displayName'], away_c['team']['displayName']
+        return {
+            'home': home, 'away': away, 'date': match_date,
+            'home_goals': int(home_c['score']), 'away_goals': int(away_c['score']),
+            'home_corners': stat(home_name, 'wonCorners'), 'away_corners': stat(away_name, 'wonCorners'),
+            'home_sot': stat(home_name, 'shotsOnTarget'), 'away_sot': stat(away_name, 'shotsOnTarget'),
+            'home_yellow': stat(home_name, 'yellowCards') or 0, 'away_yellow': stat(away_name, 'yellowCards') or 0,
+            'home_red': stat(home_name, 'redCards') or 0, 'away_red': stat(away_name, 'redCards') or 0,
+        }
+    except Exception:
+        return None
+
+
+def fetch_espn_current_season_results(season_start_year, existing=None):
+    """This season's completed EPL matches from ESPN, shaped exactly like a football-data.co.uk
+    season CSV - same columns load_results() expects (Date, HomeTeam, AwayTeam, FTHG, FTAG, HC,
+    AC, HST, AST, HY, AY, HR, AR, FTR) - so it can be written straight over seasons/E0_{season}.csv
+    and read back completely transparently by everything else that touches that file
+    (build_team_history, market_floor.py's own load_results('E0') call, and so on). Built for the
+    frequent auto-refresh (see REFRESH_MODE in __main__) so a routine check doesn't have to touch
+    football-data.co.uk at all - the weekly full refresh still re-syncs this same season from
+    football-data.co.uk too, so any ESPN/football-data.co.uk stat-definition drift never compounds
+    for more than a week before being corrected.
+
+    `existing`: the season DataFrame already on disk from the last run (or None) - a match already
+    present there (keyed by home|away|date) is trusted as-is rather than re-fetched, since a
+    completed match's stats don't change once final. Without this, every run would re-issue one
+    summary API call per completed match EVER this season, growing without bound as the season
+    goes on, for data that's already been fetched and will never change.
+
+    One scoreboard call covers the whole season (ESPN's default page size silently truncates at
+    100 events; limit=1000 lifts that comfortably past a 380-fixture season), then one summary
+    call per newly-completed match for its box score. Returns `existing` unchanged (or an empty,
+    correctly-shaped frame if there was none) on total fetch failure - this is a swap-in
+    replacement for one file, not something that should ever crash the pipeline that calls it."""
+    columns = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'HC', 'AC', 'HST', 'AST',
+               'HY', 'AY', 'HR', 'AR', 'FTR']
+    empty = pd.DataFrame(columns=columns)
+    season_end_year = season_start_year + 1
+    url = f"{ESPN_SCOREBOARD_URL}?dates={season_start_year}0801-{season_end_year}0801&limit=1000"
+    try:
+        board = _espn_get(url)
+    except Exception:
+        return existing if existing is not None else empty
+
+    existing = existing if existing is not None else empty
+    # `existing` can be a mix of formats: ISO from an earlier ESPN write, DD/MM/YYYY if the file
+    # still has rows from football-data.co.uk itself (the weekly full refresh re-syncs this same
+    # season from there too) - format='mixed' with dayfirst=True (matching load_results' own
+    # parsing) is needed so a football-data.co.uk row's date doesn't get misread and produce a key
+    # that never matches, which would silently re-fetch and re-append a match already on file.
+    existing_keys = set(zip(existing['HomeTeam'], existing['AwayTeam'],
+                             pd.to_datetime(existing['Date'], format='mixed', dayfirst=True).dt.strftime('%Y-%m-%d'))) if len(existing) else set()
+
+    new_rows = []
+    for event in board.get('events', []):
+        try:
+            comp = event['competitions'][0]
+            if not comp['status']['type'].get('completed'):
+                continue
+            home_c = next(t for t in comp['competitors'] if t['homeAway'] == 'home')
+            away_c = next(t for t in comp['competitors'] if t['homeAway'] == 'away')
+            home = ESPN_TEAM_MAP.get(home_c['team']['displayName'])
+            away = ESPN_TEAM_MAP.get(away_c['team']['displayName'])
+            if not home or not away or (home, away, event['date'][:10]) in existing_keys:
+                continue
+        except Exception:
+            continue
+
+        box = _espn_match_boxscore(event)
+        if not box:
+            continue
+        result = 'H' if box['home_goals'] > box['away_goals'] else 'A' if box['away_goals'] > box['home_goals'] else 'D'
+        # DD/MM/YYYY (football-data.co.uk's own convention), not box['date']'s ISO string as-is -
+        # pandas' format='mixed' + dayfirst=True (what load_results/this function's own dedup key
+        # both parse with, to correctly read football-data.co.uk's genuinely day-first rows) turns
+        # out to silently MISPARSE an unambiguous ISO date like "2026-09-05" as 9 May whenever both
+        # components are <=12 (confirmed directly: pd.to_datetime(['2026-09-05'], format='mixed',
+        # dayfirst=True) -> 2026-05-09) - a real pandas quirk, not a mistake in the date itself.
+        # Writing every row in the one format the file's readers already assume sidesteps that
+        # entirely rather than depending on 'mixed' inference to guess right.
+        date_ddmmyyyy = datetime.datetime.strptime(box['date'], '%Y-%m-%d').strftime('%d/%m/%Y')
+        new_rows.append({
+            'Date': date_ddmmyyyy, 'HomeTeam': box['home'], 'AwayTeam': box['away'],
+            'FTHG': box['home_goals'], 'FTAG': box['away_goals'],
+            'HC': box['home_corners'], 'AC': box['away_corners'],
+            'HST': box['home_sot'], 'AST': box['away_sot'],
+            'HY': box['home_yellow'], 'AY': box['away_yellow'],
+            'HR': box['home_red'], 'AR': box['away_red'], 'FTR': result,
+        })
+
+    if not new_rows:
+        return existing
+    return pd.concat([existing, pd.DataFrame(new_rows, columns=columns)], ignore_index=True)
+
+
 def _fetch_with_retries(url, retries=2, backoff=1.5):
     """A handful of the 54 back-to-back requests fetch_current_data fires at football-data.co.uk
     (27 seasons x 2 divisions, no delay between them) failing with a transient 503 is one thing -
@@ -252,8 +388,21 @@ def _fetch_with_retries(url, retries=2, backoff=1.5):
     raise last_err
 
 
-def fetch_current_data():
-    """Refetch all season files + upcoming fixtures - safe to call repeatedly (weekly)."""
+def fetch_current_data(mode='full'):
+    """Refetch all season files + upcoming fixtures - safe to call repeatedly (weekly).
+
+    mode='quick' skips football-data.co.uk entirely (season files AND fixtures.csv) and returns
+    immediately - the frequent auto-refresh's job is catching new results/round changes promptly,
+    which doesn't need football-data.co.uk once ESPN is supplying the current season instead (see
+    fetch_espn_current_season_results, called separately by __main__ since it writes straight over
+    the current season's own cached file rather than needing anything from this function). The 53
+    other, purely historical season files never change once their season ends, so there's nothing
+    for a routine 2-hourly check to gain by re-fetching them - only the weekly 'full' run does
+    that, which is also when football-data.co.uk's own current-season numbers get re-synced,
+    catching any ESPN/football-data.co.uk stat-definition drift before it can compound."""
+    if mode == 'quick':
+        print("  Quick mode: skipping football-data.co.uk entirely (current season comes from ESPN - see below).")
+        return
     seasons = [f"{y % 100:02d}{(y + 1) % 100:02d}" for y in range(2000, 2027)]
     os.makedirs(os.path.join(WORKDIR, "seasons"), exist_ok=True)
     ok, failed = 0, 0
@@ -554,8 +703,43 @@ def build_all_trends(team_games, league_avgs, window=ROLLING_WINDOW):
 
 
 if __name__ == '__main__':
-    print("Fetching latest data...")
-    fetch_current_data()
+    # 'full' (default - unset REFRESH_MODE, or anything other than exactly 'quick') is today's
+    # existing behavior unchanged: football-data.co.uk for everything. 'quick' is for the frequent
+    # auto-refresh only (set by the GitHub Actions workflow for its 2-hourly runs) - see
+    # fetch_current_data's docstring for why that split exists.
+    REFRESH_MODE = os.environ.get('REFRESH_MODE', 'full')
+    print(f"Fetching latest data... (mode={REFRESH_MODE})")
+    fetch_current_data(mode=REFRESH_MODE)
+
+    if REFRESH_MODE == 'quick':
+        current_season = current_season_code()
+        season_start_year = int(f"20{current_season[:2]}")
+        current_season_path = os.path.join(WORKDIR, "seasons", f"E0_{current_season}.csv")
+        existing = None
+        if os.path.exists(current_season_path):
+            try:
+                existing = pd.read_csv(current_season_path, encoding='latin1')
+            except Exception:
+                existing = None
+        espn_season = fetch_espn_current_season_results(season_start_year, existing=existing)
+        if len(espn_season):
+            os.makedirs(os.path.join(WORKDIR, "seasons"), exist_ok=True)
+            espn_season.to_csv(current_season_path, index=False)
+            new_count = len(espn_season) - (len(existing) if existing is not None else 0)
+            print(f"  ESPN current-season refresh: {len(espn_season)} completed match(es) total "
+                  f"({new_count} new this run) written to {current_season_path}")
+        else:
+            print("  ESPN current-season refresh: no completed matches yet, or the fetch failed - "
+                  "leaving any cached file as-is.")
+        # Quick mode never fetches historical seasons itself - if NONE are cached at all (no prior
+        # full run has ever succeeded here), there's genuinely nothing to build trends from yet,
+        # same unrecoverable case fetch_current_data's own check guards against in full mode.
+        if not glob.glob(os.path.join(WORKDIR, "seasons", "E0_*.csv")):
+            raise RuntimeError(
+                "Quick mode has no cached season files to work from at all (no prior 'full' "
+                "refresh has ever succeeded here) - nothing to build trends from yet. Run in "
+                "'full' mode first, or wait for the weekly full refresh.")
+
     results = load_results('E0')
     results_championship = load_results('E1')
     print(f"Loaded {len(results)} PL results (latest: {results['Date'].max()}), "

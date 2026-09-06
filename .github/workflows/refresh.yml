@@ -35,7 +35,32 @@ jobs:
       - name: Install dependencies
         run: pip install pandas numpy
 
+      # seasons/*.csv is gitignored (fetched fresh, not committed) - on a hosted runner that means
+      # a completely empty checkout every single run, with nothing for fetch_current_data's own
+      # cache-fallback (see trend_engine.py) to fall back to during a football-data.co.uk outage,
+      # and nothing for REFRESH_MODE=quick below to build the current season on top of. Restoring
+      # the last run's own seasons/ directory here closes that gap: this key never matches exactly
+      # (github.run_id is unique per run), so restore-keys always pulls the most recent prior save,
+      # and the post-job save step then stores whatever's on disk now - including this run's own
+      # ESPN-refreshed current season - under a new key for the next run to restore in turn.
+      - name: Restore season data cache
+        uses: actions/cache@v4
+        with:
+          path: seasons
+          key: seasons-${{ github.run_id }}
+          restore-keys: |
+            seasons-
+
+      # The Wednesday cron (and a manual run) does today's full football-data.co.uk refresh,
+      # unchanged - including re-syncing the current season from there too, so any drift between
+      # ESPN's and football-data.co.uk's own stat definitions never compounds for more than a
+      # week. The frequent matchday crons run 'quick' instead: they skip football-data.co.uk
+      # entirely and pull just the current season from ESPN (see fetch_current_data and
+      # fetch_espn_current_season_results in trend_engine.py) - the thing actually worth checking
+      # every couple of hours, without re-fetching 53 season files that never change in between.
       - name: Run the pipeline
+        env:
+          REFRESH_MODE: ${{ github.event.schedule == '0 0 * * 3' && 'full' || (github.event.schedule && 'quick' || 'full') }}
         run: |
           python trend_engine.py
           python matchup_engine.py
