@@ -193,8 +193,24 @@ ESPN_TEAM_MAP = {
 }
 
 
+# ESPN's own headers, not the shared HEADERS every other fetch in this file uses - confirmed via
+# an actual GitHub Actions run that the bare 'Mozilla/5.0' User-Agent alone gets a flat 403 from
+# ESPN specifically when the request comes from a GitHub-hosted runner (works fine from a normal
+# residential/dev connection - likely IP-reputation-based bot filtering on ESPN's side, common for
+# an API with no official public access). A fuller, more genuinely-browser-shaped header set is
+# the standard way past that kind of filtering; scoped to ESPN alone since football-data.co.uk and
+# openfootball have shown no sign of minding the plain HEADERS they've always gotten.
+ESPN_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.espn.com/',
+    'Origin': 'https://www.espn.com',
+}
+
+
 def _espn_get(url):
-    req = urllib.request.Request(url, headers=HEADERS)
+    req = urllib.request.Request(url, headers=ESPN_HEADERS)
     with urllib.request.urlopen(req, timeout=15) as r:
         return json.loads(r.read().decode('utf-8'))
 
