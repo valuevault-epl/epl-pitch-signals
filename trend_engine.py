@@ -16,6 +16,7 @@ these markets, so instead of testing one hardcoded line, each signal recommends 
 derived from the projection with a bit of leeway built in (see LEEWAY / recommend_line in
 matchup_engine.py), and the hit-rate shown is each team's own history AT that recommended line.
 """
+import glob
 import json
 import re
 import time
@@ -161,6 +162,74 @@ def fetch_openfootball_rounds(season_start_year, played_pairs):
     return match_rounds, current_round
 
 
+# football-data.co.uk's season results CSV stays the sole source for every historical trend/floor
+# computation and the var_era_ledger - mixing stat-counting conventions between providers (e.g.
+# what counts as a "shot on target") into that permanent record would be a much worse problem than
+# a slow refresh. But football-data.co.uk can lag a day or more posting a round's results (or, on a
+# bad day, be down entirely - see fetch_current_data's cache fallback above), which is exactly the
+# window that leaves "what's been played" stale right when it matters most: a just-finished bet
+# that needs grading, or a round that should have already advanced. ESPN's free (undocumented, no
+# official ToS coverage - same risk profile as understat.com, which this project already scrapes)
+# scoreboard is typically same-day, so it's used ONLY to keep that "played" signal current - never
+# merged into `results` itself, and never allowed to override a football-data.co.uk entry that
+# already exists for the same match. market_floor.py's fetch_espn_recent_matches does the same job
+# with full box-score detail for match_archive grading; this lighter version only needs to know
+# WHICH pairs are done, not by how much, so it's a single scoreboard call rather than one call per
+# match.
+ESPN_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+
+# ESPN spells out full club names; map to football-data.co.uk's short names (verified directly
+# against ESPN's own /teams endpoint for the current 20 PL clubs) so pairs line up with what
+# results/fixtures/tracked bets already use. A team ESPN returns that isn't in this map (mid-season
+# promotion/relegation naming drift) is skipped rather than guessed at.
+ESPN_TEAM_MAP = {
+    'AFC Bournemouth': 'Bournemouth', 'Arsenal': 'Arsenal', 'Aston Villa': 'Aston Villa',
+    'Brentford': 'Brentford', 'Brighton & Hove Albion': 'Brighton', 'Chelsea': 'Chelsea',
+    'Coventry City': 'Coventry', 'Crystal Palace': 'Crystal Palace', 'Everton': 'Everton',
+    'Fulham': 'Fulham', 'Hull City': 'Hull', 'Ipswich Town': 'Ipswich', 'Leeds United': 'Leeds',
+    'Liverpool': 'Liverpool', 'Manchester City': 'Man City', 'Manchester United': 'Man United',
+    'Newcastle United': 'Newcastle', 'Nottingham Forest': "Nott'm Forest", 'Sunderland': 'Sunderland',
+    'Tottenham Hotspur': 'Tottenham',
+}
+
+
+def _espn_get(url):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return json.loads(r.read().decode('utf-8'))
+
+
+def fetch_espn_recent_played_pairs(days_back=6):
+    """(HomeTeam, AwayTeam) pairs ESPN shows as completed in the last `days_back` days - a single,
+    cheap scoreboard call (unlike market_floor.fetch_espn_recent_matches, this never fetches a
+    per-match box score) used only to keep played/not-played current when football-data.co.uk's
+    own results are stale or unreachable. Returns an empty set on any fetch/parse problem, same
+    convention as fetch_openfootball_next_round: a convenience supplement that should never block
+    the pipeline it's supplementing."""
+    today = datetime.date.today()
+    start = today - datetime.timedelta(days=days_back)
+    date_range = f"{start.strftime('%Y%m%d')}-{today.strftime('%Y%m%d')}"
+    try:
+        board = _espn_get(f"{ESPN_SCOREBOARD_URL}?dates={date_range}")
+    except Exception:
+        return set()
+    pairs = set()
+    for event in board.get('events', []):
+        try:
+            comp = event['competitions'][0]
+            if not comp['status']['type'].get('completed'):
+                continue
+            home_c = next(t for t in comp['competitors'] if t['homeAway'] == 'home')
+            away_c = next(t for t in comp['competitors'] if t['homeAway'] == 'away')
+            home = ESPN_TEAM_MAP.get(home_c['team']['displayName'])
+            away = ESPN_TEAM_MAP.get(away_c['team']['displayName'])
+            if home and away:
+                pairs.add((home, away))
+        except Exception:
+            continue  # one malformed event shouldn't drop every other one
+    return pairs
+
+
 def _fetch_with_retries(url, retries=2, backoff=1.5):
     """A handful of the 54 back-to-back requests fetch_current_data fires at football-data.co.uk
     (27 seasons x 2 divisions, no delay between them) failing with a transient 503 is one thing -
@@ -206,10 +275,25 @@ def fetch_current_data():
     print(f"  Season file fetch: {ok} succeeded, {failed} failed/skipped "
           f"(unstarted seasons count as failed here too, so some are always expected).")
     if ok == 0:
-        raise RuntimeError(
-            "Every single football-data.co.uk season-file fetch failed this run - likely a site "
-            "outage or rate-limiting, not just one flaky request. Failing loudly here instead of "
-            "letting load_results() crash later with a much less obvious pandas error.")
+        # A total outage used to always be fatal here, on the reasoning that letting
+        # load_results() crash later with a cryptic pandas error was worse. But that meant a
+        # website hiccup blocked the ENTIRE pipeline every time - including trends, the odds
+        # floor, and match_archive grading, none of which actually need a fresh fetch on any run
+        # where yesterday's (or last week's) season files are already sitting on disk from the
+        # last successful one. Season results only ever grow, never change retroactively, so a
+        # stale file is still completely correct, just missing the very latest match(es) - exactly
+        # the gap fetch_espn_recent_matches (market_floor.py) and fetch_espn_recent_played_pairs
+        # below exist to paper over. Only truly unrecoverable when there's NOTHING cached at all
+        # (a fresh checkout with zero prior successful runs) - genuinely nothing to build from.
+        existing = glob.glob(os.path.join(WORKDIR, "seasons", "*.csv"))
+        if not existing:
+            raise RuntimeError(
+                "Every single football-data.co.uk season-file fetch failed this run, and there's "
+                "no previously-cached season file on disk to fall back to - nothing to build "
+                "trends from at all. Likely a site outage or rate-limiting; try again shortly.")
+        print(f"  All fetches failed, but {len(existing)} cached season file(s) from a previous "
+              f"run are still on disk - continuing with that (slightly stale) data instead of "
+              f"blocking the whole pipeline. ESPN fills the most recent gap for grading.")
 
     # Same tolerance as the season loop above, and for the same reason: confirmed in production
     # that football-data.co.uk can return a transient 503 here, and this used to be unguarded -
@@ -240,7 +324,6 @@ def current_season_code(today=None):
 
 
 def load_results(div='E0'):
-    import glob
     files = sorted(glob.glob(os.path.join(WORKDIR, "seasons", f"{div}_*.csv")))
     dfs = []
     for f in files:
@@ -481,6 +564,16 @@ if __name__ == '__main__':
     fd_fixtures = load_fixtures(results, current_season)
     season_start_year = int(f"20{current_season[:2]}")
     played_pairs = played_pairs_for_season(results, current_season)
+    # How far behind "now" football-data.co.uk's own results are - normally 0-1 days, but can be a
+    # week or more if fetch_current_data() just fell back to a cached season file during an outage.
+    # Widening ESPN's window to match means "played" stays accurate (round numbers, "what's next")
+    # regardless of how long football-data.co.uk itself has been stale, rather than just covering
+    # the handful of days a healthy week assumes.
+    days_stale = max(6, (datetime.date.today() - results['Date'].max().date()).days + 2)
+    espn_played = fetch_espn_recent_played_pairs(days_back=days_stale)
+    played_pairs = played_pairs | espn_played
+    print(f"Played-pairs freshness: {len(espn_played)} completed match(es) from ESPN "
+          f"(last {days_stale}d) merged in on top of football-data.co.uk's own results")
     of_fixtures = fetch_openfootball_next_round(season_start_year, played_pairs)
     match_rounds, current_round = fetch_openfootball_rounds(season_start_year, played_pairs)
     print(f"Round mapping: {len(match_rounds)} fixtures across the season"

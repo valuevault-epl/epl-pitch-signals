@@ -26,7 +26,7 @@ import pandas as pd
 
 from trend_engine import (
     load_results, build_team_history, league_averages_from_matches, build_all_trends, WORKDIR,
-    compute_team_card_count, HEADERS,
+    compute_team_card_count, HEADERS, ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP, _espn_get,
 )
 from matchup_engine import build_fixture_signals, ANCHOR_LINE
 from backtest_2025_26 import tier, blended_hit_rate, grade_signal
@@ -248,28 +248,11 @@ def build_team_match_archive(results, since_season=MATCH_ARCHIVE_START):
 # understat.com, which this project already scrapes) scoreboard is typically same-day, so it's
 # used ONLY to fill match_archive gaps for grading - never merged into `results` itself, and never
 # allowed to override a football-data.co.uk entry that already exists for the same match.
-ESPN_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+# ESPN_SCOREBOARD_URL, ESPN_TEAM_MAP and _espn_get live in trend_engine.py (imported above) since
+# trend_engine.py's own fetch_espn_recent_played_pairs needs the identical scoreboard/team-name
+# infrastructure for a lighter purpose (freshening "played", not full box scores) - one shared
+# team-name map to keep correct beats two drifting copies.
 ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
-
-# ESPN spells out full club names; map to football-data.co.uk's short names (verified directly
-# against ESPN's own /teams endpoint for the current 20 PL clubs) so archive keys line up with
-# what fixtures/tracked bets already use. A team ESPN returns that isn't in this map (mid-season
-# promotion/relegation naming drift) is skipped rather than guessed at.
-ESPN_TEAM_MAP = {
-    'AFC Bournemouth': 'Bournemouth', 'Arsenal': 'Arsenal', 'Aston Villa': 'Aston Villa',
-    'Brentford': 'Brentford', 'Brighton & Hove Albion': 'Brighton', 'Chelsea': 'Chelsea',
-    'Coventry City': 'Coventry', 'Crystal Palace': 'Crystal Palace', 'Everton': 'Everton',
-    'Fulham': 'Fulham', 'Hull City': 'Hull', 'Ipswich Town': 'Ipswich', 'Leeds United': 'Leeds',
-    'Liverpool': 'Liverpool', 'Manchester City': 'Man City', 'Manchester United': 'Man United',
-    'Newcastle United': 'Newcastle', 'Nottingham Forest': "Nott'm Forest", 'Sunderland': 'Sunderland',
-    'Tottenham Hotspur': 'Tottenham',
-}
-
-
-def _espn_get(url):
-    req = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read().decode('utf-8'))
 
 
 def fetch_espn_recent_matches(days_back=6):
@@ -403,11 +386,16 @@ if __name__ == '__main__':
     print(f"\nBuilt match archive: {len(match_archive)} matches since {MATCH_ARCHIVE_START[:2]}{MATCH_ARCHIVE_START[2:]}")
     print(f"Computed SGM lift for {len(sgm_lift)} market/direction pair combinations")
 
-    espn_matches = fetch_espn_recent_matches()
+    # How far behind "now" this results load is - normally 0-1 days, but can be a week or more if
+    # trend_engine.py's fetch_current_data() fell back to a cached season file during an outage.
+    # Widening the ESPN window to match keeps grading current regardless of how long
+    # football-data.co.uk itself has been stale, not just the handful of days a healthy week needs.
+    days_stale = max(6, (datetime.date.today() - results['Date'].max().date()).days + 2)
+    espn_matches = fetch_espn_recent_matches(days_back=days_stale)
     espn_new = {k: v for k, v in espn_matches.items() if k not in match_archive}
     match_archive.update(espn_new)
-    print(f"ESPN fast-path: {len(espn_matches)} recently-finished match(es) seen, "
-          f"{len(espn_new)} not yet in football-data.co.uk's feed - added for grading")
+    print(f"ESPN fast-path: {len(espn_matches)} recently-finished match(es) seen in the last "
+          f"{days_stale}d, {len(espn_new)} not yet in football-data.co.uk's feed - added for grading")
 
     trends_path = os.path.join(WORKDIR, 'trends_data.json')
     with open(trends_path) as f:
