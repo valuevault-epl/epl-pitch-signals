@@ -312,7 +312,8 @@ def fetch_espn_current_season_results(season_start_year, existing=None):
     url = f"{ESPN_SCOREBOARD_URL}?dates={season_start_year}0801-{season_end_year}0801&limit=1000"
     try:
         board = _espn_get(url)
-    except Exception:
+    except Exception as e:
+        print(f"    ESPN scoreboard fetch failed ({type(e).__name__}: {e}) - {url}")
         return existing if existing is not None else empty
 
     existing = existing if existing is not None else empty
