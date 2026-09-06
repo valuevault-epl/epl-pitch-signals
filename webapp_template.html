@@ -1506,6 +1506,7 @@
     line-height: 1.7;
     white-space: nowrap;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
   }
@@ -1579,6 +1580,14 @@
     text-decoration: underline;
     text-underline-offset: 2px;
     padding: 2px 0;
+  }
+
+  .tracker-status-derived {
+    font-family: "Barlow Condensed", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 9.5px;
+    color: var(--ink-faint);
   }
 
   .tracker-analytics-controls {
@@ -1895,10 +1904,10 @@
           <li>Every bet placed from the slip shows up here automatically, with its legs, platform, odds, stake, and potential return.</li>
           <li>Once a leg's fixture has been played and results are in the page's data, it grades itself Won or Lost on page load - no action needed. A multi/SGM needs every leg to win; one confirmed loss settles the whole bet as Lost even if other legs haven't played yet, and it only settles Won once every leg has.</li>
           <li>The P/L bar at the top shows running profit/loss for the last 7 days and all-time, from settled bets only (pending bets don't count yet).</li>
-          <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, status, or any leg's line/direction. Only what you actually change is touched - editing odds/stake/platform alone never affects Won/Lost, and only a leg whose line or direction you change gets reset to Pending for re-grading. Setting the status dropdown to Won or Lost directly overrides the automatic grade; setting it back to Pending hands it back to normal auto-grading.</li>
+          <li>Edit a bet with "Edit" on its row to change its odds, stake, platform, or any leg's line/direction/result. Each leg has its own Won/Lost/Pending control - set it directly rather than relying on auto-grading, which is what lets you correct a leg that graded itself wrong, or one from before this page could grade legs individually at all. The bet's own status isn't edited separately - it's always whatever its legs say: Lost the moment any leg is, Won only once every leg is.</li>
           <li>Removing a bet or saving an edit shows an "Undo" button for a few seconds - one level (your last action), not a full history.</li>
-          <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. Changing unit size later never reshapes bets already placed; each one keeps the unit size it was placed at.</li>
-          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, with win rate, total staked, and ROI - toggle Money/Units to see it all in dollars or in units (each bet converts using its own unit size, not whatever the live setting currently is), and check "Advanced stats" for average odds, average stake, average units and legs per bet, biggest win/loss, and your current streak.</li>
+          <li>Set a unit size (top of the slip) in dollars - the slip's suggested stake fills in Stake automatically from it, though you're always free to type over either. This only affects the suggestion for new bets.</li>
+          <li>The Analytics sub-tab charts cumulative profit over time across settled bets, with win rate, total staked, and ROI - toggle Money/Units to see it all in real dollars or in units (a bet's units are worked out from the odds you took, the same staking curve behind the slip's stake suggestion, so it never depends on a unit size setting that might have changed since), and check "Advanced stats" for average odds, average stake, average profit per bet, average legs per bet, biggest win/loss, and your current streak.</li>
         </ul>
 
         <h3>Account &amp; sync</h3>
@@ -3208,46 +3217,39 @@
 
     const before = JSON.parse(JSON.stringify(bet));
 
-    let anyLegChanged = false;
     row.querySelectorAll('.tracker-leg-edit-select').forEach(sel => {
       const idx = parseInt(sel.dataset.legIndex, 10);
       const [dir, lineStr] = sel.value.split('|');
       if (!isRealDirection(dir)) return; // never apply a corrupted or placeholder option value
       const newLine = parseFloat(lineStr);
       const leg = bet.legs[idx];
-      if (leg.direction !== dir || leg.line !== newLine) {
-        leg.direction = dir;
-        leg.line = newLine;
-        leg.status = 'Pending'; // this leg's old grade no longer applies to its new line
-        anyLegChanged = true;
-      }
-      // else: leave leg.status exactly as it was - this leg wasn't touched.
+      if (leg.direction !== dir || leg.line !== newLine) { leg.direction = dir; leg.line = newLine; }
     });
+    // Every leg's Won/Lost/Pending is now a direct, independent choice (see the per-leg status
+    // select in the render above) rather than something inferred from whether its line moved -
+    // that inference is what caused every version of this bug, since it couldn't tell "the user
+    // changed this leg" apart from "the dropdown's own default selection doesn't match reality."
+    row.querySelectorAll('.tracker-leg-status-select').forEach(sel => {
+      bet.legs[parseInt(sel.dataset.legIndex, 10)].status = sel.value;
+    });
+
     bet.oddsTaken = parseFloat(oddsEl.value);
     bet.stake = parseFloat(stakeEl.value);
     bet.platform = platform;
 
-    const newStatus = row.querySelector('.tracker-edit-status').value;
-    if (newStatus !== before.status) {
-      // A deliberate, detected change from what this bet's status actually was when the edit form
-      // opened - either a manual Won/Lost override, or switching back to Pending.
-      if (newStatus === 'Won') {
-        bet.status = 'Won'; bet.settledAt = bet.settledAt || new Date().toISOString();
-        bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
-      } else if (newStatus === 'Lost') {
-        bet.status = 'Lost'; bet.settledAt = bet.settledAt || new Date().toISOString();
-        bet.profit = -bet.stake;
-      } else {
-        bet.status = 'Pending'; bet.settledAt = null; bet.profit = null;
-      }
-    } else if (anyLegChanged && bet.status !== 'Pending') {
-      // Status dropdown untouched, but a line/direction change invalidated whatever grade this
-      // bet already had - back to Pending so the normal grading pass (gradeAllTrackedBets, run at
-      // the top of every renderTrackerBets) re-settles it against the new line.
+    // The bet's own status is always derived from its legs - the identical rule normal settling
+    // uses in gradeTrackedBet - never a separately-editable field of its own that can drift out of
+    // sync with what the legs actually say.
+    const anyLost = bet.legs.some(l => l.status === 'Lost');
+    const allWon = bet.legs.every(l => l.status === 'Won');
+    if (anyLost) {
+      bet.status = 'Lost'; bet.settledAt = bet.settledAt || new Date().toISOString(); bet.profit = -bet.stake;
+    } else if (allWon) {
+      bet.status = 'Won'; bet.settledAt = bet.settledAt || new Date().toISOString();
+      bet.profit = round2(bet.stake * (bet.oddsTaken - 1));
+    } else {
       bet.status = 'Pending'; bet.settledAt = null; bet.profit = null;
     }
-    // else: status untouched AND no leg changed - status/settledAt/profit stay byte-for-byte as
-    // they were. An odds/stake/platform-only edit can never flip Won/Lost.
 
     lastUndo = { type: 'edit', id, before };
     editingBetId = null;
@@ -3318,40 +3320,39 @@
 
   // A settled bet's own status is a stronger fact than any fresh per-leg recompute: a single-leg
   // bet's status IS that one leg's status, by definition, and a Won multi only ever settles once
-  // EVERY leg individually graded Won (see gradeTrackedBet) - both are hard equivalences, not
-  // estimates. A leg's own .direction/.status, on the other hand, can end up wrong in ways the bet
-  // status can't: wiped or left stale by an edit that touched the bet without meaning to touch
-  // that leg (the old pre-fix edit bug did this unconditionally, and a corrupted alt-line dropdown
-  // - see the tracker-leg-edit-select rendering above - could still do it before that was closed
-  // off), or never recorded at all on bets placed before Over/Under became a per-leg choice. So
-  // wherever the bet's own status pins a leg's outcome down for certain, that's what the leg is
-  // set to - never the other way around, and never a fresh gradeLeg call second-guessing it. Only
-  // where the bet's status genuinely doesn't determine the leg (a Lost multi can have Won legs
-  // alongside the one that actually lost) does this fall back to grading that one leg directly,
-  // and only when its own direction is a real, trustworthy value.
+  // EVERY leg individually graded Won (see gradeTrackedBet/saveEditBet) - both are hard
+  // equivalences, not estimates. A leg's own .direction/.status, on the other hand, can end up
+  // wrong in ways the bet status can't: wiped or left stale by an edit that touched the bet
+  // without meaning to touch that leg, or never recorded at all on bets placed before Over/Under
+  // became a per-leg choice. So wherever the bet's own status pins a leg's outcome down for
+  // certain, that's what the leg is set to - never the other way around. Only where the bet's
+  // status genuinely doesn't determine the leg (a Lost multi can have Won legs alongside the one
+  // that actually lost - or, now that each leg has its own status control in the edit form, simply
+  // whatever the user set it to directly) does this fall back to grading that leg directly, and
+  // only when its own direction is a real, trustworthy value.
   function repairLeg(bet, leg) {
+    let changed = false;
     if (bet.legs.length === 1 && (bet.status === 'Won' || bet.status === 'Lost')) {
-      let changed = false;
       if (leg.status !== bet.status) { leg.status = bet.status; changed = true; }
-      if (!isRealDirection(leg.direction)) {
-        const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
-        if (actual !== undefined && actual !== null && actual !== leg.line) {
-          const wentOver = actual > leg.line;
-          leg.direction = (bet.status === 'Won') === wentOver ? 'OVER' : 'UNDER';
-          changed = true;
-        }
-      }
-      return changed;
-    }
-    if (bet.status === 'Won') {
-      if (leg.status !== 'Won') { leg.status = 'Won'; return true; }
-      return false;
-    }
-    if (isRealDirection(leg.direction)) {
+    } else if (bet.status === 'Won') {
+      if (leg.status !== 'Won') { leg.status = 'Won'; changed = true; }
+    } else if (isRealDirection(leg.direction)) {
       const graded = gradeLeg(leg);
-      if (graded !== 'Pending' && leg.status !== graded) { leg.status = graded; return true; }
+      if (graded !== 'Pending' && leg.status !== graded) { leg.status = graded; changed = true; }
     }
-    return false;
+    // Cosmetic on top of the above: once this leg's result is confidently known - just settled
+    // above, or already sitting there from an earlier repair or a manual edit - a still-missing
+    // direction can be backed out from that result plus the archived actual, purely so the line
+    // reads "OVER 3.5" instead of "undefined 3.5". Nothing else here depends on direction at all.
+    if (!isRealDirection(leg.direction) && (leg.status === 'Won' || leg.status === 'Lost')) {
+      const actual = leg.signalType === 'team' ? actualForTeamLeg(leg) : actualForPlayerLeg(leg);
+      if (actual !== undefined && actual !== null && actual !== leg.line) {
+        const wentOver = actual > leg.line;
+        leg.direction = (leg.status === 'Won') === wentOver ? 'OVER' : 'UNDER';
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   async function repairLegacyLegs() {
@@ -3425,32 +3426,38 @@
       const plCls = bet.status === 'Won' ? 'pos' : bet.status === 'Lost' ? 'neg' : '';
 
       if (bet.id === editingBetId) {
-        // Each leg's own alt-line ladder (captured when it was added to the slip) drives its
+        // Each leg's own alt-line ladder (captured when it was added to the slip) drives its line
         // dropdown here too - same composite "DIRECTION|line" value scheme the Fixtures tab and
         // slip line-pickers use, so a leg can move to a different line AND flip Over/Under, not
-        // just shift distance. A leg with no ladder (shouldn't normally happen) falls back to
-        // static text rather than rendering a broken empty dropdown.
+        // just shift distance. altLines captured before Over/Under became a per-leg choice never
+        // got a real direction on their entries - every option's value would read "undefined|X",
+        // none would ever match this leg's own direction for the `selected` check below, so the
+        // browser would silently default to whichever option happens to sit first, corrupting the
+        // leg on a save that never meant to touch it. Falling back to plain text (nothing to
+        // select, nothing to corrupt) whenever any option in the ladder can't be trusted closes
+        // that off completely.
+        //
+        // Each leg's Won/Lost/Pending is its own direct, independent choice here, never inferred
+        // from whether its line changed - a multi only loses because ONE specific leg did, and for
+        // a bet old enough that its direction data was never captured at all, per-leg grading isn't
+        // even possible, so this is the only way to correct a leg like that. The bet's overall
+        // status (shown read-only below) is always computed from these, not edited separately.
         const legsHtml = bet.legs.map((l, i) => {
-          const legTag = l.status && l.status !== 'Pending'
-            ? `<span class="status-pill ${l.status.toLowerCase()}">${l.status}</span>` : '';
           const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
-          // altLines captured before Over/Under became a per-leg choice never got a real direction
-          // on their entries - every option's value would read "undefined|X", none would ever
-          // match this leg's own direction for the `selected` check below, so the browser would
-          // silently default to whichever option happens to sit first. Saving from that state
-          // then looks exactly like the user picked a different (garbage) line/direction, even
-          // though they never touched this dropdown - corrupting the leg on a save that was only
-          // ever meant to change stake or odds. Falling back to plain text (nothing to select,
-          // nothing to corrupt) whenever any option in the ladder can't be trusted closes that off
-          // completely rather than trying to patch the mismatch some other way.
           const altLinesUsable = (l.altLines || []).length > 0 && isRealDirection(l.direction)
             && l.altLines.every(al => isRealDirection(al.direction));
-          if (!altLinesUsable) {
-            return `<div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span> ${legTag}</div>`;
+          let lineHtml;
+          if (altLinesUsable) {
+            const options = l.altLines.map(al =>
+              `<option value="${al.direction}|${al.line}"${al.direction === l.direction && al.line === l.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
+            lineHtml = `<select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select>`;
+          } else {
+            lineHtml = `<span class="mono">${dirText}</span>`;
           }
-          const options = l.altLines.map(al =>
-            `<option value="${al.direction}|${al.line}"${al.direction === l.direction && al.line === l.line ? ' selected' : ''}>${al.direction} ${al.line}</option>`).join('');
-          return `<div class="tracker-leg-line">${l.label} <select class="slip-leg-select tracker-leg-edit-select" data-leg-index="${i}">${options}</select> ${legTag}</div>`;
+          const legStatus = l.status || 'Pending';
+          const statusOptions = ['Pending', 'Won', 'Lost'].map(s =>
+            `<option value="${s}"${legStatus === s ? ' selected' : ''}>${s}</option>`).join('');
+          return `<div class="tracker-leg-line">${l.label} ${lineHtml} <select class="tracker-edit-select tracker-leg-status-select" data-leg-index="${i}">${statusOptions}</select></div>`;
         }).join('');
         const isCustomPlatform = !PLATFORM_OPTIONS.includes(bet.platform);
         const platformOptions = PLATFORM_OPTIONS.map(p =>
@@ -3467,13 +3474,7 @@
           <td><input type="number" step="0.01" min="1.01" required class="tracker-edit-input tracker-edit-odds" value="${bet.oddsTaken}"></td>
           <td><input type="number" step="0.01" min="0.01" required class="tracker-edit-input tracker-edit-stake" value="${bet.stake}"></td>
           <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
-          <td>
-            <select class="tracker-edit-select tracker-edit-status">
-              <option value="Pending"${bet.status === 'Pending' ? ' selected' : ''}>Pending</option>
-              <option value="Won"${bet.status === 'Won' ? ' selected' : ''}>Won</option>
-              <option value="Lost"${bet.status === 'Lost' ? ' selected' : ''}>Lost</option>
-            </select>
-          </td>
+          <td class="tracker-status-cell"><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span><br><span class="tracker-status-derived">from legs</span></td>
           <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
           <td class="tracker-edit-actions">
             <button class="tracker-edit-save" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Save</button>
@@ -3641,6 +3642,17 @@
     if (e.target.classList.contains('tracker-edit-platform')) {
       const row = e.target.closest('tr');
       row.querySelector('.tracker-edit-platform-other').hidden = e.target.value !== 'Other';
+    }
+    if (e.target.classList.contains('tracker-leg-status-select')) {
+      // Live preview only - saveEditBet recomputes this same way for real when Save is clicked.
+      // Without this, picking Won on every leg still shows the bet's old Lost pill until you save,
+      // which reads as the edit not having taken effect.
+      const row = e.target.closest('tr');
+      const legStatuses = [...row.querySelectorAll('.tracker-leg-status-select')].map(s => s.value);
+      const derived = legStatuses.some(s => s === 'Lost') ? 'Lost'
+        : legStatuses.every(s => s === 'Won') ? 'Won' : 'Pending';
+      const pill = row.querySelector('.tracker-status-cell .status-pill');
+      if (pill) { pill.textContent = derived; pill.className = `status-pill ${derived.toLowerCase()}`; }
     }
   });
 
