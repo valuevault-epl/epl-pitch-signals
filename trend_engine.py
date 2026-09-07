@@ -243,14 +243,21 @@ def _load_espn_snapshot():
         fetched_at = datetime.datetime.strptime(latest, '%Y%m%d%H%M%S')
         age_hours = (datetime.datetime.utcnow() - fetched_at).total_seconds() / 3600
         # The Shortcut's timestamp must be UTC (see docs/iphone_shortcut_setup.md) so this lines
-        # up with utcnow() above - a negative age means it isn't (phone local time used instead),
+        # up with utcnow() above - a negative age means it isn't (phone local time used instead,
+        # or a fixed manual UTC-offset subtraction that's now off by an hour across a DST switch),
         # which would otherwise let a stale/mistimed snapshot slip past the ">MAX_AGE" check below
         # simply for looking like it's from the future. Reject that loudly rather than silently
-        # trusting mistimed data; a little slop covers ordinary phone/server clock drift.
-        if age_hours < -0.5 or age_hours > ESPN_SNAPSHOT_MAX_AGE_HOURS:
+        # trusting mistimed data. -1.5h of slop (not just clock drift) is deliberate: the Shortcut
+        # itself can only get a UTC timestamp by subtracting a hardcoded local-UTC offset from the
+        # phone's local time (no in-app timezone field to do this natively), so it's routinely up
+        # to 1h off for the ~2 days/year either side of a DST transition until the offset constant
+        # is updated by hand - that's expected slop, not a sign anything is actually wrong.
+        if age_hours < -1.5 or age_hours > ESPN_SNAPSHOT_MAX_AGE_HOURS:
             print(f"    ESPN snapshot found ({latest}) but {age_hours:.1f}h old "
-                  f"(outside 0-{ESPN_SNAPSHOT_MAX_AGE_HOURS}h) - ignoring, same as no snapshot at "
-                  f"all. A negative age usually means the Shortcut's timestamp isn't in UTC.")
+                  f"(outside -1.5-{ESPN_SNAPSHOT_MAX_AGE_HOURS}h) - ignoring, same as no snapshot "
+                  f"at all. A few hours negative usually means the Shortcut's UTC-offset constant "
+                  f"needs updating (e.g. a DST switch); very negative means it isn't subtracting "
+                  f"an offset at all.")
             return _ESPN_SNAPSHOT
         with open(os.path.join(ESPN_SNAPSHOT_ROOT, latest, "scoreboard.json"), 'r', encoding='utf-8') as f:
             _ESPN_SNAPSHOT = {'dir': os.path.join(ESPN_SNAPSHOT_ROOT, latest), 'scoreboard': json.load(f)}
