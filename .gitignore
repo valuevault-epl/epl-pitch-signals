@@ -7,3 +7,4 @@ fixtures_raw.csv
 fixtures_test.csv
 test_2324.csv
 __pycache__/
+.cloudflare_credentials

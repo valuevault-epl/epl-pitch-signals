@@ -177,6 +177,9 @@ def fetch_openfootball_rounds(season_start_year, played_pairs):
 # WHICH pairs are done, not by how much, so it's a single scoreboard call rather than one call per
 # match.
 ESPN_SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard"
+# Box-score detail for grading (market_floor.fetch_espn_recent_matches, _espn_match_boxscore
+# below) - a separate per-event endpoint from the scoreboard above.
+ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
 
 # ESPN spells out full club names; map to football-data.co.uk's short names (verified directly
 # against ESPN's own /teams endpoint for the current 20 PL clubs) so pairs line up with what
@@ -209,7 +212,66 @@ ESPN_HEADERS = {
 }
 
 
+# ESPN blocks every well-known cloud/datacenter IP range, not just GitHub Actions specifically -
+# confirmed directly by testing a Cloudflare Worker relay too (identical 403, from an Akamai-style
+# block page rather than Cloudflare's own). A phone on its own residential/cellular connection
+# isn't on that blocklist, so a small iOS Shortcut (see docs/iphone_shortcut_setup.md) fetches the
+# scoreboard + each event's summary itself and commits the raw responses here, under a
+# run-timestamped folder so every commit is a fresh file (never an overwrite - sidesteps the
+# GitHub Contents API's sha-on-update requirement, which keeps the Shortcut's own commit steps
+# uniform). _espn_get transparently serves from the newest such folder when one exists and is
+# recent enough, falling back to a live fetch (which fails the same harmless way it does today
+# with no snapshot at all) for anything the snapshot doesn't cover.
+ESPN_SNAPSHOT_ROOT = os.path.join(WORKDIR, "espn_snapshot")
+ESPN_SNAPSHOT_MAX_AGE_HOURS = 12
+_ESPN_SNAPSHOT = None
+
+
+def _load_espn_snapshot():
+    global _ESPN_SNAPSHOT
+    if _ESPN_SNAPSHOT is not None:
+        return _ESPN_SNAPSHOT
+    _ESPN_SNAPSHOT = {}
+    try:
+        run_stamps = sorted(os.listdir(ESPN_SNAPSHOT_ROOT), reverse=True)
+    except FileNotFoundError:
+        return _ESPN_SNAPSHOT
+    if not run_stamps:
+        return _ESPN_SNAPSHOT
+    latest = run_stamps[0]
+    try:
+        fetched_at = datetime.datetime.strptime(latest, '%Y%m%d%H%M%S')
+        age_hours = (datetime.datetime.utcnow() - fetched_at).total_seconds() / 3600
+        # The Shortcut's timestamp must be UTC (see docs/iphone_shortcut_setup.md) so this lines
+        # up with utcnow() above - a negative age means it isn't (phone local time used instead),
+        # which would otherwise let a stale/mistimed snapshot slip past the ">MAX_AGE" check below
+        # simply for looking like it's from the future. Reject that loudly rather than silently
+        # trusting mistimed data; a little slop covers ordinary phone/server clock drift.
+        if age_hours < -0.5 or age_hours > ESPN_SNAPSHOT_MAX_AGE_HOURS:
+            print(f"    ESPN snapshot found ({latest}) but {age_hours:.1f}h old "
+                  f"(outside 0-{ESPN_SNAPSHOT_MAX_AGE_HOURS}h) - ignoring, same as no snapshot at "
+                  f"all. A negative age usually means the Shortcut's timestamp isn't in UTC.")
+            return _ESPN_SNAPSHOT
+        with open(os.path.join(ESPN_SNAPSHOT_ROOT, latest, "scoreboard.json"), 'r', encoding='utf-8') as f:
+            _ESPN_SNAPSHOT = {'dir': os.path.join(ESPN_SNAPSHOT_ROOT, latest), 'scoreboard': json.load(f)}
+        print(f"    Using phone-fetched ESPN snapshot from {latest} ({age_hours:.1f}h old).")
+    except Exception as e:
+        print(f"    ESPN snapshot ({latest}) unreadable ({type(e).__name__}: {e}) - ignoring.")
+        _ESPN_SNAPSHOT = {}
+    return _ESPN_SNAPSHOT
+
+
 def _espn_get(url):
+    snapshot = _load_espn_snapshot()
+    if snapshot:
+        if url.startswith(ESPN_SCOREBOARD_URL):
+            return snapshot['scoreboard']
+        if url.startswith(ESPN_SUMMARY_URL):
+            event_id = url.rsplit('event=', 1)[-1]
+            summary_path = os.path.join(snapshot['dir'], f"summary_{event_id}.json")
+            if os.path.exists(summary_path):
+                with open(summary_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
     req = urllib.request.Request(url, headers=ESPN_HEADERS)
     with urllib.request.urlopen(req, timeout=15) as r:
         return json.loads(r.read().decode('utf-8'))
@@ -245,11 +307,6 @@ def fetch_espn_recent_played_pairs(days_back=6):
         except Exception:
             continue  # one malformed event shouldn't drop every other one
     return pairs
-
-
-# Box-score detail for grading (market_floor.fetch_espn_recent_matches) - shared here so there's
-# one place that knows how to read an ESPN event's box score.
-ESPN_SUMMARY_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/summary"
 
 
 def _espn_match_boxscore(event):
