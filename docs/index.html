@@ -1588,6 +1588,38 @@
 
   .tracker-edit-btn:hover, .tracker-reuse-btn:hover { color: var(--ink); }
 
+  /* ---------- Feed ---------- */
+  .feed-section { margin-bottom: 24px; }
+  .feed-section > h3 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--ink-muted); margin: 0 0 10px; font-weight: 700;
+  }
+  .feed-code-row {
+    display: flex; align-items: center; gap: 12px; padding: 7px 0;
+    border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .feed-code-row .feed-code {
+    font-family: "IBM Plex Mono", monospace; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .feed-code-row.inactive .feed-code { opacity: 0.4; text-decoration: line-through; }
+  .feed-code-row .feed-code-spacer { margin-left: auto; }
+  .feed-tip-card {
+    border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px;
+  }
+  .feed-tip-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .feed-tip-meta { font-size: 11px; color: var(--ink-faint); font-family: "IBM Plex Mono", monospace; }
+  .feed-tip-note { font-size: 12.5px; color: var(--ink-muted); margin: 8px 0 0; font-style: italic; }
+  .feed-empty { color: var(--ink-faint); font-size: 13px; padding: 14px 0; }
+  .feed-code-input {
+    font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface-2); color: var(--ink); width: 200px;
+  }
+  .feed-inline-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+
   .tracker-edit-input, .tracker-edit-select {
     font-family: "IBM Plex Mono", monospace;
     font-size: 11.5px;
@@ -1781,7 +1813,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Thursday 10 September 2026, 23:06</div>
+      <div class="updated">Updated Thursday 10 September 2026, 23:48</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -1801,6 +1833,7 @@
     <button class="view-tab" data-view="signals">All Signals</button>
     <button class="view-tab" data-view="players">Players</button>
     <button class="view-tab" data-view="tracker">Tracker</button>
+    <button class="view-tab" data-view="feed">Feed</button>
   </div>
 
   <div class="view-panel" id="panel-fixtures">
@@ -1913,6 +1946,11 @@
     </div>
   </div>
 
+  <div class="view-panel" id="panel-feed" hidden>
+    <p class="section-sub" id="feed-intro"></p>
+    <div id="feed-body"></div>
+  </div>
+
 
   <h2 class="section-heading">Team Trends</h2>
   <p class="section-sub">Every tracked team's own rolling average (10-38 games, see methodology), across all markets. This is the raw material the matchup projections above are built from.</p>
@@ -2021,6 +2059,9 @@
 
         <h3>Account &amp; sync</h3>
         <p>Sign in (top right) to use this page - everything here, including just browsing Fixtures/All Signals/Players/Team Trends, needs an account. Your slip and tracker save to your account and sync across every device you sign in on. Your data is private: nobody else who uses this page can see it, and you can't see anyone else's.</p>
+
+        <h3>Feed</h3>
+        <p>The Feed tab is where tips get shared. If someone gives you an invite code, enter it there once to see their tips; each pending tip has a "Copy to slip" button that drops its selections into your slip so you can set your own stake and track it as a normal bet. It stays your bet - the tipster never sees your tracker. Won/Lost on a tip reflects how the tipster's own call landed, graded from results the same way your tracked bets are.</p>
 
         <h3>Disclaimer</h3>
         <p>This page is for statistical tracking and analysis, not betting advice - no real bets are placed here, and nothing connects to a real bookmaker or moves real money. Modeled odds and historical hit rates describe how markets have performed in the past, not a guarantee of what happens next. If you do bet real money elsewhere, only stake what you can afford to lose, and stop if it stops being fun.</p>
@@ -2533,8 +2574,26 @@
       document.getElementById('panel-signals').hidden = btn.dataset.view !== 'signals';
       document.getElementById('panel-players').hidden = btn.dataset.view !== 'players';
       document.getElementById('panel-tracker').hidden = btn.dataset.view !== 'tracker';
+      document.getElementById('panel-feed').hidden = btn.dataset.view !== 'feed';
       if (btn.dataset.view === 'tracker') renderTracker();
+      if (btn.dataset.view === 'feed') renderFeed();
     });
+  });
+
+  document.getElementById('panel-feed').addEventListener('click', async (e) => {
+    if (e.target.id === 'feed-auth-btn') { openAuthModal(); return; }
+    const act = e.target.closest('[data-feed-act]');
+    if (!act) return;
+    const a = act.dataset.feedAct;
+    if (a === 'new-code') await generateInviteCode();
+    else if (a === 'copy-code') {
+      try { await navigator.clipboard.writeText(act.dataset.code); showBetToast('Code copied'); } catch (err) {}
+    }
+    else if (a === 'deactivate-code') await deactivateInviteCode(act.dataset.code);
+    else if (a === 'remove-tip') await removeTip(act.dataset.tip);
+    else if (a === 'copy-tip') await copyTipToSlip(act.dataset.tip);
+    else if (a === 'redeem') await redeemInviteCode(document.getElementById('feed-code-entry')?.value);
+    else if (a === 'leave') await leaveFeed();
   });
 
   // ---------- All Signals tab: flat, filterable list of every signal across every fixture ----------
@@ -2990,6 +3049,221 @@
     openSlipPanel();
     await saveSlipToCloud();
     showBetToast(hadLegs ? 'Slip replaced with these selections' : 'Selections loaded into the slip');
+  }
+
+  // ---------- Feed ----------
+  // One creator ("master") posts tips; anyone who redeems one of the master's invite codes can see
+  // that feed and copy a tip straight into their own slip. MASTER_USER_IDS gates the posting UI;
+  // the real enforcement is the Supabase RLS policies (tips_insert_master / feed_invites_all_master
+  // check the same UID server-side), so a forged client can't post regardless. A follower's
+  // `.from('tips').select()` has no client-side filter at all - tips_select_author_or_follower is
+  // what limits it to feeds they've actually joined.
+  const MASTER_USER_IDS = ['d950df52-814e-4530-a951-4e133c2f490d'];
+  function isMasterUser() { return !!currentUser && MASTER_USER_IDS.includes(currentUser.id); }
+
+  let feedTips = [];
+  let feedInviteCodes = [];
+  let feedFollowerCount = 0;
+  let feedHasAccess = false;
+
+  async function loadFeedFromCloud() {
+    feedTips = []; feedInviteCodes = []; feedFollowerCount = 0; feedHasAccess = false;
+    if (!currentUser) return;
+    try {
+      const { data: tips } = await supabaseClient.from('tips').select('*').order('created_at', { ascending: false });
+      feedTips = tips || [];
+      if (isMasterUser()) {
+        feedHasAccess = true;
+        const { data: codes } = await supabaseClient.from('feed_invites').select('*')
+          .eq('master_id', currentUser.id).order('created_at', { ascending: false });
+        feedInviteCodes = codes || [];
+        const { count } = await supabaseClient.from('feed_access')
+          .select('*', { count: 'exact', head: true }).eq('master_id', currentUser.id);
+        feedFollowerCount = count || 0;
+      } else {
+        const { data: access } = await supabaseClient.from('feed_access').select('master_id')
+          .eq('follower_id', currentUser.id);
+        feedHasAccess = !!(access && access.length);
+      }
+    } catch (e) { console.error('loadFeedFromCloud:', e); }
+  }
+
+  // Only the master's own view grades tips (RLS lets only the author UPDATE a tip). Followers just
+  // see whatever status is stored - fine, since the master opens their feed regularly and a tip's
+  // grade isn't time-critical the way a real bet's is.
+  async function gradeFeedTips() {
+    if (!isMasterUser()) return;
+    const settled = [];
+    for (const tip of feedTips) {
+      if (tip.status !== 'Pending') continue;
+      let anyLost = false, allWon = true;
+      for (const leg of (tip.legs || [])) {
+        const g = isRealDirection(leg.direction) ? gradeLeg(leg) : 'Pending';
+        if (g === 'Lost') anyLost = true;
+        if (g !== 'Won') allWon = false;
+      }
+      if (anyLost) { tip.status = 'Lost'; settled.push(tip); }
+      else if (allWon) { tip.status = 'Won'; settled.push(tip); }
+    }
+    if (settled.length) {
+      await Promise.all(settled.map(t =>
+        supabaseClient.from('tips').update({ status: t.status }).eq('id', t.id)));
+    }
+  }
+
+  function tipLegsHtml(tip) {
+    return (tip.legs || []).map(l => {
+      const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
+      return `<div class="tracker-leg-group">
+        ${legFixtureHtml(l)}
+        <div class="tracker-leg-line">${l.label} <span class="mono">${dirText}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  async function postBetAsTip(betId) {
+    const bet = trackedBets.find(b => b.id === betId);
+    if (!bet || !(bet.legs || []).length) return;
+    const note = (prompt('Add a note for this tip (optional):') || '').trim();
+    const { error } = await supabaseClient.from('tips').insert({
+      author_id: currentUser.id,
+      legs: bet.legs.map(({ status, ...leg }) => leg),
+      suggested_odds: bet.oddsTaken,
+      note: note || null,
+      status: 'Pending',
+    });
+    if (error) { showBetToast("Couldn't post the tip"); return; }
+    await loadFeedFromCloud();
+    showBetToast('Posted to your feed');
+  }
+
+  async function copyTipToSlip(tipId) {
+    const tip = feedTips.find(t => t.id === tipId);
+    if (!tip || !(tip.legs || []).length) return;
+    const hadLegs = slipLegs.length > 0;
+    slipLegs = (tip.legs || []).map(({ status, ...leg }) => leg);
+    renderSlip();
+    openSlipPanel();
+    await saveSlipToCloud();
+    showBetToast(hadLegs ? 'Slip replaced with this tip' : 'Tip copied into your slip');
+  }
+
+  async function removeTip(tipId) {
+    await supabaseClient.from('tips').delete().eq('id', tipId);
+    await loadFeedFromCloud();
+    renderFeed();
+  }
+
+  async function generateInviteCode() {
+    const code = 'VV-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const { error } = await supabaseClient.from('feed_invites').insert({ code, master_id: currentUser.id });
+    if (error) { showBetToast("Couldn't create a code"); return; }
+    await loadFeedFromCloud();
+    renderFeed();
+  }
+
+  async function deactivateInviteCode(code) {
+    await supabaseClient.from('feed_invites').update({ active: false })
+      .eq('code', code).eq('master_id', currentUser.id);
+    await loadFeedFromCloud();
+    renderFeed();
+  }
+
+  async function redeemInviteCode(raw) {
+    const code = (raw || '').trim().toUpperCase();
+    if (!code) return;
+    const { data, error } = await supabaseClient.rpc('redeem_feed_invite', { invite_code: code });
+    if (error) { showBetToast("Couldn't redeem that code"); return; }
+    if (!data || !data.ok) { showBetToast((data && data.error) || 'That code is not valid.'); return; }
+    await loadFeedFromCloud();
+    renderFeed();
+    showBetToast('You now have access to the feed');
+  }
+
+  async function leaveFeed() {
+    await supabaseClient.from('feed_access').delete().eq('follower_id', currentUser.id);
+    await loadFeedFromCloud();
+    renderFeed();
+  }
+
+  async function renderFeed() {
+    const intro = document.getElementById('feed-intro');
+    const body = document.getElementById('feed-body');
+    if (!intro || !body) return;
+
+    if (!currentUser) {
+      intro.textContent = '';
+      body.innerHTML = `<div class="auth-gate">Sign in to use the feed.<br><button class="auth-link-btn" id="feed-auth-btn" type="button">Sign in</button></div>`;
+      return;
+    }
+
+    await gradeFeedTips();
+
+    if (isMasterUser()) {
+      intro.textContent = 'Post a tip from any of your pending tracked bets, then share an invite code with the people you want to see it.';
+      const codesHtml = feedInviteCodes.length
+        ? feedInviteCodes.map(c => `
+          <div class="feed-code-row ${c.active ? '' : 'inactive'}">
+            <span class="feed-code">${c.code}</span>
+            <span class="feed-code-spacer"></span>
+            ${c.active ? `<button class="tracker-reuse-btn" data-feed-act="copy-code" data-code="${c.code}">Copy</button>
+                          <button class="tracker-reuse-btn" data-feed-act="deactivate-code" data-code="${c.code}">Deactivate</button>`
+                       : `<span class="feed-tip-meta">inactive</span>`}
+          </div>`).join('')
+        : `<div class="feed-empty">No codes yet.</div>`;
+      const tipsHtml = feedTips.length
+        ? feedTips.map(t => `
+          <div class="feed-tip-card">
+            <div class="feed-tip-head">
+              <span class="status-pill ${(t.status || 'Pending').toLowerCase()}">${t.status || 'Pending'}</span>
+              <span class="feed-tip-meta">${(t.created_at || '').slice(0, 10)}${t.suggested_odds ? ' &middot; @' + Number(t.suggested_odds).toFixed(2) : ''}</span>
+              <button class="tracker-reuse-btn" data-feed-act="remove-tip" data-tip="${t.id}">Remove</button>
+            </div>
+            ${tipLegsHtml(t)}
+            ${t.note ? `<p class="feed-tip-note">${t.note}</p>` : ''}
+          </div>`).join('')
+        : `<div class="feed-empty">You haven't posted any tips yet - use "Post as tip" on a pending bet in the Tracker.</div>`;
+      body.innerHTML = `
+        <div class="feed-section">
+          <h3>Invite codes &middot; ${feedFollowerCount} following</h3>
+          ${codesHtml}
+          <div class="feed-inline-actions"><button class="chip-btn" data-feed-act="new-code">Generate a code</button></div>
+        </div>
+        <div class="feed-section">
+          <h3>Your tips</h3>
+          ${tipsHtml}
+        </div>`;
+      return;
+    }
+
+    if (!feedHasAccess) {
+      intro.textContent = 'Enter an invite code from a tipster to follow their feed.';
+      body.innerHTML = `
+        <div class="feed-section">
+          <div class="feed-inline-actions">
+            <input class="feed-code-input" id="feed-code-entry" placeholder="VV-XXXXXX" autocomplete="off" spellcheck="false">
+            <button class="chip-btn" data-feed-act="redeem">Unlock feed</button>
+          </div>
+        </div>`;
+      return;
+    }
+
+    intro.textContent = "Tips from the feed you've joined. Copy one into your slip to size and track it as your own bet.";
+    const tipsHtml = feedTips.length
+      ? feedTips.map(t => `
+        <div class="feed-tip-card">
+          <div class="feed-tip-head">
+            <span class="status-pill ${(t.status || 'Pending').toLowerCase()}">${t.status || 'Pending'}</span>
+            <span class="feed-tip-meta">${(t.created_at || '').slice(0, 10)}${t.suggested_odds ? ' &middot; suggested @' + Number(t.suggested_odds).toFixed(2) : ''}</span>
+            ${t.status === 'Pending' ? `<button class="tracker-reuse-btn" data-feed-act="copy-tip" data-tip="${t.id}">Copy to slip</button>` : ''}
+          </div>
+          ${tipLegsHtml(t)}
+          ${t.note ? `<p class="feed-tip-note">${t.note}</p>` : ''}
+        </div>`).join('')
+      : `<div class="feed-empty">No tips on this feed yet.</div>`;
+    body.innerHTML = `
+      <div class="feed-section">${tipsHtml}</div>
+      <div class="feed-inline-actions"><button class="tracker-reuse-btn" data-feed-act="leave">Leave this feed</button></div>`;
   }
 
   // ---------- True SGM odds ----------
@@ -3812,6 +4086,7 @@
           <div class="tracker-row-actions">
             <button class="tracker-edit-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Edit</button>
             ${bet.status === 'Pending' ? `<button class="tracker-reuse-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Load these selections back into the slip">Reuse selections</button>` : ''}
+            ${(bet.status === 'Pending' && isMasterUser()) ? `<button class="tracker-reuse-btn tracker-post-tip-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Post these selections to your feed">Post as tip</button>` : ''}
             <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
           </div>
         </td>
@@ -3993,6 +4268,8 @@
 
   document.querySelector('#tracker-table tbody').addEventListener('click', async (e) => {
     if (e.target.id === 'tracker-auth-btn') { openAuthModal(); return; }
+    const postTipBtn = e.target.closest('.tracker-post-tip-btn');
+    if (postTipBtn) { await postBetAsTip(decodeURIComponent(postTipBtn.dataset.betId)); return; }
     const reuseBtn = e.target.closest('.tracker-reuse-btn');
     if (reuseBtn) { await reuseSelections(decodeURIComponent(reuseBtn.dataset.betId)); return; }
     const editBtn = e.target.closest('.tracker-edit-btn');
@@ -4101,14 +4378,16 @@
     currentUser = session?.user ?? null;
     renderAuthBar();
     if (currentUser) {
-      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud()]);
+      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud(), loadFeedFromCloud()]);
     } else {
       slipLegs = [];
       trackedBets = [];
       editingBetId = null;
+      feedTips = []; feedInviteCodes = []; feedHasAccess = false; feedFollowerCount = 0;
     }
     renderSlip();
     await renderTracker();
+    await renderFeed();
     authInitialized = true;
   }
 
@@ -4120,14 +4399,16 @@
     renderAuthBar();
     if (!changed) return;
     if (currentUser) {
-      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud()]);
+      await Promise.all([loadSlipFromCloud(), loadTrackedBetsFromCloud(), loadFeedFromCloud()]);
     } else {
       slipLegs = [];
       trackedBets = [];
       editingBetId = null;
+      feedTips = []; feedInviteCodes = []; feedHasAccess = false; feedFollowerCount = 0;
     }
     renderSlip();
     await renderTracker();
+    await renderFeed();
   });
 
   initAuth();
