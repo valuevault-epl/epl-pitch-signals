@@ -2061,7 +2061,7 @@
         <p>Sign in (top right) to use this page - everything here, including just browsing Fixtures/All Signals/Players/Team Trends, needs an account. Your slip and tracker save to your account and sync across every device you sign in on. Your data is private: nobody else who uses this page can see it, and you can't see anyone else's.</p>
 
         <h3>Feed</h3>
-        <p>The Feed tab is where tips get shared. If someone gives you an invite code, enter it there once to see their tips; each pending tip has a "Copy to slip" button that drops its selections into your slip so you can set your own stake and track it as a normal bet. It stays your bet - the tipster never sees your tracker. Won/Lost on a tip reflects how the tipster's own call landed, graded from results the same way your tracked bets are.</p>
+        <p>The Feed tab is where tips get shared. If someone gives you an invite code, enter it there once to see their tips; each pending tip has a "Copy to slip" button that drops its selections into your slip so you can set your own stake and track it as a normal bet. It stays your bet - the tipster never sees your tracker. Won/Lost on a tip reflects how the tipster's own call landed, graded from results the same way your tracked bets are. Invite codes are single-use: a code is spent the moment someone redeems it, so it can't be passed on to anyone else.</p>
 
         <h3>Disclaimer</h3>
         <p>This page is for statistical tracking and analysis, not betting advice - no real bets are placed here, and nothing connects to a real bookmaker or moves real money. Modeled odds and historical hit rates describe how markets have performed in the past, not a guarantee of what happens next. If you do bet real money elsewhere, only stake what you can afford to lose, and stop if it stops being fun.</p>
@@ -3200,15 +3200,15 @@
     await gradeFeedTips();
 
     if (isMasterUser()) {
-      intro.textContent = 'Post a tip from any of your pending tracked bets, then share an invite code with the people you want to see it.';
+      intro.textContent = 'Post a tip from any of your pending tracked bets, then share an invite code with someone you want to see it. Each code works once - generate one per person.';
       const codesHtml = feedInviteCodes.length
         ? feedInviteCodes.map(c => `
           <div class="feed-code-row ${c.active ? '' : 'inactive'}">
             <span class="feed-code">${c.code}</span>
             <span class="feed-code-spacer"></span>
             ${c.active ? `<button class="tracker-reuse-btn" data-feed-act="copy-code" data-code="${c.code}">Copy</button>
-                          <button class="tracker-reuse-btn" data-feed-act="deactivate-code" data-code="${c.code}">Deactivate</button>`
-                       : `<span class="feed-tip-meta">inactive</span>`}
+                          <button class="tracker-reuse-btn" data-feed-act="deactivate-code" data-code="${c.code}">Revoke</button>`
+                       : `<span class="feed-tip-meta">used / revoked</span>`}
           </div>`).join('')
         : `<div class="feed-empty">No codes yet.</div>`;
       const tipsHtml = feedTips.length
