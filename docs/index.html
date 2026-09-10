@@ -1781,7 +1781,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Thursday 10 September 2026, 22:57</div>
+      <div class="updated">Updated Thursday 10 September 2026, 23:06</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -3064,15 +3064,25 @@
   // blow past 25 units on an overconfident sample (a hit rate near 100% at real odds full-Kellys
   // to a huge chunk of bankroll), and hard-capping that at 4u just made every Strong-tier leg
   // show the same 4u regardless of price - not a useful staking signal either. This instead scales
-  // stake directly and only off the odds actually being taken: units = 5 / odds, clamped to
-  // [0, 4] - passes through 2.5u at odds of 2.00, rises toward 4u for short-priced favorites,
-  // tapers toward 0u for long-priced outsiders. No probability estimate involved at all, so it's
-  // a plain staking curve, not an edge calculation - it doesn't tell you whether a bet is worth
-  // taking, only how much to risk on it once you've decided it is.
+  // stake directly and only off the odds actually being taken: units = K / odds, clamped to
+  // [0, 4] - rises toward 4u for short-priced favorites, tapers toward 0u for long-priced
+  // outsiders. No probability estimate involved at all, so it's a plain staking curve, not an
+  // edge calculation - it doesn't tell you whether a bet is worth taking, only how much to risk
+  // on it once you've decided it is.
   const STAKE_MAX_UNITS = 4;
-  const STAKE_CURVE_K = 5;
-  function computeStakeUnits(oddsTaken) {
-    return Math.min(STAKE_CURVE_K / oddsTaken, STAKE_MAX_UNITS);
+  // K anchors the curve: K=4 passes through 2u at odds of 2.00 (K=5 was 2.5u at 2.00). The change
+  // is forward-only - Analytics measures each already-placed bet on whichever curve was current
+  // when it was placed, since that's what its stake was actually sized against; recomputing old
+  // bets on the new K would misrepresent them. `placedAt` omitted (the live slip suggestion, and
+  // any brand-new bet) always uses the current K. To move the curve again, bump STAKE_CURVE_K and
+  // set STAKE_CURVE_K_CHANGED_AT to that moment - but then bets between the two changes need
+  // their own era, so switch this to a dated list at that point rather than stacking constants.
+  const STAKE_CURVE_K = 4;
+  const STAKE_CURVE_K_LEGACY = 5;
+  const STAKE_CURVE_K_CHANGED_AT = '2026-09-10T13:05:03Z';
+  function computeStakeUnits(oddsTaken, placedAt) {
+    const k = (placedAt && placedAt < STAKE_CURVE_K_CHANGED_AT) ? STAKE_CURVE_K_LEGACY : STAKE_CURVE_K;
+    return Math.min(k / oddsTaken, STAKE_MAX_UNITS);
   }
 
   function renderStakeCalc() {
@@ -3843,14 +3853,14 @@
   // was in effect" - which meant every old bet's unit count silently reshaped itself whenever that
   // setting changed (or, until it's actually persisted, just reverted to a hardcoded default on
   // every reload regardless of what was typed in). Units mode now means something a bet can never
-  // lose: computeStakeUnits(oddsTaken) is the app's own staking curve (the same one the slip's
-  // stake suggestion already uses) - "the units this bet was always supposed to represent," a pure
-  // function of the odds actually taken and nothing else. Money mode is the mirror image: it never
-  // touches units at all, just the real dollars actually staked and won/lost.
+  // lose: computeStakeUnits(oddsTaken, placedAt) is the app's own staking curve (the same one the
+  // slip's stake suggestion uses) - "the units this bet was always supposed to represent," a pure
+  // function of the odds taken and which curve was current when it was placed, nothing else. Money
+  // mode is the mirror image: it never touches units at all, just the real dollars staked and won.
   let analyticsUnitMode = 'money';
   let analyticsShowAdvanced = false;
 
-  function unitsStaked(bet) { return computeStakeUnits(bet.oddsTaken); }
+  function unitsStaked(bet) { return computeStakeUnits(bet.oddsTaken, bet.placedAt); }
   // Profit as a multiple of stake is (odds-1) on a win, -1 on a loss, regardless of what stake is
   // denominated in - so the units figure follows directly from unitsStaked and the bet's own
   // result, without ever needing a dollars-per-unit conversion.

@@ -2475,13 +2475,13 @@
   // blow past 25 units on an overconfident sample (a hit rate near 100% at real odds full-Kellys
   // to a huge chunk of bankroll), and hard-capping that at 4u just made every Strong-tier leg
   // show the same 4u regardless of price - not a useful staking signal either. This instead scales
-  // stake directly and only off the odds actually being taken: units = 5 / odds, clamped to
-  // [0, 4] - passes through 2.5u at odds of 2.00, rises toward 4u for short-priced favorites,
-  // tapers toward 0u for long-priced outsiders. No probability estimate involved at all, so it's
+  // stake directly and only off the odds actually being taken: units = K / odds, clamped to
+  // [0, 4] - K=4 passes through 2u at odds of 2.00, rising toward 4u for short-priced favorites,
+  // tapering toward 0u for long-priced outsiders. No probability estimate involved at all, so it's
   // a plain staking curve, not an edge calculation - it doesn't tell you whether a bet is worth
   // taking, only how much to risk on it once you've decided it is.
   const STAKE_MAX_UNITS = 4;
-  const STAKE_CURVE_K = 5;
+  const STAKE_CURVE_K = 4;
   function computeStakeUnits(oddsTaken) {
     return Math.min(STAKE_CURVE_K / oddsTaken, STAKE_MAX_UNITS);
   }
