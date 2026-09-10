@@ -1813,7 +1813,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Thursday 10 September 2026, 23:59</div>
+      <div class="updated">Updated Friday 11 September 2026, 00:15</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -2061,7 +2061,7 @@
         <p>Sign in (top right) to use this page - everything here, including just browsing Fixtures/All Signals/Players/Team Trends, needs an account. Your slip and tracker save to your account and sync across every device you sign in on. Your data is private: nobody else who uses this page can see it, and you can't see anyone else's.</p>
 
         <h3>Feed</h3>
-        <p>The Feed tab is where tips get shared. If someone gives you an invite code, enter it there once to see their tips; each pending tip has a "Copy to slip" button that drops its selections into your slip so you can set your own stake and track it as a normal bet. It stays your bet - the tipster never sees your tracker. Won/Lost on a tip reflects how the tipster's own call landed, graded from results the same way your tracked bets are. Invite codes are single-use: a code is spent the moment someone redeems it, so it can't be passed on to anyone else.</p>
+        <p>The Feed tab is where tips get shared. If someone gives you an invite code, enter it there once to see their tips; each pending tip has a "Copy to slip" button that drops its selections into your slip so you can set your own stake and track it as a normal bet. It stays your bet - the tipster never sees your tracker. Won/Lost on a tip reflects how the tipster's own call landed, graded from results the same way your tracked bets are. Invite codes are single-use: a code is spent the moment someone redeems it, so it can't be passed on to anyone else. For a phone notification when a tip drops, the Feed tab shows an ntfy topic to subscribe to in the free ntfy app - that just pings you to open the page, it doesn't carry the tip itself.</p>
 
         <h3>Disclaimer</h3>
         <p>This page is for statistical tracking and analysis, not betting advice - no real bets are placed here, and nothing connects to a real bookmaker or moves real money. Modeled odds and historical hit rates describe how markets have performed in the past, not a guarantee of what happens next. If you do bet real money elsewhere, only stake what you can afford to lose, and stop if it stops being fun.</p>
@@ -2589,6 +2589,9 @@
     else if (a === 'copy-code') {
       try { await navigator.clipboard.writeText(act.dataset.code); showBetToast('Code copied'); } catch (err) {}
     }
+    else if (a === 'copy-ntfy') {
+      try { await navigator.clipboard.writeText(NTFY_TOPIC); showBetToast('Topic copied'); } catch (err) {}
+    }
     else if (a === 'deactivate-code') await deactivateInviteCode(act.dataset.code);
     else if (a === 'remove-tip') await removeTip(act.dataset.tip);
     else if (a === 'copy-tip') await copyTipToSlip(act.dataset.tip);
@@ -3061,6 +3064,22 @@
   const MASTER_USER_IDS = ['d950df52-814e-4530-a951-4e133c2f490d'];
   function isMasterUser() { return !!currentUser && MASTER_USER_IDS.includes(currentUser.id); }
 
+  // ntfy push: one shared topic for the whole feed. On free ntfy.sh a topic name is the only
+  // secret and isn't access-controlled - fine here, since knowing it only gets you "a tip was
+  // posted" pings (and the ability to spam the topic), never the tips themselves, which still
+  // need a feed invite code. Only the master's browser ever publishes (it's the only thing that
+  // posts tips); followers just subscribe to it in the ntfy app.
+  const NTFY_TOPIC = 'valuevault-feed-djmzo8i4rbsnma';
+  function pingNtfy(message) {
+    try {
+      fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+        method: 'POST',
+        body: message,
+        headers: { 'Title': 'ValueVault', 'Click': location.origin + location.pathname },
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
   let feedTips = [];
   let feedInviteCodes = [];
   let feedFollowerCount = 0;
@@ -3111,6 +3130,24 @@
     }
   }
 
+  function ntfySectionHtml(forFollower) {
+    return `
+      <div class="feed-section">
+        <h3>Phone notifications</h3>
+        <p class="feed-tip-note" style="font-style:normal;">
+          ${forFollower
+            ? 'Get a ping when a new tip is posted. Install the free <b>ntfy</b> app (App Store / Google Play), open it, add a subscription, and paste this topic:'
+            : 'Followers who set this up get a push notification the moment you post a tip. This is the topic they subscribe to in the ntfy app:'}
+        </p>
+        <div class="feed-code-row">
+          <span class="feed-code">${NTFY_TOPIC}</span>
+          <span class="feed-code-spacer"></span>
+          <button class="tracker-reuse-btn" data-feed-act="copy-ntfy">Copy</button>
+          <a class="tracker-reuse-btn" href="https://ntfy.sh/${NTFY_TOPIC}" target="_blank" rel="noopener">Open in browser</a>
+        </div>
+      </div>`;
+  }
+
   function tipLegsHtml(tip) {
     return (tip.legs || []).map(l => {
       const dirText = isRealDirection(l.direction) ? `${l.direction} ${l.line}` : `${l.line}`;
@@ -3133,6 +3170,7 @@
       status: 'Pending',
     });
     if (error) { showBetToast("Couldn't post the tip"); return; }
+    pingNtfy('A new tip was just posted - open ValueVault to see it.');
     await loadFeedFromCloud();
     showBetToast('Posted to your feed');
   }
@@ -3229,6 +3267,7 @@
           ${codesHtml}
           <div class="feed-inline-actions"><button class="chip-btn" data-feed-act="new-code">Generate a code</button></div>
         </div>
+        ${ntfySectionHtml(false)}
         <div class="feed-section">
           <h3>Your tips</h3>
           ${tipsHtml}
@@ -3263,6 +3302,7 @@
       : `<div class="feed-empty">No tips on this feed yet.</div>`;
     body.innerHTML = `
       <div class="feed-section">${tipsHtml}</div>
+      ${ntfySectionHtml(true)}
       <div class="feed-inline-actions"><button class="tracker-reuse-btn" data-feed-act="leave">Leave this feed</button></div>`;
   }
 
