@@ -1575,7 +1575,7 @@
     white-space: nowrap;
   }
 
-  .tracker-edit-btn {
+  .tracker-edit-btn, .tracker-reuse-btn {
     font-size: 11px;
     color: var(--ink-muted);
     background: none;
@@ -1586,7 +1586,7 @@
     padding: 2px 0;
   }
 
-  .tracker-edit-btn:hover { color: var(--ink); }
+  .tracker-edit-btn:hover, .tracker-reuse-btn:hover { color: var(--ink); }
 
   .tracker-edit-input, .tracker-edit-select {
     font-family: "IBM Plex Mono", monospace;
@@ -1781,7 +1781,7 @@
       <div class="auth-bar" id="auth-bar">
         <button class="auth-link-btn" id="auth-open-btn" type="button">Sign in</button>
       </div>
-      <div class="updated">Updated Thursday 10 September 2026, 19:36</div>
+      <div class="updated">Updated Thursday 10 September 2026, 22:57</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -2976,6 +2976,22 @@
     await saveSlipToCloud();
   }
 
+  // Drop a pending bet's selections back into the slip so it can be re-placed (bumped stake,
+  // added/dropped leg, or just re-bet next round). A tracked bet's legs ARE its old slip legs
+  // plus a per-leg status field, so stripping that lands them straight back in as if re-added
+  // from Fixtures/Players. Replaces the slip rather than merging - "reuse these selections"
+  // reads as "start from this bet", not "append it to whatever I've already got".
+  async function reuseSelections(betId) {
+    const bet = trackedBets.find(b => b.id === betId);
+    if (!bet || !(bet.legs || []).length) return;
+    const hadLegs = slipLegs.length > 0;
+    slipLegs = bet.legs.map(({ status, ...leg }) => leg);
+    renderSlip();
+    openSlipPanel();
+    await saveSlipToCloud();
+    showBetToast(hadLegs ? 'Slip replaced with these selections' : 'Selections loaded into the slip');
+  }
+
   // ---------- True SGM odds ----------
   // Naive multiplication (computeSlipTotals below) assumes every leg is independent - true for
   // legs from different fixtures (different matches, nothing to correlate), false for legs from
@@ -3785,6 +3801,7 @@
         <td>${legsHtml}
           <div class="tracker-row-actions">
             <button class="tracker-edit-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}">Edit</button>
+            ${bet.status === 'Pending' ? `<button class="tracker-reuse-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Load these selections back into the slip">Reuse selections</button>` : ''}
             <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
           </div>
         </td>
@@ -3966,6 +3983,8 @@
 
   document.querySelector('#tracker-table tbody').addEventListener('click', async (e) => {
     if (e.target.id === 'tracker-auth-btn') { openAuthModal(); return; }
+    const reuseBtn = e.target.closest('.tracker-reuse-btn');
+    if (reuseBtn) { await reuseSelections(decodeURIComponent(reuseBtn.dataset.betId)); return; }
     const editBtn = e.target.closest('.tracker-edit-btn');
     if (editBtn) { editingBetId = decodeURIComponent(editBtn.dataset.betId); await renderTrackerBets(); return; }
     const cancelBtn = e.target.closest('.tracker-edit-cancel');

@@ -1104,6 +1104,20 @@
 
   .slip-remove:hover { color: var(--negative); }
 
+  .tracker-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .tracker-reuse-btn {
+    font-size: 11px;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 2px 0;
+    white-space: nowrap;
+  }
+  .tracker-reuse-btn:hover { color: var(--ink); }
+
   .slip-summary {
     padding: 12px 16px 14px;
     border-top: 1px solid var(--border);
@@ -1417,7 +1431,7 @@
       <button class="help-btn" id="help-btn" type="button" aria-haspopup="dialog" aria-label="How this dashboard works">?</button>
     </div>
     <div class="masthead-meta">
-      <div class="updated">Updated Thursday 10 September 2026, 19:36</div>
+      <div class="updated">Updated Thursday 10 September 2026, 22:57</div>
       <div>Refreshes weekly after each round <span class="dot">&middot;</span> adaptive 10-38 game trends</div>
     </div>
   </div>
@@ -2795,7 +2809,10 @@
         <td class="mono-cell">$${potentialReturn.toFixed(2)}</td>
         <td><span class="status-pill ${bet.status.toLowerCase()}">${bet.status}</span></td>
         <td class="mono-cell ${plCls}">${bet.status === 'Pending' ? '—' : fmtPL(bet.profit)}</td>
-        <td><button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button></td>
+        <td><div class="tracker-actions">
+          ${bet.status === 'Pending' ? `<button class="tracker-reuse-btn" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Load these selections back into the slip">Reuse selections</button>` : ''}
+          <button class="slip-remove" type="button" data-bet-id="${encodeURIComponent(bet.id)}" title="Remove this bet">&times;</button>
+        </div></td>
       </tr>`;
     }).join('');
   }
@@ -2859,9 +2876,26 @@
   }
 
   document.querySelector('#tracker-table tbody').addEventListener('click', (e) => {
+    const reuseBtn = e.target.closest('.tracker-reuse-btn');
+    if (reuseBtn) { reuseSelections(decodeURIComponent(reuseBtn.dataset.betId)); return; }
     const btn = e.target.closest('.slip-remove');
     if (btn) removeTrackedBet(decodeURIComponent(btn.dataset.betId));
   });
+
+  // Drop a pending bet's selections back into the slip so it can be re-placed. A tracked bet's
+  // legs ARE its old slip legs plus a per-leg status field, so stripping that lands them straight
+  // back in. Replaces the slip rather than merging - "reuse these selections" reads as "start
+  // from this bet", not "append it to whatever I've already got".
+  function reuseSelections(betId) {
+    const bet = trackedBets.find(b => b.id === betId);
+    if (!bet || !(bet.legs || []).length) return;
+    const hadLegs = slipLegs.length > 0;
+    slipLegs = bet.legs.map(({ status, ...leg }) => leg);
+    saveSlip();
+    renderSlip();
+    openSlipPanel();
+    showBetToast(hadLegs ? 'Slip replaced with these selections' : 'Selections loaded into the slip');
+  }
 
   document.querySelectorAll('.tracker-subtabs .view-tab').forEach(btn => {
     btn.addEventListener('click', () => {
