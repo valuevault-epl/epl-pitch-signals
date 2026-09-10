@@ -2225,9 +2225,14 @@
       odds: slipOdds, source: slipSource, fairProb,
     };
     const slipBtnHtml = `<button class="slip-add-btn" type="button" data-leg="${encodeURIComponent(JSON.stringify(slipLeg))}" title="Add to slip">+</button>`;
+    // The dropdown's colour follows the OVER/UNDER direction (green/red), NOT `sign` (the edge) -
+    // the two agree at the default line but diverge the moment a different line/direction is
+    // picked, and the text saying UNDER in green read as a bug. The bar and delta below stay on
+    // `sign` because that's genuinely what they measure (rate vs league average).
+    const dirClass = direction === 'OVER' ? 'pos' : 'neg';
     const valueHtml = `
       <div class="signal-value-row">
-        <select class="line-select ${sign}" data-team="${teamLabel}" data-opp="${opponentLabel}" data-key="${key}" data-direction="${direction}">${lineOptions}</select>
+        <select class="line-select ${dirClass}" data-team="${teamLabel}" data-opp="${opponentLabel}" data-key="${key}" data-direction="${direction}">${lineOptions}</select>
         ${slipBtnHtml}
       </div>
       <div class="signal-delta">${fmtSigned(value)} vs league avg</div>`;
