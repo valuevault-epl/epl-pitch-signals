@@ -1799,3 +1799,10 @@ season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_
 2627,2026-09-06,Arsenal,Chelsea,away_goals,Chelsea to score,UNDER,1.5,1.0,True,75.0,20
 2627,2026-09-06,Arsenal,Chelsea,away_corners,Chelsea corners,UNDER,5.5,3.0,True,75.0,20
 2627,2026-09-06,Arsenal,Chelsea,away_sot,Chelsea shots on target,UNDER,4.5,5.0,False,80.0,20
+2627,2026-09-12,Crystal Palace,Ipswich,away_goals,Ipswich to score,OVER,1.5,3.0,True,80.0,20
+2627,2026-09-12,Crystal Palace,Ipswich,home_corners,Crystal Palace corners,UNDER,5.5,6.0,False,85.0,20
+2627,2026-09-12,Tottenham,Everton,away_corners,Everton corners,UNDER,5.5,6.0,False,80.0,20
+2627,2026-09-12,Aston Villa,Nott'm Forest,home_corners,Aston Villa corners,UNDER,5.5,6.0,False,80.0,20
+2627,2026-09-12,Sunderland,Arsenal,home_goals,Sunderland to score,UNDER,1.5,0.0,True,75.0,20
+2627,2026-09-12,Sunderland,Arsenal,home_corners,Sunderland corners,UNDER,5.5,4.0,True,85.0,20
+2627,2026-09-12,Sunderland,Arsenal,home_sot,Sunderland shots on target,UNDER,4.5,3.0,True,80.0,20
