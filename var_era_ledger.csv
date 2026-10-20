@@ -1824,3 +1824,11 @@ season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_
 2627,2026-10-11,Liverpool,Man City,home_corners,Liverpool corners,UNDER,5.5,5.0,True,75.0,20
 2627,2026-10-11,Crystal Palace,Nott'm Forest,home_corners,Crystal Palace corners,UNDER,5.5,5.0,True,75.0,20
 2627,2026-10-12,Coventry,Newcastle,away_corners,Newcastle corners,UNDER,5.5,6.0,False,75.0,20
+2627,2026-10-17,Brentford,Liverpool,home_corners,Brentford corners,UNDER,5.5,3.0,True,75.0,20
+2627,2026-10-17,Brentford,Liverpool,match_cards,Total match cards,OVER,3.5,9.0,True,80.0,20
+2627,2026-10-17,Man City,Ipswich,away_corners,Ipswich corners,UNDER,5.5,3.0,True,90.0,16
+2627,2026-10-18,Leeds,Man United,home_corners,Leeds corners,UNDER,5.5,2.0,True,75.0,20
+2627,2026-10-18,Nott'm Forest,Arsenal,home_goals,Nott'm Forest to score,UNDER,1.5,0.0,True,75.0,20
+2627,2026-10-18,Nott'm Forest,Arsenal,home_corners,Nott'm Forest corners,UNDER,5.5,8.0,False,80.0,20
+2627,2026-10-18,Brighton,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,5.0,True,75.0,20
+2627,2026-10-19,Tottenham,Coventry,away_corners,Coventry corners,UNDER,5.5,4.0,True,76.7,16
