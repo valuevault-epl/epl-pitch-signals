@@ -1832,3 +1832,13 @@ season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_
 2627,2026-10-18,Nott'm Forest,Arsenal,home_corners,Nott'm Forest corners,UNDER,5.5,8.0,False,80.0,20
 2627,2026-10-18,Brighton,Crystal Palace,away_corners,Crystal Palace corners,UNDER,5.5,5.0,True,75.0,20
 2627,2026-10-19,Tottenham,Coventry,away_corners,Coventry corners,UNDER,5.5,4.0,True,76.7,16
+2627,2026-10-23,Ipswich,Nott'm Forest,home_corners,Ipswich corners,UNDER,5.5,0.0,True,80.0,17
+2627,2026-10-24,Coventry,Fulham,home_goals,Coventry to score,UNDER,1.5,0.0,True,77.8,17
+2627,2026-10-24,Coventry,Fulham,home_corners,Coventry corners,UNDER,5.5,4.0,True,82.8,17
+2627,2026-10-24,Chelsea,Tottenham,match_cards,Total match cards,OVER,3.5,8.0,True,75.0,20
+2627,2026-10-24,Aston Villa,Man City,home_corners,Aston Villa corners,UNDER,5.5,4.0,True,80.0,20
+2627,2026-10-24,Arsenal,Everton,away_goals,Everton to score,UNDER,1.5,0.0,True,75.0,20
+2627,2026-10-24,Arsenal,Everton,away_corners,Everton corners,UNDER,5.5,3.0,True,75.0,20
+2627,2026-10-25,Crystal Palace,Newcastle,home_corners,Crystal Palace corners,UNDER,5.5,7.0,False,75.0,20
+2627,2026-10-25,Sunderland,Leeds,home_goals,Sunderland to score,UNDER,1.5,0.0,True,75.0,20
+2627,2026-10-25,Sunderland,Leeds,away_corners,Leeds corners,UNDER,5.5,5.0,True,75.0,20
