@@ -1850,3 +1850,10 @@ season,date,home,away,market,label,direction,line,actual,won,blended_hit_rate,n_
 2627,2026-10-31,Chelsea,Man United,match_cards,Total match cards,OVER,3.5,8.0,True,75.0,20
 2627,2026-10-31,Coventry,Sunderland,home_corners,Coventry corners,UNDER,5.5,4.0,True,83.8,18
 2627,2026-11-01,Liverpool,Arsenal,home_corners,Liverpool corners,UNDER,5.5,7.0,False,75.0,20
+2627,2026-11-07,Nott'm Forest,Man City,home_corners,Nott'm Forest corners,UNDER,5.5,3.0,True,75.0,20
+2627,2026-11-07,Leeds,Tottenham,home_goals,Leeds to score,UNDER,1.5,1.0,True,80.0,20
+2627,2026-11-07,Leeds,Tottenham,home_corners,Leeds corners,UNDER,5.5,6.0,False,80.0,20
+2627,2026-11-08,Ipswich,Bournemouth,home_corners,Ipswich corners,UNDER,5.5,2.0,True,85.0,19
+2627,2026-11-08,Crystal Palace,Liverpool,home_corners,Crystal Palace corners,UNDER,5.5,4.0,True,80.0,20
+2627,2026-11-08,Crystal Palace,Liverpool,home_sot,Crystal Palace shots on target,UNDER,4.5,7.0,False,85.0,20
+2627,2026-11-08,Man United,Aston Villa,away_corners,Aston Villa corners,UNDER,5.5,1.0,True,80.0,20
